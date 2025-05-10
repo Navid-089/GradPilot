@@ -519,7 +519,7 @@ Authorization: Bearer JWT_TOKEN
 ---
 
 
-## AI Chatbot – Ask Anything
+## AI Chatbot 
 
 ### Ask a Question
 - **HTTP Method**: POST
