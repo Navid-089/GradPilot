@@ -401,25 +401,6 @@ Authorization: Bearer JWT_TOKEN
 ```
 - **Status**: 200
 
-### Apply to Scholarship
-- **HTTP Method**: POST
-- **Endpoint**: `/api/v1/scholarships/apply`
-- **Description**: Marks a scholarship as applied for the authenticated user.
-
-
-**Request**
-```json
-{
-  "scholarshipId": "122"
-}
-```
-**Response**
-```json
-{
-  "message": "Scholarship marked as applied"
-}
-```
-- **Status**: 200
 
 ---
 
