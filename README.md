@@ -268,7 +268,7 @@ Authorization: Bearer JWT_TOKEN
 ```json
 {
   "type": "university",
-  "id": "1"
+  "taskId": "1"
 }
 ```
 **Response**
@@ -333,7 +333,7 @@ Authorization: Bearer JWT_TOKEN
 ```json
 {
   "type": "professor",
-  "id": "231"
+  "taskId": "231"
 }
 ```
 **Response**
@@ -628,7 +628,7 @@ Authorization: Bearer JWT_TOKEN
 ```json
 {
   "type": "university",
-  "id": "1001"
+  "taskId": "1001"
 }
 ```
 **Response**
