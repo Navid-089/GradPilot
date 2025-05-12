@@ -224,7 +224,6 @@ Authorization: Bearer JWT_TOKEN
 - **Status**: 200
 
 ---
-
 ## University Matches
 
 ### Get Matched Universities
@@ -243,7 +242,8 @@ Authorization: Bearer JWT_TOKEN
       "score": 0.97,
       "matchedResearch": ["Deep Learning"],
       "tuition": 29500,
-      "deadline": "2025-12-01"
+      "deadline": "2025-12-01",
+      "website": "https://web.mit.edu"
     },
     {
       "universityId": "3",
@@ -251,9 +251,30 @@ Authorization: Bearer JWT_TOKEN
       "score": 0.94,
       "matchedResearch": ["AI"],
       "tuition": 30000,
-      "deadline": "2025-11-15"
+      "deadline": "2025-11-15",
+      "website": "https://www.stanford.edu"
     }
   ]
+}
+```
+- **Status**: 200
+
+### Save University
+- **HTTP Method**: POST
+- **Endpoint**: `/api/v1/tracker/save`
+- **Description**: Saves a university to the authenticated user's application tracker.
+
+**Request**
+```json
+{
+  "type": "university",
+  "id": "1"
+}
+```
+**Response**
+```json
+{
+  "message": "University saved to tracker"
 }
 ```
 - **Status**: 200
@@ -302,6 +323,27 @@ Authorization: Bearer JWT_TOKEN
 }
 ```
 - **Status**: 200
+
+### Save Professor
+- **HTTP Method**: POST
+- **Endpoint**: `/api/v1/tracker/save`
+- **Description**: Saves a professor to the authenticated user's application tracker.
+
+**Request**
+```json
+{
+  "type": "professor",
+  "id": "231"
+}
+```
+**Response**
+```json
+{
+  "message": "Professor saved to tracker"
+}
+```
+- **Status**: 200
+
 
 ---
 
