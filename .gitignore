@@ -1,0 +1,12 @@
+# Dependencies 
+node_modules/ 
+target/ 
+.idea/ 
+*.log 
+.env 
+.DS_Store 
+Thumbs.db 
+*.jar 
+*.war 
+dist/ 
+build/ 
