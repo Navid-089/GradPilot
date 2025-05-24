@@ -1,50 +1,51 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { X, Send, Loader2, GraduationCap, User } from "lucide-react"
-import { useChatbot } from "@/components/chatbot/chatbot-provider"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { askChatbot } from "@/lib/chatbot-service"
+import { useState, useRef, useEffect } from "react";
+import { X, Send, Loader2, GraduationCap, User } from "lucide-react";
+import { useChatbot } from "@/components/chatbot/chatbot-provider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { askChatbot } from "@/lib/chatbot-service";
+import ReactMarkdown from "react-markdown";
 
 export function ChatbotDialog() {
-  const { isOpen, closeChat } = useChatbot()
+  const { isOpen, closeChat } = useChatbot();
   const [messages, setMessages] = useState([
     {
       role: "assistant",
       content:
         "Hi there! I'm GradPilot's AI assistant. How can I help with your graduate school application journey today?",
     },
-  ])
-  const [input, setInput] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const messagesEndRef = useRef(null)
+  ]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+    scrollToBottom();
+  }, [messages]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!input.trim()) return
+    if (!input.trim()) return;
 
     const userMessage = {
       role: "user",
       content: input,
-    }
+    };
 
-    setMessages((prev) => [...prev, userMessage])
-    setInput("")
-    setIsLoading(true)
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
 
     try {
-      const response = await askChatbot(input)
+      const response = await askChatbot(input);
 
       setMessages((prev) => [
         ...prev,
@@ -52,9 +53,9 @@ export function ChatbotDialog() {
           role: "assistant",
           content: response.response,
         },
-      ])
+      ]);
     } catch (error) {
-      console.error("Error getting chatbot response:", error)
+      console.error("Error getting chatbot response:", error);
 
       setMessages((prev) => [
         ...prev,
@@ -62,13 +63,13 @@ export function ChatbotDialog() {
           role: "assistant",
           content: "I'm sorry, I encountered an error. Please try again later.",
         },
-      ])
+      ]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 md:p-8">
@@ -91,23 +92,55 @@ export function ChatbotDialog() {
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((message, index) => (
-            <div key={index} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div
+              key={index}
+              className={`flex ${
+                message.role === "user" ? "justify-end" : "justify-start"
+              }`}
+            >
               <div
-                className={`flex items-start gap-3 max-w-[80%] ${message.role === "user" ? "flex-row-reverse" : ""}`}
+                className={`flex items-start gap-3 max-w-[80%] ${
+                  message.role === "user" ? "flex-row-reverse" : ""
+                }`}
               >
-                <Avatar className={message.role === "user" ? "bg-primary" : "bg-chatbot"}>
+                <Avatar
+                  className={
+                    message.role === "user" ? "bg-primary" : "bg-chatbot"
+                  }
+                >
                   <AvatarFallback
-                    className={message.role === "user" ? "text-primary-foreground" : "text-chatbot-foreground"}
+                    className={
+                      message.role === "user"
+                        ? "text-primary-foreground"
+                        : "text-chatbot-foreground"
+                    }
                   >
-                    {message.role === "user" ? <User className="h-4 w-4" /> : <GraduationCap className="h-4 w-4" />}
+                    {message.role === "user" ? (
+                      <User className="h-4 w-4" />
+                    ) : (
+                      <GraduationCap className="h-4 w-4" />
+                    )}
                   </AvatarFallback>
                 </Avatar>
                 <div
                   className={`rounded-lg px-4 py-2 ${
-                    message.role === "user" ? "bg-primary text-primary-foreground" : "bg-chatbot/10 dark:bg-chatbot/20"
+                    message.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-chatbot/10 dark:bg-chatbot/20"
                   }`}
                 >
-                  <p className="text-sm">{message.content}</p>
+                  {/* <p className="text-sm">{message.content}</p> */}
+                  <div
+                    className={`rounded-lg px-4 py-2 ${
+                      message.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-chatbot/10 dark:bg-chatbot/20"
+                    }`}
+                  >
+                    <ReactMarkdown className="prose prose-sm">
+                      {message.content}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               </div>
             </div>
@@ -143,10 +176,14 @@ export function ChatbotDialog() {
             size="icon"
             className="bg-chatbot hover:bg-chatbot-hover text-chatbot-foreground"
           >
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         </form>
       </div>
     </div>
-  )
+  );
 }
