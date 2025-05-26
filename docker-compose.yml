@@ -1,17 +1,17 @@
 version: '3.8'
 services:
-  db:
-    image: postgres
-    container_name: gradpilot-db
-    environment:
-      POSTGRES_DB: gradPilot
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5433:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./db-init-scripts:/docker-entrypoint-initdb.d
+  # db:
+  #   image: postgres
+  #   container_name: gradpilot-db
+  #   environment:
+  #     POSTGRES_DB: gradPilot
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #   ports:
+  #     - "5433:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+  #     - ./db-init-scripts:/docker-entrypoint-initdb.d
   chatbot:
     build:
       context: ./services/chatbot
@@ -20,11 +20,12 @@ services:
       - "8081:8081"
     env_file:
       - .env
-    depends_on:
-      - db
+    # depends_on:
+    #   - db
     environment:
-      DB_USERNAME: postgres
-      DB_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
 
   frontend:
