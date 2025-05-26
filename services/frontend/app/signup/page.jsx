@@ -10,26 +10,148 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { GraduationCap, Loader2 } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 
+const countries = [
+  "United States", "Canada", "United Kingdom", "Australia"
+  // ...add all countries you want
+];
+
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    gpa: "",
+    testScores: {
+      GRE: "",
+      IELTS: "",
+      TOFEL: ""
+    },
+    targetCountries: [],
+    targetMajors: [],
+    researchInterests: [],
+    deadlineYear: ""
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
   const { register } = useAuth()
+  const [currentInterest, setCurrentInterest] = useState("");
+  const [currentMajor, setCurrentMajor] = useState("");
 
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target
+  //   setFormData((prev) => ({ ...prev, [name]: value }))
+  // }
+  const handleCheckboxChange = (e) => {
+    const { value, checked } = e.target;
+    
+    setFormData(prev => {
+      const currentCountries = prev.targetCountries || [];
+      
+      if (checked) {
+        // Add country if checked
+        return {
+          ...prev,
+          targetCountries: [...currentCountries, value]
+        };
+      } else {
+        // Remove country if unchecked
+        return {
+          ...prev,
+          targetCountries: currentCountries.filter(country => country !== value)
+        };
+      }
+    });
+  };
+  
+  // Alternative: If you want to integrate with your existing handleChange
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    const { name, value, type, checked } = e.target;
+    
+    if (type === "checkbox" && name === "targetCountries") {
+      setFormData(prev => {
+        const currentCountries = prev.targetCountries || [];
+        
+        if (checked) {
+          return {
+            ...prev,
+            targetCountries: [...currentCountries, value]
+          };
+        } else {
+          return {
+            ...prev,
+            targetCountries: currentCountries.filter(country => country !== value)
+          };
+        }
+      });
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError("")
+
+    // Validate GPA/CGPA
+    if (
+      !formData.gpa ||
+      isNaN(formData.gpa) ||
+      formData.gpa < 0 ||
+      formData.gpa > 4
+    ) {
+      setError("Please enter a valid GPA between 0 and 4.0.");
+      return;
+    }
+    
+    // Validate GRE
+    if (
+      !formData.testScores.GRE ||
+      isNaN(formData.testScores.GRE) ||
+      formData.testScores.GRE < 260 ||
+      formData.testScores.GRE > 340
+    ) {
+      setError("Please enter a valid GRE score between 260 and 340.");
+      return;
+    }
+
+    // Validate IELTS
+    if (
+      !formData.testScores.IELTS ||
+      isNaN(formData.testScores.IELTS) ||
+      formData.testScores.IELTS < 0 ||
+      formData.testScores.IELTS > 9
+    ) {
+      setError("Please enter a valid IELTS score between 0 and 9.");
+      return;
+    }
+
+    // Validate TOEFL
+    if (
+      !formData.testScores.TOFEL ||
+      isNaN(formData.testScores.TOFEL) ||
+      formData.testScores.TOFEL < 0 ||
+      formData.testScores.TOFEL > 120
+    ) {
+      setError("Please enter a valid TOEFL score between 0 and 120.");
+      return;
+    }
+
+    // Validate Deadline
+    const currentYear = new Date().getFullYear();
+    if (
+      !formData.deadlineYear ||
+      isNaN(formData.deadlineYear) ||
+      formData.deadlineYear < currentYear ||
+      formData.deadlineYear > currentYear + 10
+    ) {
+      setError(`Please enter a valid deadline year between ${currentYear} and ${currentYear + 10}.`);
+      return;
+    }
 
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
@@ -50,6 +172,12 @@ export default function SignupPage() {
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        gpa: formData.gpa,
+        testScores: formData.testScores,
+        targetCountries: formData.targetCountries,
+        targetMajors: formData.targetMajors,
+        researchInterests: formData.researchInterests,
+        deadlineYear: formData.deadlineYear
       })
 
       if (result.success) {
@@ -65,6 +193,56 @@ export default function SignupPage() {
       setIsLoading(false)
     }
   }
+
+  // Handler for input change
+  const handleInterestInputChange = (e) => {
+    setCurrentInterest(e.target.value);
+  };
+
+  // Handler for key down (Enter)
+  const handleInterestKeyDown = (e) => {
+    if (e.key === "Enter" && currentInterest.trim()) {
+      e.preventDefault();
+      setFormData((prev) => ({
+        ...prev,
+        researchInterests: [...(prev.researchInterests || []), currentInterest.trim()],
+      }));
+      setCurrentInterest("");
+    }
+  };
+
+  // Handler to remove a tag
+  const handleRemoveInterest = (interest) => {
+    setFormData((prev) => ({
+      ...prev,
+      researchInterests: prev.researchInterests.filter((i) => i !== interest),
+    }));
+  };
+
+  // Handler for major input change
+  const handleMajorInputChange = (e) => {
+    setCurrentMajor(e.target.value);
+  };
+
+  // Handler for key down (Enter) for major
+  const handleMajorKeyDown = (e) => {
+    if (e.key === "Enter" && currentMajor.trim()) {
+      e.preventDefault();
+      setFormData((prev) => ({
+        ...prev,
+        targetMajors: [...(prev.targetMajors || []), currentMajor.trim()],
+      }));
+      setCurrentMajor("");
+    }
+  };
+
+  // Handler to remove a major
+  const handleRemoveMajor = (major) => {
+    setFormData((prev) => ({
+      ...prev,
+      targetMajors: prev.targetMajors.filter((m) => m !== major),
+    }));
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
@@ -86,7 +264,7 @@ export default function SignupPage() {
               {error && <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded">{error}</div>}
 
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">Full Name <span className="text-destructive">*</span></Label>
                 <Input
                   id="name"
                   name="name"
@@ -97,7 +275,7 @@ export default function SignupPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Email <span className="text-destructive">*</span></Label>
                 <Input
                   id="email"
                   name="email"
@@ -109,11 +287,181 @@ export default function SignupPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="gpa">GPA</Label>
+                <Input
+                  id="gpa"
+                  name="gpa"
+                  type="number"
+                  placeholder="e.g. 3.9"
+                  value={formData.gpa}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Test Scores</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="gre"
+                    name="GRE"
+                    type="number"
+                    placeholder="GRE"
+                    value={formData.testScores.GRE}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        testScores: { ...prev.testScores, GRE: e.target.value }
+                      }))
+                    }
+                  />
+                  <Input
+                    id="ielts"
+                    name="IELTS"
+                    type="number"
+                    placeholder="IELTS"
+                    value={formData.testScores.IELTS}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        testScores: { ...prev.testScores, IELTS: e.target.value }
+                      }))
+                    }
+                  />
+                  <Input
+                    id="tofel"
+                    name="TOFEL"
+                    type="number"
+                    placeholder="TOFEL"
+                    value={formData.testScores.TOFEL}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        testScores: { ...prev.testScores, TOFEL: e.target.value }
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="targetMajors">Target Majors</Label>
+                <Input
+                  id="targetMajors"
+                  name="targetMajors"
+                  type="text"
+                  value={currentMajor}
+                  onChange={handleMajorInputChange}
+                  onKeyDown={handleMajorKeyDown}
+                  placeholder="Type and press Enter to add"
+                />
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.targetMajors.map((major, idx) => (
+                    <span key={idx} className="bg-green-100 text-green-800 px-2 py-1 rounded flex items-center">
+                      {major}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveMajor(major)}
+                        className="ml-1 text-red-500 hover:text-red-700"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="researchInterests">Research Interests</Label>
+                <Input
+                  id="researchInterests"
+                  name="researchInterests"
+                  type="text"
+                  value={currentInterest}
+                  onChange={handleInterestInputChange}
+                  onKeyDown={handleInterestKeyDown}
+                  placeholder="Type and press Enter to add"
+                />
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.researchInterests.map((interest, idx) => (
+                    <span key={idx} className="bg-blue-100 text-blue-800 px-2 py-1 rounded flex items-center">
+                      {interest}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveInterest(interest)}
+                        className="ml-1 text-red-500 hover:text-red-700"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="deadlineYear">Deadline Year</Label>
+                <Input
+                  id="deadlineYear"
+                  name="deadlineYear"
+                  type="number"
+                  placeholder="2026"
+                  value={formData.deadlineYear}
+                  onChange={handleChange}
+                />
+              </div>
+        
+{/* 
+              <div className="space-y-2">
+                <Label htmlFor="targetCountries">Target Countries</Label>
+                <Input
+                  id="targetCountries"
+                  name="targetCountries"
+                  type="select"
+                  options={["USA", "Canada", "UK", "Australia", "New Zealand", "Other"]}
+                
+                  placeholder="Select countries"
+                  value={formData.targetCountries}
+                  onChange={handleChange}
+                />
+              </div> */}
+
+<div className="space-y-2">
+  <Label>Target Countries</Label>
+  <div className="border rounded-md p-3 space-y-2 max-h-48 overflow-y-auto">
+    {countries.map((country) => (
+      <div key={country} className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          id={`country-${country}`}
+          name="targetCountries"
+          value={country}
+          checked={formData.targetCountries?.includes(country) || false}
+          onChange={handleCheckboxChange}
+          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        />
+        <label 
+          htmlFor={`country-${country}`} 
+          className="text-sm font-medium cursor-pointer"
+        >
+          {country}
+        </label>
+      </div>
+    ))}
+  </div>
+  
+  {/* Show selected countries */}
+  {formData.targetCountries && formData.targetCountries.length > 0 && (
+    <div className="text-sm text-gray-600">
+      Selected: {formData.targetCountries.join(", ")}
+    </div>
+  )}
+</div>   
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Password <span className="text-destructive">*</span></Label>
                 <Input
                   id="password"
                   name="password"
                   type="password"
+                  placeholder="******"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -121,18 +469,18 @@ export default function SignupPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword">Confirm Password <span className="text-destructive">*</span></Label>
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
                   type="password"
+                  placeholder="******"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
                   minLength={6}
                 />
-              </div>
-            </CardContent>
+              </div>            </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (

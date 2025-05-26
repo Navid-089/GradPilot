@@ -40,6 +40,7 @@ export function AuthProvider({ children }) {
     setIsLoading(true)
     try {
       const response = await loginUser(email, password)
+      console.log(response)
       setUser(response.user)
       return { success: true, user: response.user }
     } catch (error) {

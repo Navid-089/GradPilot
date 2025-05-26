@@ -1,112 +1,123 @@
 // Mock authentication service
 
 export async function loginUser(email, password) {
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-
   // Mock validation
   if (!email || !password) {
-    throw new Error("Email and password are required")
+    throw new Error("Email and password are required");
   }
 
-  // For demo purposes, accept any valid-looking email/password
-  if (email.includes("@") && password.length >= 6) {
-    // Store auth state in localStorage
-    localStorage.setItem("token", "mock-jwt-token")
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        userId: "user-" + Math.floor(Math.random() * 1000),
-        name: email.split("@")[0],
-        email: email,
-      }),
-    )
+  let response;
 
-    // Mock successful response
-    return {
-      token: "mock-jwt-token",
-      user: {
-        userId: "user-" + Math.floor(Math.random() * 1000),
-        name: email.split("@")[0],
-        email: email,
+  try {
+    response = await fetch("http://localhost:8082/api/v1/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+    console.log(data);
+
+    if (!response.ok) {
+      throw new Error(data.message || "Login failed");
     }
-  } else {
-    throw new Error("Invalid email or password")
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+
+    return {
+      user: data.user,
+    };
+  } catch (err) {
+    console.error(err);
+    throw err;
   }
 }
 
 export async function registerUser(userData) {
   // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1500))
+  // await new Promise((resolve) => setTimeout(resolve, 1500))
 
   // Mock validation
   if (!userData.name || !userData.email || !userData.password) {
-    throw new Error("Name, email, and password are required")
+    throw new Error("Name, email, and password are required");
   }
 
   if (!userData.email.includes("@")) {
-    throw new Error("Please enter a valid email address")
+    throw new Error("Please enter a valid email address");
   }
 
   if (userData.password.length < 6) {
-    throw new Error("Password must be at least 6 characters long")
+    throw new Error("Password must be at least 6 characters long");
+  }
+
+  let response;
+  try {
+    response = await fetch("http://localhost:8082/api/v1/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+    const data = await response.json();
+    console.log(data);
+    if (!response.ok) {
+      throw new Error(data.message || "Registration failed");
+    }
+    return data;
+  } catch (err) {
+    console.error(err);
+    throw err;
   }
 
   // Store auth state in localStorage
-  localStorage.setItem("token", "mock-jwt-token")
-  localStorage.setItem(
-    "user",
-    JSON.stringify({
-      userId: "user-" + Math.floor(Math.random() * 1000),
-      name: userData.name,
-      email: userData.email,
-    }),
-  )
+  // localStorage.setItem("token", "mock-jwt-token")
+  // localStorage.setItem(
+  //   "user",
+  //   JSON.stringify({
+  //     userId: "user-" + Math.floor(Math.random() * 1000),
+  //     name: userData.name,
+  //     email: userData.email,
+  //   }),
+  // )
 
   // Mock successful response
-  return {
-    message: "Registration successful",
-    token: "mock-jwt-token",
-    user: {
-      userId: "user-" + Math.floor(Math.random() * 1000),
-      name: userData.name,
-      email: userData.email,
-    },
-  }
 }
 
 export async function logoutUser() {
   // Clear auth state from localStorage
-  localStorage.removeItem("token")
-  localStorage.removeItem("user")
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
 
   // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 500))
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   // Mock successful response
   return {
     message: "Logged out successfully",
-  }
+  };
 }
 
 export async function getCurrentUser() {
   // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 300))
+  await new Promise((resolve) => setTimeout(resolve, 300));
 
   // Check if we have a user in localStorage
-  const userJson = localStorage.getItem("user")
-  const token = localStorage.getItem("token")
+  const userJson = localStorage.getItem("user");
+  const token = localStorage.getItem("token");
 
   if (!userJson || !token) {
-    return null
+    return null;
   }
 
   try {
     // Parse and return the user data
-    return JSON.parse(userJson)
+    return JSON.parse(userJson);
   } catch (error) {
-    console.error("Error parsing user data:", error)
-    return null
+    console.error("Error parsing user data:", error);
+    return null;
   }
 }
