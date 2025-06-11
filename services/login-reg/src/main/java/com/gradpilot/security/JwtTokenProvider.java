@@ -1,5 +1,6 @@
 package com.gradpilot.security;
 
+import com.gradpilot.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,9 +22,18 @@ public class JwtTokenProvider {
     private int jwtExpirationMs;
 
     // Generate JWT token
-    public String generateToken(UserDetails userDetails) {
+    // public String generateToken(UserDetails userDetails) {
+    // Map<String, Object> claims = new HashMap<>();
+    // if (userDetails instanceof User) {
+    // claims.put("userId", ((User) userDetails).getUserId());
+    // }
+    // return createToken(claims, userDetails.getUsername());
+    // }
+
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername());
+        claims.put("userId", user.getUserId());
+        return createToken(claims, user.getEmail());
     }
 
     // Create token with claims

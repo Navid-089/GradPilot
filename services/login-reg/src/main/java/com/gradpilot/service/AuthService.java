@@ -73,8 +73,7 @@ public class AuthService {
                     UserScore userScore = new UserScore(
                             savedUser.getUserId(),
                             entry.getKey(),
-                            entry.getValue().toString()
-                    );
+                            entry.getValue().toString());
                     userScoreRepository.save(userScore);
                 }
             }
@@ -85,7 +84,8 @@ public class AuthService {
                     ResearchInterest interest = researchInterestRepository.findByName(interestName)
                             .orElseGet(() -> researchInterestRepository.save(new ResearchInterest(interestName)));
 
-                    // Insert into user_research_interests table (you'll need to create this entity too)
+                    // Insert into user_research_interests table (you'll need to create this entity
+                    // too)
                     // For now, we'll skip this step to keep it simple
                 }
             }
@@ -96,7 +96,8 @@ public class AuthService {
                     Country country = countryRepository.findByName(countryName)
                             .orElseGet(() -> countryRepository.save(new Country(countryName)));
 
-                    // Insert into user_target_countries table (you'll need to create this entity too)
+                    // Insert into user_target_countries table (you'll need to create this entity
+                    // too)
                     // For now, we'll skip this step to keep it simple
                 }
             }
@@ -113,15 +114,16 @@ public class AuthService {
             }
 
             // Generate JWT token
-            UserDetails userDetails = savedUser;
+            // UserDetails userDetails = savedUser;
+            User userDetails = savedUser; // Assuming User implements UserDetails
+            // String token = jwtTokenProvider.generateToken(userDetails);
             String token = jwtTokenProvider.generateToken(userDetails);
 
             // Create user info for response
             RegisterResponse.UserInfo userInfo = new RegisterResponse.UserInfo(
                     savedUser.getUserId().toString(),
                     savedUser.getName(),
-                    savedUser.getEmail()
-            );
+                    savedUser.getEmail());
 
             return new RegisterResponse("Registration successful", userInfo, token);
 
@@ -136,12 +138,11 @@ public class AuthService {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getEmail(),
-                            loginRequest.getPassword()
-                    )
-            );
+                            loginRequest.getPassword()));
 
             // Get user details
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            // UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User userDetails = (User) authentication.getPrincipal();
 
             // Generate JWT token
             String token = jwtTokenProvider.generateToken(userDetails);
@@ -154,8 +155,7 @@ public class AuthService {
             LoginResponse.UserInfo userInfo = new LoginResponse.UserInfo(
                     user.getUserId().toString(),
                     user.getName(),
-                    user.getEmail()
-            );
+                    user.getEmail());
 
             return new LoginResponse(token, userInfo);
 

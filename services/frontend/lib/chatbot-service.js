@@ -1,17 +1,28 @@
 // Actual chatbot service calling backend API
 
 export async function askChatbot(message) {
-  const userId = 1; // Default userId
-  // Use localhost:8081 as this code runs client-side in the browser
+  // Get user info from localStorage
+  const userJson = localStorage.getItem("user");
+  const token = localStorage.getItem("token");
+
   const url = "http://localhost:8081/api/chat";
 
   try {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    // Only add Authorization header if token exists
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const response = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId: userId, message: message }),
+      headers: headers,
+      body: JSON.stringify({
+        message: message,
+      }),
     });
 
     if (!response.ok) {
