@@ -1,19 +1,24 @@
 package com.gradpilot.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.gradpilot.dto.LoginRequest;
 import com.gradpilot.dto.LoginResponse;
 import com.gradpilot.dto.RegisterRequest;
 import com.gradpilot.dto.RegisterResponse;
 import com.gradpilot.service.AuthService;
+
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
-@CrossOrigin(origins = "*") // For testing purposes
+// @CrossOrigin(origins = "*") // For testing purposes
 public class AuthController {
 
     @Autowired
