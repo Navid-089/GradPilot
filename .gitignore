@@ -1,15 +1,14 @@
-# Java
+# Java / Maven
 **/target/
 *.class
 *.jar
 *.war
 *.iml
-
-# Maven
 .mvn/
 !/.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.log
 
-# Node.js / Next.js
+# Node.js / Frontend
 **/node_modules/
 **/.next/
 **/out/
@@ -22,8 +21,8 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Environment files
-.env
-.env.*
+# .env
+# .env.*
 
 # OS generated files
 .DS_Store
@@ -33,30 +32,16 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+.classpath
+.project
+.settings/
 
 # Docker
-**/frontend@0.1.0
+*.bak
+docker-compose.override.yml
 
 # Misc
 *.local
-*.sublime-workspace
-*.sublime-project
-
-
-# ------------------
-
-# Maven wrapper logs
-.mvn/wrapper/maven-wrapper.log
-
-# VS Code backups
-*.code-workspace
-
-# IntelliJ output
-out/
-
-# Docker artifacts (optional)
-docker-compose.override.yml
-*.bak
-
-# Optional IDE metadata
-*.classloader-cache
