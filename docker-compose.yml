@@ -30,11 +30,10 @@ services:
   frontend:
     build: ./services/frontend
     ports:
-      - "8080:3000"
-    # This environment section passes the correct URLs to the frontend
+      - "8080:3000"    # This environment section passes the correct URLs to the frontend
     environment:
-      - NEXT_PUBLIC_API_URL=http://57.159.24.58:8082
-      - NEXT_PUBLIC_CHATBOT_API_URL=http://57.159.24.58:8081
+      - NEXT_PUBLIC_API_URL=http://192.168.0.3:8082
+      - NEXT_PUBLIC_CHATBOT_API_URL=http://192.168.0.3:8081
     depends_on:
       - chatbot
       - login-reg
