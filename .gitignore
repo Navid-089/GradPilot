@@ -6,8 +6,8 @@
 *.iml
 
 # Maven
-.mvn/
-!/.mvn/wrapper/maven-wrapper.jar
+# .mvn/
+# !/.mvn/wrapper/maven-wrapper.jar
 
 # Node.js / Next.js
 **/node_modules/
