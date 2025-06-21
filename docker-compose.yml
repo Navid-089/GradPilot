@@ -1,6 +1,5 @@
 version: '3.8'
 services:
-  # ... (db and chatbot services remain the same)
   chatbot:
     build:
       context: ./services/chatbot
@@ -33,7 +32,7 @@ services:
     build: ./services/frontend
     ports:
       - "3000:3000"
-    # Add this environment section
+    # This environment section passes the correct URLs to the frontend
     environment:
       - NEXT_PUBLIC_API_URL=http://57.159.24.58:8082
       - NEXT_PUBLIC_CHATBOT_API_URL=http://57.159.24.58:8081
