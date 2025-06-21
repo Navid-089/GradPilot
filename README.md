@@ -88,7 +88,7 @@ This is the backend for the GradPilot project. It is a RESTful API built using S
 
 ---
 
-## API Documentation
+## API Documentation 
 
 
 ## Authentication
