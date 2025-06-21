@@ -41,3 +41,22 @@ Thumbs.db
 *.local
 *.sublime-workspace
 *.sublime-project
+
+
+# ------------------
+
+# Maven wrapper logs
+.mvn/wrapper/maven-wrapper.log
+
+# VS Code backups
+*.code-workspace
+
+# IntelliJ output
+out/
+
+# Docker artifacts (optional)
+docker-compose.override.yml
+*.bak
+
+# Optional IDE metadata
+*.classloader-cache
