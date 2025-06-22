@@ -5,7 +5,7 @@ FROM node:18.18.0 AS builder
 WORKDIR /app
 
 # Copy package files and install dependencies
-COPY package.json package-lock.json* ./
+COPY package.json ./
 RUN npm install
 
 # Copy the rest of the app source code
@@ -29,4 +29,4 @@ ENV NODE_ENV=production
 EXPOSE 3000
 
 # Run the app
-CMD ["npm", "start"]
+CMD ["npm", "start", "--", "--hostname", "0.0.0.0"]
