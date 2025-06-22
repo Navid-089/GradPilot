@@ -103,4 +103,5 @@ jobs:
             docker compose down  
             docker image prune -af -f
             docker compose pull
-            docker compose up -d
+            docker compose up -d 
+          timeout: 60m
