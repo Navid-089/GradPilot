@@ -227,7 +227,7 @@ export default function HomePage() {
           </div>
           <nav className="flex gap-4 sm:gap-6">
             <Link className="text-sm font-medium hover:underline" href="/terms">
-              Terms of Service
+              Terms of Services
             </Link>
             <Link className="text-sm font-medium hover:underline" href="/privacy">
               Privacy
