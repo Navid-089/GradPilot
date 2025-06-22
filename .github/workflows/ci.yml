@@ -83,4 +83,20 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:latest \
                        -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:${{ github.sha }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:${{ github.sha }} 
+
+  deploy-to-vm:
+    needs: build-test-and-dockerize
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Deploy on Azure VM via SSH 
+        uses: appleboy/ssh-action@v1.0.0 
+        with:
+          host: ${{ secrets.VM_IP}} 
+          username: seed 
+          key: ${{ secrets.SSH_KEY }} 
+          script: | 
+            cd /home/seed/GradPilot
+            git pull origin deployment 
+            docker compose pull 
+            docker compose up --build -d
