@@ -96,7 +96,7 @@ jobs:
           username: seed 
           key: ${{ secrets.SSH_KEY }} 
           script: | 
-            cd /home/seed/GradPilot
+            cd /home/seed/GradPilot2/GradPilot
             git pull origin deployment 
             docker compose down 
             docker compose pull
