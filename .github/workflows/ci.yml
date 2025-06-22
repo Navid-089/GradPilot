@@ -11,6 +11,8 @@ permissions:
 jobs:
   build-test-and-dockerize:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_BUILDKIT: 1
 
     steps:
       - name: Checkout code
@@ -56,7 +58,7 @@ jobs:
       - name: Dockerize and push recommendation
         working-directory: services/recommendation
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-recommendation:latest \
+          docker build --pull -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-recommendation:latest \
                        -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-recommendation:${{ github.sha }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-recommendation:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-recommendation:${{ github.sha }}
@@ -64,7 +66,7 @@ jobs:
       - name: Dockerize and push chatbot
         working-directory: services/chatbot
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-chatbot:latest \
+          docker build --pull -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-chatbot:latest \
                        -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-chatbot:${{ github.sha }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-chatbot:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-chatbot:${{ github.sha }}
@@ -72,7 +74,7 @@ jobs:
       - name: Dockerize and push login-reg
         working-directory: services/login-reg
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-login-reg:latest \
+          docker build --pull -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-login-reg:latest \
                        -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-login-reg:${{ github.sha }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-login-reg:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-login-reg:${{ github.sha }}
@@ -80,7 +82,7 @@ jobs:
       - name: Dockerize and push frontend
         working-directory: services/frontend
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:latest \
+          docker build --pull -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:latest \
                        -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:${{ github.sha }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:${{ github.sha }} 
@@ -98,6 +100,7 @@ jobs:
           script: | 
             cd /home/seed/GradPilot2/GradPilot
             git pull origin deployment 
-            docker compose down 
+            docker compose down  
+            docker image prune -af -f
             docker compose pull
             docker compose up -d
