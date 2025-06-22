@@ -32,7 +32,7 @@ export default function HomePage() {
                   Your Graduate School Journey Starts Here
                 </div>
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
-                  Navigate Your Path to Graduate School Success
+                  Navigate Your Path to Graduate School Success From Today!
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
                   GradPilot helps you find the perfect graduate programs, connect with professors, and streamline your
