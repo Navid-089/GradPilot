@@ -1,5 +1,7 @@
 package com.gradpilot.chatbot.config;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +44,11 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:3000");
+        config.setAllowedOrigins(Arrays.asList(
+            "http://localhost:3000",
+            "http://gradpilot.me"
+        ));
+
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
@@ -61,4 +67,17 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
+    // @Bean
+    // public UrlBasedCorsConfigurationSource corsConfigurationSourceForFrontend() {
+    //     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    //     CorsConfiguration config = new CorsConfiguration();
+    //     config.addAllowedOrigin("http://gradpilot.me");
+    //     config.addAllowedHeader("*");
+    //     config.addAllowedMethod("*");
+    //     config.setAllowCredentials(true);
+    //     source.registerCorsConfiguration("/**", config);
+    //     return source;
+    // }
+    
 }

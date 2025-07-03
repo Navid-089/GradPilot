@@ -32,7 +32,7 @@ export default function HomePage() {
                   Your Graduate School Journey Starts Here
                 </div>
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
-                  Navigate Your Path to Graduate School Success
+                  Navigate Your Path to Graduate School Success From Now!
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
                   GradPilot helps you find the perfect graduate programs, connect with professors, and streamline your
@@ -227,7 +227,7 @@ export default function HomePage() {
           </div>
           <nav className="flex gap-4 sm:gap-6">
             <Link className="text-sm font-medium hover:underline" href="/terms">
-              Terms of Service
+              Terms of Services
             </Link>
             <Link className="text-sm font-medium hover:underline" href="/privacy">
               Privacy

@@ -1,38 +1,92 @@
+# version: '3.8'
+# services:
+#   # db:
+#   #   image: postgres
+#   #   container_name: gradpilot-db
+#   #   environment:
+#   #     POSTGRES_DB: gradPilot
+#   #     POSTGRES_USER: postgres
+#   #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+#   #   ports:
+#   #     - "5433:5432"
+#   #   volumes:
+#   #     - pgdata:/var/lib/postgresql/data
+#   #     - ./db-init-scripts:/docker-entrypoint-initdb.d
+#   chatbot: 
+#     build:
+#       context: ./services/chatbot
+#     container_name: gradpilot-chatbot
+#     ports:
+#       - "8081:8081"
+#     env_file:
+#       - .env
+#     # depends_on:
+#     #   - db
+#     environment:
+#       SPRING_DATASOURCE_URL: ${DB_URL}
+#       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+#       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+#       GEMINI_API_KEY: ${GEMINI_API_KEY}
+#       APP_JWT_SECRET: ${JWT_SECRET}
+  
+#   login-reg:
+#     build:
+#       context: ./services/login-reg
+#       dockerfile: Dockerfile
+#     container_name: gradpilot-login-reg
+#     ports:
+#       - "8082:8082"
+#     env_file:
+#       - .env
+#     environment:
+#       SPRING_DATASOURCE_URL: ${DB_URL}
+#       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+#       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+#       APP_JWT_SECRET: ${JWT_SECRET}
+
+#   recommendation:
+#     build:
+#       context: ./services/recommendation
+#     container_name: gradpilot-recommendation
+#     ports:
+#       - "8083:8083"
+#     env_file:
+#       - .env
+#     environment:
+#       SPRING_DATASOURCE_URL: ${DB_URL}
+#       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+#       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+#       APP_JWT_SECRET: ${JWT_SECRET}
+
+#   frontend:
+#     build: ./services/frontend
+#     ports:
+#       - "3000:3000"
+#     depends_on:
+#       - chatbot
+
+# volumes:
+#   pgdata: 
+
 version: '3.8'
+
 services:
-  # db:
-  #   image: postgres
-  #   container_name: gradpilot-db
-  #   environment:
-  #     POSTGRES_DB: gradPilot
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
-  #   ports:
-  #     - "5433:5432"
-  #   volumes:
-  #     - pgdata:/var/lib/postgresql/data
-  #     - ./db-init-scripts:/docker-entrypoint-initdb.d
   chatbot:
-    build:
-      context: ./services/chatbot
+    image: ananyapromi3/gradpilot-chatbot:latest
     container_name: gradpilot-chatbot
     ports:
       - "8081:8081"
     env_file:
       - .env
-    # depends_on:
-    #   - db
     environment:
       SPRING_DATASOURCE_URL: ${DB_URL}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       APP_JWT_SECRET: ${JWT_SECRET}
-  
+
   login-reg:
-    build:
-      context: ./services/login-reg
-      dockerfile: Dockerfile
+    image: ananyapromi3/gradpilot-login-reg:latest
     container_name: gradpilot-login-reg
     ports:
       - "8082:8082"
@@ -45,8 +99,7 @@ services:
       APP_JWT_SECRET: ${JWT_SECRET}
 
   recommendation:
-    build:
-      context: ./services/recommendation
+    image: ananyapromi3/gradpilot-recommendation:latest
     container_name: gradpilot-recommendation
     ports:
       - "8083:8083"
@@ -59,11 +112,9 @@ services:
       APP_JWT_SECRET: ${JWT_SECRET}
 
   frontend:
-    build: ./services/frontend
+    image: ananyapromi3/gradpilot-frontend:latest
     ports:
-      - "3000:3000"
+      - "80:3000"
     depends_on:
       - chatbot
-
-volumes:
-  pgdata:
+#
