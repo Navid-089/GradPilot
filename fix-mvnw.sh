@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fix Maven wrapper permissions 
-# henloo
+# henloooo
 
 echo "Making mvnw files executable..."
 
