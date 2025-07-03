@@ -2,7 +2,7 @@ name: CI/CD
 
 on:
   push:
-    branches: [deployment]
+    branches: [main]
 
 permissions:
   contents: read
@@ -99,7 +99,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }} 
           script: | 
             cd /home/seed/deployment/GradPilot
-            git pull origin deployment 
+            git checkout main
+            git pull origin main
             docker compose down  
             docker image prune -af -f
             docker compose pull
