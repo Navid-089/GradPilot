@@ -98,7 +98,7 @@ jobs:
           username: seed 
           key: ${{ secrets.SSH_KEY }} 
           script: | 
-            cd /home/seed/GradPilot2/GradPilot
+            cd /home/seed/deployment/GradPilot
             git pull origin deployment 
             docker compose down  
             docker image prune -af -f
