@@ -1,0 +1,23 @@
+{
+  "name": "gradpilot",
+  "version": "1.0.0",
+  "description": "This is the backend for the GradPilot project. It is a RESTful API built using Spring Boot and PostgreSQL.",
+  "main": "playwright.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Navid-089/GradPilot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Navid-089/GradPilot/issues"
+  },
+  "homepage": "https://github.com/Navid-089/GradPilot#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.53.2"
+  }
+}
