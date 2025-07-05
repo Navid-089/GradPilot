@@ -30,19 +30,19 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       APP_JWT_SECRET: ${JWT_SECRET}
 
-  recommendation:
-    build:
-      context: ./services/recommendation
-    container_name: gradpilot-recommendation
-    ports:
-      - "8083:8083"
-    env_file:
-      - .env
-    environment:
-      SPRING_DATASOURCE_URL: ${DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      APP_JWT_SECRET: ${JWT_SECRET}
+  # recommendation:
+  #   build:
+  #     context: ./services/recommendation
+  #   container_name: gradpilot-recommendation
+  #   ports:
+  #     - "8083:8083"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     SPRING_DATASOURCE_URL: ${DB_URL}
+  #     SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+  #     SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+  #     APP_JWT_SECRET: ${JWT_SECRET}
 
   frontend:
     build:
@@ -52,3 +52,17 @@ services:
       - "80:3000"
     depends_on:
       - chatbot
+
+  sop-review-service:
+    build:
+      context: ./services/sop-review-service
+    container_name: gradpilot-sop-review
+    ports:
+      - "8084:8084"
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      APP_JWT_SECRET: ${JWT_SECRET}
