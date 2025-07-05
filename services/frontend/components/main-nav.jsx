@@ -54,6 +54,7 @@ export function MainNav() {
     { name: "Dashboard", href: "/dashboard", icon: <BookOpen className="h-4 w-4 mr-2" /> },
     { name: "Universities", href: "/universities", icon: <School className="h-4 w-4 mr-2" /> },
     { name: "Research", href: "/research", icon: <FileText className="h-4 w-4 mr-2" /> },
+    { name: "SOP Review", href: "/dashboard/sop-review", icon: <FileText className="h-4 w-4 mr-2" /> },
     { name: "Scholarships", href: "/scholarships", icon: <Award className="h-4 w-4 mr-2" /> },
     { name: "Timeline", href: "/dashboard/timeline", icon: <Calendar className="h-4 w-4 mr-2" /> },
   ]
