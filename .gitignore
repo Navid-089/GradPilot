@@ -41,3 +41,6 @@ Thumbs.db
 *.local
 *.sublime-workspace
 *.sublime-project
+
+# Test results
+**/test-results/
