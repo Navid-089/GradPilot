@@ -8,6 +8,10 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install
 
+# Copy both package.json and package-lock.json to enable layer caching
+
+
+
 # Copy the rest of the app source code
 COPY . .
 

@@ -14,37 +14,50 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { School, Search, MapPin, Calendar, DollarSign, GraduationCap, Star, BookOpen } from "lucide-react"
 import { getUniversityMatches } from "@/lib/university-service"
+import { trackerService } from "@/lib/tracker-service"
+import { useAuth } from "@/lib/auth-context"
 
 export default function UniversitiesPage() {
+  const { isAuthenticated, user } = useAuth()
   const [universities, setUniversities] = useState([])
   const [filteredUniversities, setFilteredUniversities] = useState([])
+  const [savedUniversities, setSavedUniversities] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
 
+  const countries = [
+    "United States",
+    "United Kingdom",
+    "Canada",
+    "Germany",
+    "Australia",
+    "Singapore",
+    "Japan",
+    "China",
+    "South Korea",
+    "Switzerland",
+    "Belgium"
+  ]
+
   const [filters, setFilters] = useState({
-    countries: [],
+    countries: [...countries],
     minMatchScore: 0,
     maxTuition: 50000,
-    researchAreas: [],
   })
-
-  const countries = ["USA", "UK", "Canada", "Germany", "Australia", "Singapore", "Japan"]
-  const researchAreas = [
-    "Machine Learning",
-    "Natural Language Processing",
-    "Computer Vision",
-    "Robotics",
-    "Bioinformatics",
-    "Quantum Computing",
-    "Cybersecurity",
-  ]
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getUniversityMatches()
+        console.log("Fetched university data:", data)
         setUniversities(data)
         setFilteredUniversities(data)
+        
+        // Fetch saved universities
+        const savedTasks = await trackerService.getUserTasksByType('university')
+        const savedUniIds = savedTasks.map(task => task.universityId)
+        const savedUnis = data.filter(uni => savedUniIds.includes(uni.id))
+        setSavedUniversities(savedUnis)
       } catch (error) {
         console.error("Error fetching university data:", error)
       } finally {
@@ -59,32 +72,33 @@ export default function UniversitiesPage() {
     // Apply filters and search
     let result = [...universities]
 
+    console.log("Initial universities:", result.length)
+    console.log("Available countries:", [...new Set(result.map(u => u.country))])
+
     // Apply search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       result = result.filter(
-        (uni) => uni.name.toLowerCase().includes(query) || uni.location.toLowerCase().includes(query),
+        (uni) => uni.name.toLowerCase().includes(query) || uni.address.toLowerCase().includes(query),
       )
+      console.log("After search filter:", result.length)
     }
 
     // Apply country filter
     if (filters.countries.length > 0) {
-      result = result.filter((uni) => {
-        const country = uni.location.split(", ").pop()
-        return filters.countries.includes(country)
-      })
+      result = result.filter((uni) => filters.countries.includes(uni.country))
+      console.log("After country filter:", result.length)
+      console.log("Filter countries:", filters.countries)
+      console.log("University countries:", result.map(u => u.country))
     }
 
     // Apply match score filter
     result = result.filter((uni) => uni.matchScore >= filters.minMatchScore)
+    console.log("After match score filter:", result.length)
 
     // Apply tuition filter
-    result = result.filter((uni) => uni.tuition <= filters.maxTuition)
-
-    // Apply research areas filter
-    if (filters.researchAreas.length > 0) {
-      result = result.filter((uni) => uni.researchAreas.some((area) => filters.researchAreas.includes(area)))
-    }
+    result = result.filter((uni) => uni.tuitionFees <= filters.maxTuition)
+    console.log("After tuition filter:", result.length)
 
     setFilteredUniversities(result)
   }, [searchQuery, filters, universities])
@@ -102,27 +116,28 @@ export default function UniversitiesPage() {
     })
   }
 
-  const handleResearchAreaChange = (area) => {
-    setFilters((prev) => {
-      const updatedAreas = prev.researchAreas.includes(area)
-        ? prev.researchAreas.filter((a) => a !== area)
-        : [...prev.researchAreas, area]
-
-      return {
-        ...prev,
-        researchAreas: updatedAreas,
-      }
-    })
-  }
-
   const resetFilters = () => {
     setFilters({
-      countries: [],
+      countries: [...countries],
       minMatchScore: 0,
       maxTuition: 50000,
-      researchAreas: [],
     })
     setSearchQuery("")
+  }
+
+  const handleUniversitySaveToggle = (university, isSaved) => {
+    if (isSaved) {
+      // Add to saved universities if not already there
+      setSavedUniversities(prev => {
+        if (!prev.find(uni => uni.id === university.id)) {
+          return [...prev, university]
+        }
+        return prev
+      })
+    } else {
+      // Remove from saved universities
+      setSavedUniversities(prev => prev.filter(uni => uni.id !== university.id))
+    }
   }
 
   return (
@@ -192,24 +207,6 @@ export default function UniversitiesPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Research Areas</Label>
-                  <div className="space-y-2">
-                    {researchAreas.map((area) => (
-                      <div key={area} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`area-${area}`}
-                          checked={filters.researchAreas.includes(area)}
-                          onCheckedChange={() => handleResearchAreaChange(area)}
-                        />
-                        <Label htmlFor={`area-${area}`} className="cursor-pointer">
-                          {area}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
                 <Button variant="outline" className="w-full" onClick={resetFilters}>
                   Reset Filters
                 </Button>
@@ -254,7 +251,7 @@ export default function UniversitiesPage() {
                     </div>
                   ) : filteredUniversities.length > 0 ? (
                     filteredUniversities.map((university) => (
-                      <UniversityCard key={university.id} university={university} />
+                      <UniversityCard key={university.id} university={university} onSaveToggle={handleUniversitySaveToggle} />
                     ))
                   ) : (
                     <div className="text-center py-10">
@@ -265,11 +262,17 @@ export default function UniversitiesPage() {
                   )}
                 </TabsContent>
                 <TabsContent value="saved" className="space-y-4 mt-4">
-                  <div className="text-center py-10">
-                    <Star className="h-12 w-12 mx-auto text-muted-foreground" />
-                    <h3 className="mt-4 text-lg font-medium">No saved universities</h3>
-                    <p className="text-muted-foreground">Save universities to track them here</p>
-                  </div>
+                  {savedUniversities.length > 0 ? (
+                    savedUniversities.map((university) => (
+                      <UniversityCard key={university.id} university={university} onSaveToggle={handleUniversitySaveToggle} />
+                    ))
+                  ) : (
+                    <div className="text-center py-10">
+                      <Star className="h-12 w-12 mx-auto text-muted-foreground" />
+                      <h3 className="mt-4 text-lg font-medium">No saved universities</h3>
+                      <p className="text-muted-foreground">Save universities to track them here</p>
+                    </div>
+                  )}
                 </TabsContent>
                 <TabsContent value="applied" className="space-y-4 mt-4">
                   <div className="text-center py-10">
@@ -313,7 +316,63 @@ export default function UniversitiesPage() {
   )
 }
 
-function UniversityCard({ university }) {
+function UniversityCard({ university, onSaveToggle }) {
+  const { isAuthenticated, user } = useAuth()
+  const [isSaved, setIsSaved] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+
+  // Check if university is saved on component mount
+  useEffect(() => {
+    const checkSavedStatus = async () => {
+      try {
+        const saved = await trackerService.isItemSaved('university', university.id)
+        setIsSaved(saved)
+      } catch (error) {
+        console.error('Error checking saved status:', error)
+      }
+    }
+    checkSavedStatus()
+  }, [university.id])
+
+  // Handle save/unsave university
+  const handleSaveToggle = async () => { 
+    console.log("Save button clicked for university:", university.name, "ID:", university.id)
+    console.log("User authenticated:", isAuthenticated)
+    console.log("Current user:", user)
+    
+    if (!isAuthenticated) {
+      alert("Please log in to save universities")
+      return
+    }
+    
+    setIsSaving(true)
+    try {
+      if (isSaved) {
+        console.log("Removing university from tracker...")
+        await trackerService.removeTask('university', university.id)
+        console.log("University removed successfully")
+        setIsSaved(false)
+        // Notify parent component about the save toggle
+        if (onSaveToggle) {
+          onSaveToggle(university, false)
+        }
+      } else {
+        console.log("Saving university to tracker...")
+        const result = await trackerService.saveTask('university', university.id)
+        console.log("Save result:", result)
+        setIsSaved(true)
+        // Notify parent component about the save toggle
+        if (onSaveToggle) {
+          onSaveToggle(university, true)
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling save status:', error)
+      alert(`Error: ${error.message}`)
+    } finally {
+      setIsSaving(false)
+    }
+  }
   return (
     <Card>
       <CardContent className="p-6">
@@ -328,7 +387,7 @@ function UniversityCard({ university }) {
                 <h3 className="text-xl font-bold">{university.name}</h3>
                 <div className="flex items-center text-muted-foreground">
                   <MapPin className="h-4 w-4 mr-1" />
-                  <span>{university.location}</span>
+                  <span>{university.address}</span>
                 </div>
               </div>
               <Badge variant="outline" className="bg-green-50 w-fit">
@@ -341,14 +400,17 @@ function UniversityCard({ university }) {
                 <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Application Deadline</p>
-                  <p className="text-sm text-muted-foreground">{university.deadline}</p>
+                  <p className="text-sm text-muted-foreground">{university.applicationDeadline}</p>
                 </div>
               </div>
               <div className="flex items-center">
                 <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Tuition</p>
-                  <p className="text-sm text-muted-foreground">${university.tuition.toLocaleString()}/year</p>
+                  <p className="text-sm text-muted-foreground">
+                    {university.tuitionFees != null ? `$${university.tuitionFees.toLocaleString()}/year` : "N/A"}
+</p>
+
                 </div>
               </div>
               <div className="flex items-center">
@@ -361,24 +423,34 @@ function UniversityCard({ university }) {
             </div>
 
             <div>
-              <p className="text-sm font-medium mb-1">Research Areas</p>
-              <div className="flex flex-wrap gap-2">
-                {university.researchAreas.map((area, index) => (
-                  <Badge key={index} variant="secondary">
-                    {area}
-                  </Badge>
-                ))}
-              </div>
+              <p className="text-sm font-medium mb-1">About</p>
+              <p className="text-sm text-muted-foreground">{university.description}</p>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Button variant="default">
-                <BookOpen className="mr-2 h-4 w-4" />
-                View Details
+              <Button variant="default" asChild>
+              <a href={university.websiteUrl ?? "#"} target="_blank" rel="noopener noreferrer">
+
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  Visit Website
+                </a>
               </Button>
-              <Button variant="outline">
-                <Star className="mr-2 h-4 w-4" />
-                Save
+              <Button
+                variant={isSaved ? "default" : "outline"}
+                onClick={() => {
+                  console.log("🚀 SAVE BUTTON CLICKED! 🚀")
+                  console.log("University:", university.name, "ID:", university.id)
+                  handleSaveToggle()
+                }}
+                disabled={isSaving}
+                data-testid={`save-button-${university.id}`}
+              >
+                {isSaving ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
+                ) : (
+                  <Star className={`mr-2 h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+                )}
+                {isSaving ? 'Saving...' : (isSaved ? 'Saved' : 'Save')}
               </Button>
             </div>
           </div>

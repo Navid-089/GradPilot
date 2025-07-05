@@ -1,6 +1,7 @@
 package com.gradpilot.recommendation.service;
 
 import com.gradpilot.recommendation.dto.RecommendationDto;
+import com.gradpilot.recommendation.dto.UniversityRecommendationDto;
 import com.gradpilot.recommendation.model.*;
 import com.gradpilot.recommendation.repository.*;
 import org.springframework.stereotype.Service;
@@ -12,13 +13,16 @@ import java.util.stream.Collectors;
 public class RecommendationService {
     private final UserRepository userRepository;
     private final ProfessorRepository professorRepository;
+    private final MLRecommendationService mlRecommendationService;
 
-    public RecommendationService(UserRepository userRepository, ProfessorRepository professorRepository) {
+    public RecommendationService(UserRepository userRepository, ProfessorRepository professorRepository, 
+                               MLRecommendationService mlRecommendationService) {
         this.userRepository = userRepository;
         this.professorRepository = professorRepository;
+        this.mlRecommendationService = mlRecommendationService;
     }
 
-    public List<RecommendationDto> getRecommendations(String email) {
+    public List<RecommendationDto> getProfessorRecommendations(String email) {
         User user = userRepository.findByEmail(email).orElseThrow();
         List<ResearchInterest> interests = user.getResearchInterests();
         List<String> countries = user.getTargetCountries().stream().map(Country::getName).toList();
@@ -45,5 +49,24 @@ public class RecommendationService {
                 .sorted(Comparator.comparingInt(RecommendationDto::getMatchScore).reversed())
                 .limit(10)
                 .collect(Collectors.toList());
+    }
+
+    public List<UniversityRecommendationDto> getUniversityRecommendations(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        return mlRecommendationService.getUniversityRecommendations(user.getUserId());
+    }
+
+    public List<UniversityRecommendationDto> getUniversityRecommendationsByCategory(String email, String category, int limit) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        return mlRecommendationService.getRecommendationsByCategory(user.getUserId(), category, limit);
+    }
+
+    public Map<String, Object> getAllRecommendations(String email) {
+        Map<String, Object> allRecommendations = new HashMap<>();
+        
+        allRecommendations.put("professors", getProfessorRecommendations(email));
+        allRecommendations.put("universities", getUniversityRecommendations(email));
+        
+        return allRecommendations;
     }
 }

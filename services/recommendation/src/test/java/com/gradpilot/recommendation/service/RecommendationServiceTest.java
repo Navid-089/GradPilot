@@ -45,8 +45,8 @@ class RecommendationServiceTest {
         UserTestHelper.setTargetCountries(user, List.of(new Country("USA")));
         UserTestHelper.setTargetMajors(user, List.of(new Major("Computer Science")));
 
-        university1 = new University("Test University 1", "", "", 0, "USA", "http://test1.com");
-        university2 = new University("Test University 2", "", "", 0, "Canada", "http://test2.com");
+        university1 = new University("Test University 1", "desc1", "test1@uni.com", 0, 50000.0, "USA", "address1", "http://test1.com");
+        university2 = new University("Test University 2", "desc2", "test2@uni.com", 0, 45000.0, "Canada", "address2", "http://test2.com");
 
         professor1 = new Professor();
         ProfessorTestHelper.setName(professor1, "Dr. Smith");
@@ -62,11 +62,11 @@ class RecommendationServiceTest {
     }
 
     @Test
-    void getRecommendations() {
+    void getProfessorRecommendations() {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
         when(professorRepository.findByResearchInterestsIn(any())).thenReturn(List.of(professor1, professor2));
 
-        List<RecommendationDto> recommendations = recommendationService.getRecommendations("test@example.com");
+        List<RecommendationDto> recommendations = recommendationService.getProfessorRecommendations("test@example.com");
 
         assertNotNull(recommendations);
         assertEquals(2, recommendations.size());
@@ -83,11 +83,11 @@ class RecommendationServiceTest {
     }
 
     @Test
-    void getRecommendations_NoMatchingProfessors() {
+    void getProfessorRecommendations_NoMatchingProfessors() {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
         when(professorRepository.findByResearchInterestsIn(any())).thenReturn(Collections.emptyList());
 
-        List<RecommendationDto> recommendations = recommendationService.getRecommendations("test@example.com");
+        List<RecommendationDto> recommendations = recommendationService.getProfessorRecommendations("test@example.com");
 
         assertNotNull(recommendations);
         assertTrue(recommendations.isEmpty());

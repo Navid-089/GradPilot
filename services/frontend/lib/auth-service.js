@@ -24,6 +24,8 @@ export async function loginUser(email, password) {
       throw new Error(data.message || "Login failed");
     }
 
+    console.log("Storing token:", data.token);
+    console.log("Storing user:", data.user);
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 
