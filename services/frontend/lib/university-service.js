@@ -1,6 +1,6 @@
 // Real university service that calls the ML-powered recommendation API
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8083'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL 
 
 export async function getUniversityMatches(userEmail = null) {
   try {

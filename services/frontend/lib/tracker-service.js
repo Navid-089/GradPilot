@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8083'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL 
 
 export const trackerService = {
   // Save a task (university, professor, or scholarship)
