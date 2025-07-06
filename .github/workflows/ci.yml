@@ -49,9 +49,9 @@ jobs:
         working-directory: services/frontend
         run: npm install
 
-      # - name: Install Playwright
-      #   working-directory: services/frontend
-      #   run: npx playwright install --with-deps
+      - name: Install Playwright
+        working-directory: services/frontend
+        run: npx playwright install --with-deps
 
       - name: Run Playwright E2E tests
         working-directory: services/frontend
