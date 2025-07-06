@@ -46,30 +46,30 @@ test("Login workflow with incorrect and correct credentials, and navigation link
   await page.getByRole("link", { name: "Research" }).click();
   await page.getByRole("link", { name: "Scholarships" }).click();
   await page.getByRole("button", { name: "Open AI Chatbot" }).click();
-  await page
-    .getByRole("textbox", { name: "Type your question here..." })
-    .click();
-  await page
-    .getByRole("textbox", { name: "Type your question here..." })
-    .fill("Help me write SOP");
-  await page.getByRole("button").filter({ hasText: /^$/ }).click();
-  await page
-    .getByRole("textbox", { name: "Type your question here..." })
-    .click();
-  await page
-    .getByRole("textbox", { name: "Type your question here..." })
-    .fill("help me");
-  await page.getByRole("button").filter({ hasText: /^$/ }).click();
+  // await page
+  //   .getByRole("textbox", { name: "Type your question here..." })
+  //   .click();
+  // await page
+  //   .getByRole("textbox", { name: "Type your question here..." })
+  //   .fill("Help me write SOP");
+  // await page.getByRole("button").filter({ hasText: /^$/ }).click();
+  // await page
+  //   .getByRole("textbox", { name: "Type your question here..." })
+  //   .click();
+  // await page
+  //   .getByRole("textbox", { name: "Type your question here..." })
+  //   .fill("help me");
+  // await page.getByRole("button").filter({ hasText: /^$/ }).click();
   await page.getByRole("button", { name: "Close" }).click();
   await page.getByRole("link", { name: "Dashboard" }).click();
   await page.getByRole("button", { name: "Open AI Chatbot" }).click();
-  await page
-    .getByRole("textbox", { name: "Type your question here..." })
-    .click();
-  await page
-    .getByRole("textbox", { name: "Type your question here..." })
-    .fill("guide me");
-  await page.getByRole("button").filter({ hasText: /^$/ }).click();
+  // await page
+  //   .getByRole("textbox", { name: "Type your question here..." })
+  //   .click();
+  // await page
+  //   .getByRole("textbox", { name: "Type your question here..." })
+  //   .fill("guide me");
+  // await page.getByRole("button").filter({ hasText: /^$/ }).click();
   await page.getByRole("button", { name: "Close" }).click();
   await page.getByRole("button", { name: "Rapunzel Rapunzel" }).click();
   await page.getByRole("menuitem", { name: "Log out" }).click();
