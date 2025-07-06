@@ -15,7 +15,8 @@ test("Login workflow with incorrect and correct credentials, and navigation link
   page,
 }) => {
   // Go to login page
-  await page.goto("http://gradpilot.me/login");
+  // await page.goto("http://gradpilot.me/login");
+  await page.goto("http://localhost:3000/login");
 
   // Try login with incorrect password
   await page.getByRole("textbox", { name: "Email" }).fill("rapunz@gmail.com");
