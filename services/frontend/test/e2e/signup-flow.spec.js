@@ -1,8 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("test", async ({ page }) => {
-  // await page.goto("http://gradpilot.me/signup");
-  await page.goto("http://localhost:3000/signup");
+  await page.goto("http://gradpilot.me/signup");
   await page.getByRole("button", { name: "Close notification" }).click();
   await page.getByRole("textbox", { name: "Full Name *" }).fill("Test user");
   await page.getByRole("textbox", { name: "Email *" }).click();
@@ -52,8 +51,7 @@ test("test", async ({ page }) => {
     .getByRole("textbox", { name: "Confirm Password *" })
     .fill("asdfghjk");
   await page.getByRole("button", { name: "Sign Up" }).click();
-  // await page.goto("http://gradpilot.me/signup");
-  await page.goto("http://localhost:3000/signup");
+  await page.goto("http://gradpilot.me/signup");
   await page.getByRole("textbox", { name: "Email *" }).click();
   await page
     .getByRole("textbox", { name: "Email *" })
@@ -67,10 +65,8 @@ test("test", async ({ page }) => {
     .fill("testuser@gmail.com");
   await page.getByRole("checkbox", { name: "Canada" }).uncheck();
   await page.getByRole("button", { name: "Sign Up" }).click();
-  // await page.goto("http://gradpilot.me/signup");
-  await page.goto("http://localhost:3000/signup");
+  await page.goto("http://gradpilot.me/signup");
   await page.getByRole("link", { name: "Log in" }).click();
-  // await page.goto("http://gradpilot.me/signup");
-  await page.goto("http://localhost:3000/signup");
+  await page.goto("http://gradpilot.me/signup");
   await page.getByRole("button", { name: "Sign Up" }).click();
 });

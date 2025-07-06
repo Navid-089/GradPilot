@@ -4,8 +4,7 @@ test("Login workflow with incorrect and correct credentials, and navigation link
   page,
 }) => {
   // Go to login page
-  // await page.goto("http://gradpilot.me/login");
-  await page.goto("http://localhost:3000/login");
+  await page.goto("http://gradpilot.me/login");
 
   // Try login with incorrect password
   await page.getByRole("textbox", { name: "Email" }).fill("rapunz@gmail.com");
@@ -32,16 +31,14 @@ test("Login workflow with incorrect and correct credentials, and navigation link
   await expect(page).toHaveURL(/dashboard/);
 
   // Go back to login page
-  // await page.goto("http://gradpilot.me/login");
-  await page.goto("http://localhost:3000/login");
+  await page.goto("http://gradpilot.me/login");
 
   // Navigate to Forgot password page
   await page.getByRole("link", { name: "Forgot password?" }).click();
   await expect(page).toHaveURL(/forgot-password/); // adjust URL as per your app
 
   // Go back to login page
-  // await page.goto("http://gradpilot.me/login");
-  await page.goto("http://localhost:3000/login");
+  await page.goto("http://gradpilot.me/login");
 
   // Navigate to Sign up page
   await page.getByRole("link", { name: "Sign up" }).click();
