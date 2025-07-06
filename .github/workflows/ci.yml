@@ -36,6 +36,10 @@ jobs:
         working-directory: services/recommendation
         run: ./mvnw clean package
 
+      - name: Build SOP Review Service
+        working-directory: services/sop-review-service
+        run: ./mvnw clean package
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -55,7 +59,7 @@ jobs:
 
       - name: Run frontend unit tests
         working-directory: services/frontend
-        run: npm test -- --watchAll=false 
+        run: npm test -- --watchAll=false
 
       - name: Build frontend
         working-directory: services/frontend
@@ -113,7 +117,7 @@ jobs:
             cd /home/seed/CSE408/GradPilot
             git fetch origin
             git reset --hard origin/main
-            
+
             docker compose down  
             docker image prune -af -f
             docker compose pull

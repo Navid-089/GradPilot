@@ -82,7 +82,7 @@ export default function Dashboard() {
         <CardContent>
           <Progress value={dashboardData.progress.overall} className="h-2 mb-4" />
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-4">
             <ProgressCard
               title="Universities"
               value={dashboardData.progress.universities}
@@ -94,6 +94,12 @@ export default function Dashboard() {
               value={dashboardData.progress.professors}
               icon={<Users className="h-5 w-5" />}
               href="/dashboard/professors"
+            />
+            <ProgressCard
+              title="SOP Review"
+              value={dashboardData.progress.sop || 0}
+              icon={<FileText className="h-5 w-5" />}
+              href="/dashboard/sop-review"
             />
             <ProgressCard
               title="Documents"
@@ -178,6 +184,45 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* SOP Review Feature Highlight */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <FileText className="mr-2 h-5 w-5 text-primary" />
+            Statement of Purpose Review
+          </CardTitle>
+          <CardDescription>
+            Get AI-powered feedback on your SOP to improve grammar, style, and clarity
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-2">
+                • Grammar and spelling check
+              </p>
+              <p className="text-sm text-muted-foreground mb-2">
+                • Style and clarity suggestions
+              </p>
+              <p className="text-sm text-muted-foreground mb-4">
+                • Professional writing tips
+              </p>
+            </div>
+            <div className="text-right">
+              <Badge className="bg-primary/10 text-primary border-primary/20">
+                New Feature
+              </Badge>
+            </div>
+          </div>
+          <Button asChild className="w-full">
+            <Link href="/dashboard/sop-review">
+              Review My SOP
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* University Matches */}
       <Card>

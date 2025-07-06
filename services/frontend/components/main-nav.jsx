@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   GraduationCap,
   User,
@@ -20,11 +20,11 @@ import {
   Search,
   Menu,
   X,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useAuth } from "@/lib/auth-context"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth-context";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,59 +37,91 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
   DropdownMenuPortal,
-} from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 export function MainNav() {
-  const pathname = usePathname()
-  const router = useRouter()
-  const { isAuthenticated, user, logout } = useAuth()
-  const [notifications, setNotifications] = useState(3) // Dummy notification count
-  const [messages, setMessages] = useState(2) // Dummy messages count
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname();
+  const router = useRouter();
+  const { isAuthenticated, user, logout } = useAuth();
+  const [notifications, setNotifications] = useState(3); // Dummy notification count
+  const [messages, setMessages] = useState(2); // Dummy messages count
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const mainNavItems = [
-    { name: "Dashboard", href: "/dashboard", icon: <BookOpen className="h-4 w-4 mr-2" /> },
-    { name: "Universities", href: "/universities", icon: <School className="h-4 w-4 mr-2" /> },
-    { name: "Research", href: "/research", icon: <FileText className="h-4 w-4 mr-2" /> },
-    { name: "Scholarships", href: "/scholarships", icon: <Award className="h-4 w-4 mr-2" /> },
-    { name: "Timeline", href: "/dashboard/timeline", icon: <Calendar className="h-4 w-4 mr-2" /> },
-  ]
+    {
+      name: "Dashboard",
+      href: "/dashboard",
+      icon: <BookOpen className="h-4 w-4 mr-2" />,
+    },
+    {
+      name: "Universities",
+      href: "/universities",
+      icon: <School className="h-4 w-4 mr-2" />,
+    },
+    {
+      name: "Research",
+      href: "/research",
+      icon: <FileText className="h-4 w-4 mr-2" />,
+    },
+    {
+      name: "SOP Review",
+      href: "/dashboard/sop-review",
+      icon: <FileText className="h-4 w-4 mr-2" />,
+    },
+    {
+      name: "Scholarships",
+      href: "/scholarships",
+      icon: <Award className="h-4 w-4 mr-2" />,
+    },
+    {
+      name: "Timeline",
+      href: "/dashboard/timeline",
+      icon: <Calendar className="h-4 w-4 mr-2" />,
+    },
+  ];
 
   const resourcesItems = [
     { name: "University Rankings", href: "/resources/rankings" },
     { name: "Application Guides", href: "/resources/guides" },
     { name: "Visa Information", href: "/resources/visa" },
     { name: "Financial Aid", href: "/resources/financial-aid" },
-  ]
+  ];
 
   const getInitials = (name) => {
-    if (!name) return "U"
+    if (!name) return "U";
     return name
       .split(" ")
       .map((n) => n[0])
       .join("")
-      .toUpperCase()
-  }
+      .toUpperCase();
+  };
 
   const handleLogout = () => {
-    logout()
-    router.push("/")
-  }
+    logout();
+    router.push("/");
+  };
 
   return (
     <div className="border-b bg-background sticky top-0 z-30 w-full">
       <div className="container flex h-16 items-center px-4 mx-auto">
-        <Link href={isAuthenticated ? "/dashboard" : "/"} className="flex items-center space-x-2 mr-6">
+        <Link
+          href={isAuthenticated ? "/dashboard" : "/"}
+          className="flex items-center space-x-2 mr-6"
+        >
           <GraduationCap className="h-6 w-6 text-primary" />
           <span className="text-xl font-bold">GradPilot</span>
         </Link>
 
         {/* Mobile menu button */}
         <div className="md:hidden">
-          <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(true)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(true)}
+          >
             <Menu className="h-5 w-5" />
           </Button>
         </div>
@@ -98,11 +130,18 @@ export function MainNav() {
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetContent side="left" className="w-[300px] sm:w-[400px]">
             <div className="flex items-center justify-between mb-6">
-              <Link href={isAuthenticated ? "/dashboard" : "/"} className="flex items-center space-x-2">
+              <Link
+                href={isAuthenticated ? "/dashboard" : "/"}
+                className="flex items-center space-x-2"
+              >
                 <GraduationCap className="h-6 w-6 text-primary" />
                 <span className="text-xl font-bold">GradPilot</span>
               </Link>
-              <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 <X className="h-5 w-5" />
               </Button>
             </div>
@@ -115,21 +154,26 @@ export function MainNav() {
                   </Avatar>
                   <div>
                     <div className="font-medium">{user?.name || "User"}</div>
-                    <div className="text-sm text-muted-foreground">{user?.email || "user@example.com"}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {user?.email || "user@example.com"}
+                    </div>
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-sm font-medium text-muted-foreground mb-2 px-2">Main Navigation</div>
+                  <div className="text-sm font-medium text-muted-foreground mb-2 px-2">
+                    Main Navigation
+                  </div>
                   {mainNavItems.map((item) => (
                     <Link
                       key={item.name}
                       href={item.href}
                       className={cn(
                         "flex items-center py-2 px-3 rounded-md text-sm",
-                        pathname === item.href || pathname?.startsWith(`${item.href}/`)
+                        pathname === item.href ||
+                          pathname?.startsWith(`${item.href}/`)
                           ? "bg-primary/10 text-primary font-medium"
-                          : "text-muted-foreground hover:bg-muted",
+                          : "text-muted-foreground hover:bg-muted"
                       )}
                       onClick={() => setMobileMenuOpen(false)}
                     >
@@ -140,7 +184,9 @@ export function MainNav() {
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-sm font-medium text-muted-foreground mb-2 px-2">Resources</div>
+                  <div className="text-sm font-medium text-muted-foreground mb-2 px-2">
+                    Resources
+                  </div>
                   {resourcesItems.map((item) => (
                     <Link
                       key={item.name}
@@ -154,7 +200,9 @@ export function MainNav() {
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-sm font-medium text-muted-foreground mb-2 px-2">Account</div>
+                  <div className="text-sm font-medium text-muted-foreground mb-2 px-2">
+                    Account
+                  </div>
                   <Link
                     href="/profile"
                     className="flex items-center py-2 px-3 rounded-md text-sm text-muted-foreground hover:bg-muted"
@@ -203,8 +251,8 @@ export function MainNav() {
                   variant="destructive"
                   className="w-full"
                   onClick={() => {
-                    handleLogout()
-                    setMobileMenuOpen(false)
+                    handleLogout();
+                    setMobileMenuOpen(false);
                   }}
                 >
                   <LogOut className="h-4 w-4 mr-2" />
@@ -238,10 +286,19 @@ export function MainNav() {
                 </div>
 
                 <div className="space-y-2">
-                  <Button variant="outline" className="w-full" asChild onClick={() => setMobileMenuOpen(false)}>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    asChild
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     <Link href="/login">Sign In</Link>
                   </Button>
-                  <Button className="w-full" asChild onClick={() => setMobileMenuOpen(false)}>
+                  <Button
+                    className="w-full"
+                    asChild
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     <Link href="/signup">Get Started</Link>
                   </Button>
                 </div>
@@ -260,9 +317,10 @@ export function MainNav() {
                   href={item.href}
                   className={cn(
                     "flex items-center text-sm font-medium transition-colors hover:text-primary",
-                    pathname === item.href || pathname?.startsWith(`${item.href}/`)
+                    pathname === item.href ||
+                      pathname?.startsWith(`${item.href}/`)
                       ? "text-foreground"
-                      : "text-muted-foreground",
+                      : "text-muted-foreground"
                   )}
                 >
                   {item.icon}
@@ -272,7 +330,10 @@ export function MainNav() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center text-sm font-medium">
+                  <Button
+                    variant="ghost"
+                    className="flex items-center text-sm font-medium"
+                  >
                     <FileText className="h-4 w-4 mr-2" />
                     Resources
                     <ChevronDown className="h-4 w-4 ml-1" />
@@ -291,13 +352,22 @@ export function MainNav() {
             </nav>
           ) : (
             <nav className="flex items-center space-x-6 flex-1">
-              <Link href="/features" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+              <Link
+                href="/features"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
                 Features
               </Link>
-              <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+              <Link
+                href="/pricing"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
                 Pricing
               </Link>
-              <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+              <Link
+                href="/about"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
                 About
               </Link>
             </nav>
@@ -344,12 +414,21 @@ export function MainNav() {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="rounded-full flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-full flex items-center gap-2"
+                  >
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user?.avatar || "/placeholder.svg"} alt={user?.name} />
+                      <AvatarImage
+                        src={user?.avatar || "/placeholder.svg"}
+                        alt={user?.name}
+                      />
                       <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
                     </Avatar>
-                    <span className="font-medium text-sm hidden sm:inline-block">{user?.name || "User"}</span>
+                    <span className="font-medium text-sm hidden sm:inline-block">
+                      {user?.name || "User"}
+                    </span>
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -357,13 +436,19 @@ export function MainNav() {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/profile" className="cursor-pointer flex items-center">
+                    <Link
+                      href="/profile"
+                      className="cursor-pointer flex items-center"
+                    >
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/professors" className="cursor-pointer flex items-center">
+                    <Link
+                      href="/dashboard/professors"
+                      className="cursor-pointer flex items-center"
+                    >
                       <Users className="mr-2 h-4 w-4" />
                       <span>Professors</span>
                     </Link>
@@ -379,7 +464,9 @@ export function MainNav() {
                           <Link href="/settings/account">Account</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link href="/settings/notifications">Notifications</Link>
+                          <Link href="/settings/notifications">
+                            Notifications
+                          </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/settings/privacy">Privacy</Link>
@@ -411,5 +498,5 @@ export function MainNav() {
         </div>
       </div>
     </div>
-  )
+  );
 }
