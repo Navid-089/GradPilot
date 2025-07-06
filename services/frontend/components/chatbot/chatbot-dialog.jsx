@@ -1,5 +1,5 @@
 "use client";
-
+// hi
 import { useState, useRef, useEffect } from "react";
 import { X, Send, Loader2, GraduationCap, User } from "lucide-react";
 import { useChatbot } from "@/components/chatbot/chatbot-provider";
@@ -164,7 +164,7 @@ export function ChatbotDialog() {
 
         <form onSubmit={handleSubmit} className="p-4 border-t flex gap-2">
           <Input
-            placeholder="Type your question here..."
+            placeholder="Type your question here.."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={isLoading}
