@@ -72,9 +72,9 @@ version: '3.8'
 
 services:
   chatbot:
-    #image: ananyapromi3/gradpilot-chatbot:latest
-    build:
-      context: ./services/chatbot
+    image: ananyapromi3/gradpilot-chatbot:latest
+    # build:
+    #   context: ./services/chatbot
     container_name: gradpilot-chatbot
     ports:
       - "8081:8081"
@@ -88,9 +88,9 @@ services:
       APP_JWT_SECRET: ${JWT_SECRET}
 
   login-reg:
-    #image: ananyapromi3/gradpilot-login-reg:latest
-    build:
-      context: ./services/login-reg
+    image: ananyapromi3/gradpilot-login-reg:latest
+    # build:
+    #   context: ./services/login-reg
     container_name: gradpilot-login-reg
     ports:
       - "8082:8082"
@@ -103,8 +103,9 @@ services:
       APP_JWT_SECRET: ${JWT_SECRET}
 
   recommendation:
-    build:
-      context: ./services/recommendation
+    image: ananyapromi3/gradpilot-recommendation:latest
+    # build:
+    #   context: ./services/recommendation
     container_name: gradpilot-recommendation
     ports:
       - "8083:8083"
@@ -117,8 +118,9 @@ services:
       APP_JWT_SECRET: ${JWT_SECRET}
 
   frontend:
-    build:
-      context: ./services/frontend
+    image: ananyapromi3/gradpilot-frontend:latest
+    # build:
+    #   context: ./services/frontend
     ports:
       - "3000:3000"
     depends_on:
@@ -126,4 +128,8 @@ services:
       - recommendation
     environment:
       NEXT_PUBLIC_API_URL: http://gradpilot.me:8083
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      APP_JWT_SECRET: ${JWT_SECRET}
 #
