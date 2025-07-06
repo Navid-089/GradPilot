@@ -106,6 +106,8 @@ services:
     env_file:
       - .env
     environment:
+      API_BASE_URL: http://gradpilot.me:8083
+      NEXT_PUBLIC_API_URL: http://gradpilot.me:8083
       SPRING_DATASOURCE_URL: ${DB_URL}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
