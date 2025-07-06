@@ -111,8 +111,9 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /home/seed/CSE408/GradPilot
-            git checkout main
-            git pull origin main
+            git fetch origin
+            git reset --hard origin/main
+            
             docker compose down  
             docker image prune -af -f
             docker compose pull
