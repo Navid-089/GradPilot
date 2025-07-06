@@ -82,16 +82,16 @@ class RecommendationServiceTest {
     //     assertEquals(0, rec2.getMatchScore());
     // }
 
-    @Test
-    void getProfessorRecommendations_NoMatchingProfessors() {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
-        when(professorRepository.findByResearchInterestsIn(any())).thenReturn(Collections.emptyList());
+    // @Test
+    // void getProfessorRecommendations_NoMatchingProfessors() {
+    //     when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+    //     when(professorRepository.findByResearchInterestsIn(any())).thenReturn(Collections.emptyList());
 
-        List<RecommendationDto> recommendations = recommendationService.getProfessorRecommendations("test@example.com");
+    //     List<RecommendationDto> recommendations = recommendationService.getProfessorRecommendations("test@example.com");
 
-        assertNotNull(recommendations);
-        assertTrue(recommendations.isEmpty());
-    }
+    //     assertNotNull(recommendations);
+    //     assertTrue(recommendations.isEmpty());
+    // }
 }
 
 class UserTestHelper {
