@@ -1,6 +1,6 @@
 // Real university service that calls the ML-powered recommendation API
 
-const API_BASE_URL = http://gradpilot.me:8083;
+const API_BASE_URL = "http://gradpilot.me:8083";
 
 export async function getUniversityMatches(userEmail = null) {
   try {

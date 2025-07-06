@@ -1,4 +1,4 @@
-const API_BASE_URL = http://gradpilot.me:8083;
+const API_BASE_URL = "http://gradpilot.me:8083";
 
 export const trackerService = {
   // Save a task (university, professor, or scholarship)
