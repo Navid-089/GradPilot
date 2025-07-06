@@ -1,45 +1,26 @@
-package com.gradpilot.recommendation.model;
+package com.gradpilot.recommendation.dto;
 
-import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.util.Random;
 
-@Entity
-@Table(name = "universities")
-public class University {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "university_id")
+public class UniversityRecommendationDto {
     private Integer id;
-
-    @Column(name = "name", nullable = false, unique = true)
     private String name;
-
-    @Column(name = "description")
     private String description;
-
-    @Column(name = "email")
     private String email;
-
-    @Column(name = "ranking")
     private Integer ranking;
-
-    @Column(name = "tuition_fees")
     private Double tuitionFees;
-
-    @Column(name = "country")
     private String country;
-
-    @Column(name = "address")
     private String address;
-
-    @Column(name = "website_url")
     private String websiteUrl;
+    private LocalDate applicationDeadline;
+    private Double matchScore;
 
-    // Constructors
-    public University() {
+    public UniversityRecommendationDto() {
     }
 
-    public University(String name, String description, String email, Integer ranking, Double tuitionFees, String country, String address, String websiteUrl) {
+    public UniversityRecommendationDto(Integer id, String name, String description, String email, Integer ranking, Double tuitionFees, String country, String address, String websiteUrl, Double matchScore) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.email = email;
@@ -48,6 +29,21 @@ public class University {
         this.country = country;
         this.address = address;
         this.websiteUrl = websiteUrl;
+        this.matchScore = matchScore;
+        this.applicationDeadline = generateRandomDeadline();
+    }
+
+    private LocalDate generateRandomDeadline() {
+        Random random = new Random();
+        // Generate a random date within the next 2 months
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = now.plusMonths(1).withDayOfMonth(1);
+        LocalDate endDate = startDate.plusMonths(2).withDayOfMonth(1).minusDays(1);
+        
+        long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
+        long randomDays = random.nextInt((int) daysBetween + 1);
+        
+        return startDate.plusDays(randomDays);
     }
 
     // Getters
@@ -87,6 +83,14 @@ public class University {
         return websiteUrl;
     }
 
+    public LocalDate getApplicationDeadline() {
+        return applicationDeadline;
+    }
+
+    public Double getMatchScore() {
+        return matchScore;
+    }
+
     // Setters
     public void setId(Integer id) {
         this.id = id;
@@ -123,4 +127,12 @@ public class University {
     public void setWebsiteUrl(String websiteUrl) {
         this.websiteUrl = websiteUrl;
     }
-}
+
+    public void setApplicationDeadline(LocalDate applicationDeadline) {
+        this.applicationDeadline = applicationDeadline;
+    }
+
+    public void setMatchScore(Double matchScore) {
+        this.matchScore = matchScore;
+    }
+} 

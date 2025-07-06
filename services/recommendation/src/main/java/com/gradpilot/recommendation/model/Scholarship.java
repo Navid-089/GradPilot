@@ -9,7 +9,7 @@ public class Scholarship {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "scholarship_id")
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "university_id")
@@ -43,7 +43,7 @@ public class Scholarship {
     }
 
     // Getters and setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

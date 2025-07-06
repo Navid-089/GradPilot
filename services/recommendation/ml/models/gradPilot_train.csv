@@ -1,0 +1,420 @@
+University,Decision,Degree,Funding,Ugrad_Major,Work_Experience,Paper,Ugrad,CGPA,GRE,TOEFL,IELTS,Gap_year,Applied
+University of Louisiana at Lafayette,Accepted,PhD,Full,CSE,No,0,BUET,3.5,0,110,8,1,2025
+Massachusetts Institute of Technology,Rejected,PhD,N/A,CSE,No,0,BUET,3.5,0,110,8,1,2025
+Texas Tech University,Accepted,PhD,Full,ChE,Industry Internship,0,BUET,3.71,0,101,0,1,2025
+Colorado School of Mines,Accepted,PhD,Partial,ChE,Industry Internship,0,BUET,3.71,0,101,0,1,2025
+University of Florida,Rejected,PhD,N/A,ChE,Industry Internship,0,BUET,3.71,0,101,0,1,2025
+University of Virginia,Rejected,PhD,N/A,ChE,Industry Internship,0,BUET,3.71,0,101,0,1,2025
+Virginia Tech,Rejected,PhD,N/A,ChE,Industry Internship,0,BUET,3.71,0,101,0,1,2025
+Case Western Reserve University,Rejected,PhD,N/A,ChE,Industry Internship,0,BUET,3.71,0,101,0,1,2025
+University of Pittsburgh,Rejected,PhD,N/A,ChE,Industry Internship,0,BUET,3.71,0,101,0,1,2025
+Washington University in St. Louis,Accepted,PhD,Full,EEE,Full-time Job,1,BUET,3.82,0,101,0,1,2024
+University of Maryland,Rejected,PhD,N/A,EEE,Full-time Job,1,BUET,3.82,0,101,0,1,2024
+University of Wisconsin-Madison,Rejected,PhD,N/A,EEE,Full-time Job,1,BUET,3.82,0,101,0,1,2024
+Boston University,Rejected,PhD,N/A,EEE,Full-time Job,1,BUET,3.82,0,101,0,1,2024
+University of Michigan,Rejected,PhD,N/A,EEE,Full-time Job,1,BUET,3.82,0,101,0,1,2024
+Northeastern University,Rejected,PhD,N/A,EEE,Full-time Job,1,BUET,3.82,0,101,0,1,2024
+Stevens Institute of Technology,Accepted,PhD,Partial,EEE,Full-time Job,1,BUET,3.67,314,109,0,1,2024
+New Jersey Institute of Technology,Accepted,PhD,Full,EEE,Full-time Job,1,BUET,3.67,314,109,0,1,2024
+University of North Carolina at Charlotte,Accepted,PhD,Partial,EEE,Full-time Job,1,BUET,3.67,314,109,0,1,2024
+Worcester Polytechnic Institute,Accepted,PhD,Partial,EEE,Full-time Job,1,BUET,3.67,314,109,0,1,2024
+Purdue University,Accepted,PhD,Full,CSE,Full-time Job,2+,BUET,3.5,315,102,0,1,2023
+Arizona State University,Accepted,PhD,Partial,CSE,Full-time Job,2+,BUET,3.5,315,102,0,1,2023
+Washington State University,Accepted,PhD,Partial,CSE,Full-time Job,2+,BUET,3.5,315,102,0,1,2023
+University of Maryland,Rejected,PhD,N/A,CSE,Full-time Job,2+,BUET,3.5,315,102,0,1,2023
+Pennsylvania State University,Rejected,PhD,N/A,CSE,Full-time Job,2+,BUET,3.5,315,102,0,1,2023
+University of Virginia,Rejected,PhD,N/A,CSE,Full-time Job,2+,BUET,3.5,315,102,0,1,2023
+Virginia Tech,Rejected,PhD,N/A,CSE,Full-time Job,2+,BUET,3.5,315,102,0,1,2023
+University of Colorado Boulder,Rejected,PhD,N/A,CSE,Full-time Job,2+,BUET,3.5,315,102,0,1,2023
+"University of California, Riverside",Rejected,PhD,N/A,CSE,Full-time Job,2+,BUET,3.5,315,102,0,1,2023
+North Carolina State University,Rejected,PhD,N/A,CSE,Full-time Job,2+,BUET,3.5,315,102,0,1,2023
+University of Notre Dame,Rejected,PhD,N/A,CSE,Full-time Job,2+,BUET,3.5,315,102,0,1,2023
+University of Alabama,Accepted,PhD,Full,EEE,No,0,BUET,3.3,324,112,0,1,2024
+West Virginia University,Accepted,PhD,Full,MME,Research Internship,2+,BUET,3.35,307,0,7,1,2025
+University of Cincinnati,Accepted,PhD,Partial,MME,Research Internship,2+,BUET,3.35,307,0,7,1,2025
+Lehigh University,Accepted,PhD,Partial,MME,Research Internship,2+,BUET,3.35,307,0,7,1,2025
+University of Wisconsin–Madison,Rejected,PhD,N/A,MME,Research Internship,2+,BUET,3.35,307,0,7,1,2025
+University of Virginia,Rejected,PhD,N/A,MME,Research Internship,2+,BUET,3.35,307,0,7,1,2025
+South Dakota State University,Accepted,PhD,Full,ME,No,1,BUET,3.24,317,0,8,1,2025
+University of Oklahoma,Accepted,MS,No,NAME,Industry Internship,1,BUET,3.26,314,,7.5,1,2025
+Auburn University,Accepted,PhD,No,NAME,Industry Internship,1,BUET,3.26,314,,7.5,1,2025
+University of Maryland,Accepted,PhD,Full,EEE,"Research Internship
+Full-time Job",2+,BUET,3.57,321,109,0,1,2023
+"University of Maryland, Baltimore County",Accepted,PhD,Full,EEE,"Research Internship
+Full-time Job",2+,BUET,3.57,321,109,0,1,2023
+North Carolina State University,Accepted,PhD,Full,EEE,"Research Internship
+Full-time Job",2+,BUET,3.57,321,109,0,1,2023
+George Mason University,Accepted,PhD,Full,CSE,Full-timeJob,0,BUET,3.5,316,110,0,1,2025
+University of Central Florida,Accepted,PhD,Partial,CSE,Full-timeJob,0,BUET,3.5,316,110,0,1,2025
+Stony Brook University,Accepted,PhD,Partial,CSE,Full-timeJob,0,BUET,3.5,316,110,0,1,2025
+"University of California, Santa Barbara",Rejected,PhD,N/A,CSE,Full-timeJob,0,BUET,3.5,316,110,0,1,2025
+"University of California, Riverside",Rejected,PhD,N/A,CSE,Full-timeJob,0,BUET,3.5,316,110,0,1,2025
+Arizona State University,Rejected,PhD,N/A,CSE,Full-timeJob,0,BUET,3.5,316,110,0,1,2025
+Purdue University,Rejected,PhD,N/A,CSE,Full-timeJob,0,BUET,3.5,316,110,0,1,2025
+Northeastern University,Rejected,PhD,N/A,CSE,Full-timeJob,0,BUET,3.5,316,110,0,1,2025
+University of Virginia,Rejected,PhD,N/A,CSE,Full-timeJob,0,BUET,3.5,316,110,0,1,2025
+University of Utah,Rejected,PhD,N/A,CSE,Full-timeJob,0,BUET,3.5,316,110,0,1,2025
+Wayne State University,Rejected,PhD,N/A,CSE,Full-time Job,0,BUET,3.5,316,110,0,1,2025
+Oklahoma State University,Accepted,MS,No,CE,No,0,BUET,2.96,317,0,8,0,2025
+Illinois Institute of Technology,Rejected,MS,No,CE,No,0,BUET,2.96,317,0,8,0,2025
+Brigham Young University,Rejected,MS,No,CE,No,0,BUET,2.96,317,0,8,0,2025
+Wayne State University,Accepted,PhD,Full,CSE,Full-time Job,0,BUET,3.1,307,0,8,0,2024
+University of Illinois Urbana-Champaign,Rejected,PhD,N/A,ME,Full-time Job,1,BUET,3.81,0,92,0,6,2024
+Ohio State University,Rejected,PhD,N/A,ME,Full-time Job,1,BUET,3.81,0,92,0,6,2024
+University of Maryland,Rejected,PhD,N/A,ME,Full-time Job,1,BUET,3.81,0,92,0,6,2024
+Purdue University,Rejected,PhD,N/A,ME,Full-time Job,1,BUET,3.81,0,92,0,6,2024
+Michigan State University,Rejected,PhD,N/A,ME,Full-time Job,1,BUET,3.81,0,92,0,6,2024
+North Carolina State University,Rejected,PhD,N/A,ME,Full-time Job,1,BUET,3.81,0,92,0,6,2024
+Texas A&M University,Rejected,PhD,N/A,ME,Full-time Job,1,BUET,3.81,0,92,0,6,2024
+Virginia Tech,Rejected,PhD,N/A,ME,Full-time Job,1,BUET,3.81,0,92,0,6,2024
+University of Utah,Rejected,PhD,N/A,ME,Full-time Job,1,BUET,3.81,0,92,0,6,2024
+Rensselaer Polytechnic Institute,Rejected,PhD,N/A,ME,Full-time Job,1,BUET,3.81,0,92,0,6,2024
+Binghamton University,Accepted,PhD,No,ME,Full-time Job,0,BUET,3.54,0,0,7.5,0,2025
+Mississippi State University,Accepted,PhD,No,ME,Full-time Job,0,BUET,3.54,0,0,7.5,0,2025
+Rensselaer Polytechnic Institute,Rejected,PhD,N/A,ME,Full-time Job,0,BUET,3.54,0,0,7.5,0,2025
+Iowa State University,Rejected,PhD,N/A,ME,Full-time Job,0,BUET,3.54,0,0,7.5,0,2025
+University of Tennessee,Rejected,PhD,N/A,ME,Full-time Job,0,BUET,3.54,0,0,7.5,0,2025
+Oklahoma State University,Rejected,PhD,N/A,ME,Full-time Job,0,BUET,3.54,0,0,7.5,0,2025
+University of Utah,Rejected,PhD,N/A,ME,Full-time Job,0,BUET,3.54,0,0,7.5,0,2025
+University of Kansas,Rejected,PhD,N/A,ME,Full-time Job,0,BUET,3.54,0,0,7.5,0,2025
+University of Delaware,Rejected,PhD,N/A,ME,Full-time Job,0,BUET,3.54,0,0,7.5,0,2025
+University of Massachusetts Dartmouth,Accepted,PhD,Full,IPE,Full-time Job,2+,BUET,3.63,0,0,7.5,6,2025
+Purdue University,Accepted,PhD,Full,EEE,Full-time Job,0,BUET,3.9,0,97,0,2,2025
+University of Wisconsin–Madison,Accepted,PhD,Partial,EEE,Full-time Job,0,BUET,3.9,0,97,0,2,2025
+Ohio State University,Accepted,PhD,Partial,EEE,Full-time Job,0,BUET,3.9,0,97,0,2,2025
+University of Florida,Accepted,PhD,Partial,EEE,Full-time Job,0,BUET,3.9,0,97,0,2,2025
+Rensselaer Polytechnic Institute,Accepted,PhD,Partial,EEE,Full-time Job,0,BUET,3.9,0,97,0,2,2025
+University of Texas at Dallas,Accepted,PhD,Partial,EEE,Full-time Job,0,BUET,3.9,0,97,0,2,2025
+University of Nebraska-Lincoln,Accepted,PhD,Partial,EEE,Full-time Job,0,BUET,3.9,0,97,0,2,2025
+Rice University,Rejected,PhD,N/A,EEE,Full-time Job,0,BUET,3.9,0,97,0,2,2025
+Pennsylvania State University,Rejected,PhD,N/A,EEE,Full-time Job,0,BUET,3.9,0,97,0,2,2025
+University of Southern California,Rejected,PhD,N/A,EEE,Full-time Job,0,BUET,3.9,0,97,0,2,2025
+Boston University,Rejected,PhD,N/A,EEE,Full-time Job,0,BUET,3.9,0,97,0,2,2025
+Virginia Tech,Accepted,MS,Partial,Architecture,Industry Internship,2+,BUET,3.57,0,0,8,1,2025
+Virginia Tech,Accepted,MS,Partial,Architecture,Industry Internship,2+,BUET,3.57,0,0,8,1,2025
+University of Southern California,Accepted,MS,Partial,Architecture,Industry Internship,2+,BUET,3.57,0,0,8,1,2025
+University of Illinois Urbana-Champaign,Accepted,MS,Partial,Architecture,Industry Internship,2+,BUET,3.57,0,0,8,1,2025
+University of Washington,Accepted,MS,Partial,Architecture,Industry Internship,2+,BUET,3.57,0,0,8,1,2025
+Columbia University,Rejected,MS,N/A,Architecture,Industry Internship,2+,BUET,3.57,0,0,8,1,2025
+Pratt Institute,Rejected,MS,N/A,Architecture,Industry Internship,2+,BUET,3.57,0,0,8,1,2025
+Yale University,Rejected,MS,N/A,Architecture,Industry Internship,2+,BUET,3.57,0,0,8,1,2025
+University of Maryland,Rejected,MS,N/A,Architecture,Industry Internship,2+,BUET,3.57,0,0,8,1,2025
+Massachusetts Institute of Technology,Rejected,MS,N/A,Architecture,Industry Internship,2+,BUET,3.57,0,0,8,1,2025
+Colorado State University,Accepted,PhD,Partial,WRE,No,2+,BUET,3.82,0,104,0,0,2025
+University of Connecticut ,Accepted,PhD,Full,WRE,No,2+,BUET,3.82,0,104,0,0,2025
+University of Florida,Rejected,PhD,N/A,WRE,No,2+,BUET,3.82,0,104,0,0,2025
+Pennsylvania State University,Rejected,PhD,N/A,WRE,No,2+,BUET,3.82,0,104,0,0,2025
+Virginia Tech,Rejected,PhD,N/A,WRE,No,2+,BUET,3.82,0,104,0,0,2025
+Northeastern University,Rejected,PhD,N/A,WRE,No,2+,BUET,3.82,0,104,0,0,2025
+University of Virginia,Rejected,PhD,N/A,WRE,No,2+,BUET,3.82,0,104,0,0,2025
+Northeastern University,Accepted,PhD,Full,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+"University of California, Santa Cruz",Accepted,PhD,Partial,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+"University of California, Irvine",Accepted,PhD,Partial,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+"University of California, Berkeley",Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+Columbia University,Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+University of California San Diego,Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+University of Michigan,Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+"University of California, Los Angeles",Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+"University of California, Santa Barbara",Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+University of Washington,Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+University of Virginia,Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+University of Wisconsin-Madison,Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+University of Illinois Urbana-Champaign,Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+"University of California, Irvine",Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+Carnegie Mellon University,Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+University of Texas at Austin,Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+Georgia Institute of Technology,Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+University of Chicago,Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+Purdue University,Rejected,PhD,N/A,CSE,"Research Internship
+Full-time Job",0,BUET,3.84,0,111,0,0,2024
+University of Cincinnati,Accepted,PhD,Full,ME,No,0,BUET,3.56,318,0,7,1,2025
+Binghamton University,Accepted,PhD,Partial,ME,No,0,BUET,3.56,318,0,7,1,2025
+University of Toledo,Accepted,PhD,Partial,ME,No,0,BUET,3.56,318,0,7,1,2025
+Louisiana State University,Accepted,PhD,Partial,ME,No,0,BUET,3.56,318,0,7,1,2025
+University of Kansas,Rejected,PhD,N/A,ME,No,0,BUET,3.56,318,0,7,1,2025
+Oklahoma State University,Rejected,PhD,N/A,ME,No,0,BUET,3.56,318,0,7,1,2025
+University of Delaware,Rejected,PhD,N/A,ME,No,0,BUET,3.56,318,0,7,1,2025
+Rensselaer Polytechnic Institute,Rejected,PhD,N/A,ME,No,0,BUET,3.56,318,0,7,1,2025
+Iowa State University,Rejected,PhD,N/A,ME,No,0,BUET,3.56,318,0,7,1,2025
+University of Maryland,Accepted,MS,Partial,Architecture,"Industry Internship
+Full-time Job",1,BUET,3.261,0,97,0,1,2025
+Arizona State University,Accepted,MS,No,Architecture,"Industry Internship
+Full-time Job",1,BUET,3.261,0,97,0,1,2025
+University of Oklahoma,Accepted,MS,No,Architecture,"Industry Internship
+Full-time Job",1,BUET,3.261,0,97,0,1,2025
+University of Kansas,Accepted,MS,No,Architecture,"Industry Internship
+Full-time Job",1,BUET,3.261,0,97,0,1,2025
+Texas Tech University,Accepted,MS,No,Architecture,"Industry Internship
+Full-time Job",1,BUET,3.261,0,97,0,1,2025
+University of Michigan,Rejected,PhD,N/A,Architecture,"Industry Internship
+Full-time Job",1,BUET,3.261,0,97,0,1,2025
+Pennsylvania State University,Rejected,MS,N/A,Architecture,"Industry Internship
+Full-time Job",1,BUET,3.261,0,97,0,1,2025
+Louisiana State University,Accepted,PhD,Full,ChE,Full-time Job,0,BUET,3.09,308,0,8,1,2023
+Louisiana Tech University,Accepted,PhD,Partial,ChE,Full-time Job,0,BUET,3.09,308,0,8,1,2023
+University of Toledo,Accepted,PhD,Partial,ChE,Full-time Job,0,BUET,3.09,308,0,8,1,2023
+University of Nebraska-Lincoln,Accepted,PhD,Partial,ChE,Full-time Job,0,BUET,3.09,308,0,8,1,2023
+Universiti Teknologi PETRONAS,Accepted,PhD,Partial,WRE,"Industry Internship
+Full-time Job",2+,BUET,3.43,305,86,0,1,2025
+University of Windsor,Accepted,PhD,Partial,WRE,"Industry Internship
+Full-time Job",2+,BUET,3.43,305,86,0,1,2025
+University College Dublin,Accepted,PhD,Partial,WRE,"Industry Internship
+Full-time Job",2+,BUET,3.43,305,86,0,1,2025
+University of Alabama,Accepted,PhD,Full,WRE,"Industry Internship
+Full-time Job",2+,BUET,3.43,305,86,0,1,2025
+University of Houston,Accepted,PhD,Partial,WRE,"Industry Internship
+Full-time Job",2+,BUET,3.43,305,86,0,1,2025
+Florida State University,Accepted,PhD,Partial,WRE,"Industry Internship
+Full-time Job",2+,BUET,3.43,305,86,0,1,2025
+University of Wollongong,Accepted,PhD,Partial,WRE,"Industry Internship
+Full-time Job",2+,BUET,3.43,305,86,0,1,2025
+Lehigh University,Accepted,PhD,Full,NAME,Full-time Job,1,BUET,3.67,0,0,7.5,2,2025
+Rensselaer Polytechnic Institute,Accepted,PhD,Partial,NAME,Full-time Job,1,BUET,3.67,0,0,7.5,2,2025
+Clemson University,Accepted,PhD,Partial,NAME,Full-time Job,1,BUET,3.67,0,0,7.5,2,2025
+Oklahoma State University,Rejected,PhD,N/A,NAME,Full-time Job,1,BUET,3.67,0,0,7.5,2,2025
+Purdue University,Rejected,PhD,N/A,NAME,Full-time Job,1,BUET,3.67,0,0,7.5,2,2025
+Northeastern University,Rejected,PhD,N/A,NAME,Full-time Job,1,BUET,3.67,0,0,7.5,2,2025
+Carnegie Mellon University,Rejected,PhD,N/A,NAME,Full-time Job,1,BUET,3.67,0,0,7.5,2,2025
+University of Virginia,Rejected,PhD,N/A,NAME,Full-time Job,1,BUET,3.67,0,0,7.5,2,2025
+University of Delaware,Rejected,PhD,N/A,NAME,Full-time Job,1,BUET,3.67,0,0,7.5,2,2025
+Ohio State University,Rejected,PhD,N/A,ChE,No,0,BUET,3.63,0,100,0,1,2025
+University of Virginia,Rejected,PhD,N/A,ChE,No,0,BUET,3.63,0,100,0,1,2025
+Rice University,Rejected,PhD,N/A,ChE,No,0,BUET,3.63,0,100,0,1,2025
+University of Florida,Rejected,PhD,N/A,ChE,No,0,BUET,3.63,0,100,0,1,2025
+Worcester Polytechnic Institute,Accepted,PhD,Partial,BME,"Research Internship
+Industry Internship
+Full-time Job",0,BUET,3.07,308,94,7,2,2023
+Michigan State University,Accepted,PhD,Full,BME,"Research Internship
+Industry Internship
+Full-time Job",0,BUET,3.07,308,94,7,2,2023
+Missouri University of Science and Technology,Accepted,PhD,Full,ME,No,1,BUET,3.57,322,0,8.5,1,2025
+University of Texas at Arlington,Accepted,PhD,Full,ME,No,1,BUET,3.57,322,0,8.5,1,2025
+Rensselaer Polytechnic Institute,Accepted,MS,No,ME,No,1,BUET,3.57,322,0,8.5,1,2025
+Colorado School of Mines,Accepted,PhD,No,ME,No,1,BUET,3.57,322,0,8.5,1,2025
+Virginia Tech,Rejected,PhD,N/A,ME,No,1,BUET,3.57,322,0,8.5,1,2025
+University of Virginia,Rejected,PhD,N/A,ME,No,1,BUET,3.57,322,0,8.5,1,2025
+University of Massachusetts Amherst,Rejected,PhD,N/A,ME,No,1,BUET,3.57,322,0,8.5,1,2025
+University of Pittsburgh,Rejected,PhD,N/A,ME,No,1,BUET,3.57,322,0,8.5,1,2025
+Missouri University of Science and Technology,Accepted,PhD,Partial,ME,No,0,BUET,3.48,331,0,8,1,2025
+University of Houston,Accepted,PhD,Full,ME,No,0,BUET,3.48,331,0,8,1,2025
+Binghamton University,Accepted,PhD,Partial,ME,No,0,BUET,3.48,331,0,8,1,2025
+University of Arizona,Rejected,PhD,N/A,ME,No,0,BUET,3.48,331,0,8,1,2025
+University of Utah,Rejected,PhD,N/A,ME,No,0,BUET,3.48,331,0,8,1,2025
+University of Pittsburgh,Rejected,PhD,N/A,ME,No,0,BUET,3.48,331,0,8,1,2025
+Rensselaer Polytechnic Institute,Rejected,PhD,N/A,ME,No,0,BUET,3.48,331,0,8,1,2025
+University of Colorado Boulder,Accepted,PhD,Full,ME,Industry Internship,0,BUET,3.74,319,94,,0,2024
+Texas Tech University,Accepted,MS,No,CE,No,0,BUET,3.02,311,106,0,1,2025
+South Dakota State University,Accepted,MS,Partial,CE,No,0,BUET,3.02,311,106,0,1,2025
+Idaho State University,Accepted,MS,Full,CE,No,0,BUET,3.02,311,106,0,1,2025
+Virginia Tech,Rejected,MS,N/A,CE,No,0,BUET,3.02,311,106,0,1,2025
+Rensselaer Polytechnic Institute,Rejected,MS,N/A,CE,No,0,BUET,3.02,311,106,0,1,2025
+University of Idaho,Rejected,MS,N/A,CE,No,0,BUET,3.02,311,106,0,1,2025
+University of Houston,Rejected,MS,N/A,CE,No,0,BUET,3.02,311,106,0,1,2025
+University of Minnesota Duluth,Accepted,MS,Full,NAME,No,0,BUET,3.09,309,0,7.5,1,2023
+"University of Maryland, Baltimore County",Accepted,PhD,No,NAME,Research Internship,0,BUET,3.55,0,0,7,1,2024
+Michigan State University,Rejected,PhD,N/A,NAME,Research Internship,0,BUET,3.55,0,0,7,1,2024
+University of Delaware,Rejected,PhD,N/A,NAME,Research Internship,0,BUET,3.55,0,0,7,1,2024
+University of Florida,Rejected,PhD,N/A,NAME,Research Internship,0,BUET,3.55,0,0,7,1,2024
+University of Virginia,Accepted,PhD,Full,CSE,Full-time Job,0,BUET,3.66,314,112,0,2,2025
+"University of California, Riverside",Rejected,PhD,N/A,CSE,Full-time Job,0,BUET,3.66,314,112,0,2,2025
+Stony Brook University,Rejected,PhD,N/A,CSE,Full-time Job,0,BUET,3.66,314,112,0,2,2025
+University of Central Florida,Rejected,PhD,N/A,CSE,Full-time Job,0,BUET,3.66,314,112,0,2,2025
+George Mason University,Rejected,PhD,N/A,CSE,Full-time Job,0,BUET,3.66,314,112,0,2,2025
+Purdue University,Rejected,PhD,N/A,CSE,Full-time Job,0,BUET,3.66,314,112,0,2,2025
+University of California Merced,Rejected,PhD,N/A,CSE,Full-time Job,0,BUET,3.66,314,112,0,2,2025
+Arizona State University,Rejected,PhD,N/A,CSE,Full-time Job,0,BUET,3.66,314,112,0,2,2025
+University of Utah,Rejected,PhD,N/A,CSE,Full-time Job,0,BUET,3.66,314,112,0,2,2025
+Missouri University of Science and Technology,Accepted,PhD,Full,MME,No,0,BUET,3.64,0,0,7.5,0,2024
+University of Cincinnati,Accepted,PhD,Partial,MME,No,0,BUET,3.64,0,0,7.5,0,2024
+Arizona State University,Accepted,PhD,Partial,MME,No,0,BUET,3.64,0,0,7.5,0,2024
+University of Florida,Accepted,MS,Partial,MME,No,0,BUET,3.64,0,0,7.5,0,2024
+Ohio State University,Rejected,PhD,N/A,MME,No,0,BUET,3.64,0,0,7.5,0,2024
+University of Virginia,Rejected,PhD,N/A,MME,No,0,BUET,3.64,0,0,7.5,0,2024
+Rensselaer Polytechnic Institute,Rejected,PhD,N/A,MME,No,0,BUET,3.64,0,0,7.5,0,2024
+University of Connecticut ,Rejected,PhD,N/A,MME,No,0,BUET,3.64,0,0,7.5,0,2024
+Ohio University,Accepted,MS,Full,IPE,"Industry Internship
+Full-time Job",1,BUET,3.31,303,83,0,2,2025
+New Mexico Institute of Mining and Technology,Accepted,MS,Full,MME,No,2+,BUET,3.38,310,91,0,1,2025
+New Jersey Institute of Technology,Accepted,PhD,Partial,MME,No,2+,BUET,3.38,310,91,0,1,2025
+Colorado State University,Rejected,MS,N/A,MME,No,2+,BUET,3.38,310,91,0,1,2025
+Missouri University of Science and Technology,Rejected,PhD,N/A,MME,No,2+,BUET,3.38,310,91,0,1,2025
+Missouri State University,Rejected,MS,N/A,MME,No,2+,BUET,3.38,310,91,0,1,2025
+Northeastern University,Rejected,PhD,N/A,MME,No,2+,BUET,3.38,310,91,0,1,2025
+University of Delaware,Rejected,PhD,N/A,MME,No,2+,BUET,3.38,310,91,0,1,2025
+University of Connecticut ,Rejected,PhD,N/A,MME,No,2+,BUET,3.38,310,91,0,1,2025
+Indiana University Bloomington,Accepted,PhD,Full,EEE,Full-time Job,0,BUET,3.44,321,0,8,7,2025
+University of Tennessee,Accepted,PhD,Partial,EEE,Full-time Job,0,BUET,3.44,321,0,8,7,2025
+University of Nebraska-Lincoln,Accepted,PhD,Partial,EEE,Full-time Job,0,BUET,3.44,321,0,8,7,2025
+University of Wyoming,Accepted,PhD,Partial,EEE,Full-time Job,0,BUET,3.44,321,0,8,7,2025
+Duke University,Rejected,PhD,N/A,EEE,Full-time Job,0,BUET,3.44,321,0,8,7,2025
+Boston University,Rejected,PhD,N/A,EEE,Full-time Job,0,BUET,3.44,321,0,8,7,2025
+Michigan State University,Rejected,PhD,N/A,EEE,Full-time Job,0,BUET,3.44,321,0,8,7,2025
+University of Connecticut ,Rejected,PhD,N/A,EEE,Full-time Job,0,BUET,3.44,321,0,8,7,2025
+Fordham University,Rejected,PhD,N/A,EEE,Full-time Job,0,BUET,3.44,321,0,8,7,2025
+University of Houston,Accepted,PhD,Full,ChE,No,1,BUET,3.61,0,105,0,0,2025
+University of Michigan,Accepted,PhD,Full,ChE,Full-time Job,2+,BUET,3.87,0,0,7.5,3,2025
+Carnegie Mellon University,Accepted,PhD,Partial,ChE,Full-time Job,2+,BUET,3.87,0,0,7.5,3,2025
+University of Notre Dame,Accepted,PhD,Partial,ChE,Full-time Job,2+,BUET,3.87,0,0,7.5,3,2025
+Cornell University,Accepted,MS,Partial,ChE,Full-time Job,2+,BUET,3.87,0,0,7.5,3,2025
+Massachusetts Institute of Technology,Rejected,PhD,N/A,ChE,Full-time Job,2+,BUET,3.87,0,0,7.5,3,2025
+"University of California, Berkeley",Rejected,PhD,N/A,ChE,Full-time Job,2+,BUET,3.87,0,0,7.5,3,2025
+Georgia Institute of Technology,Rejected,PhD,N/A,ChE,Full-time Job,2+,BUET,3.87,0,0,7.5,3,2025
+Princeton University,Rejected,PhD,N/A,ChE,Full-time Job,2+,BUET,3.87,0,0,7.5,3,2025
+University of Arizona,Accepted,PhD,Partial,EEE,Full-time Job,0,BUET,3.7,317,0,7.5,3,2025
+Iowa State University,Accepted,PhD,Full,EEE,Full-time Job,0,BUET,3.7,317,0,7.5,3,2025
+University of Texas at El Paso,Accepted,PhD,Partial,EEE,Full-time Job,0,BUET,3.7,317,0,7.5,3,2025
+Harvard University,Accepted,MS,Partial,EEE,Full-time Job,0,BUET,3.65,333,0,8.5,9,2025
+Princeton University,Accepted,MS,Full,EEE,Full-time Job,0,BUET,3.65,333,0,8.5,9,2025
+"University of California, Berkeley",Accepted,MS,Partial,EEE,Full-time Job,0,BUET,3.65,333,0,8.5,9,2025
+University of Chicago,Accepted,MS,Partial,EEE,Full-time Job,0,BUET,3.65,333,0,8.5,9,2025
+Columbia University,Accepted,MS,Partial,EEE,Full-time Job,0,BUET,3.65,333,0,8.5,9,2025
+Georgetown University,Accepted,MS,Partial,EEE,Full-time Job,0,BUET,3.65,333,0,8.5,9,2025
+Iowa State University,Accepted,PhD,Full,ME,"Industry Internship
+Full-time Job",1,BUET,3.65,324,0,8,3,2025
+Colorado School of Mines,Accepted,PhD,Full,ME,"Industry Internship
+Full-time Job",1,BUET,3.65,324,0,8,3,2025
+University of Houston,Accepted,PhD,Full,ME,"Industry Internship
+Full-time Job",1,BUET,3.65,324,0,8,3,2025
+Washington University in St. Louis,Accepted,PhD,Full,ME,"Industry Internship
+Full-time Job",1,BUET,3.65,324,0,8,3,2025
+Boston University,Accepted,PhD,Full,ME,"Industry Internship
+Full-time Job",1,BUET,3.65,324,0,8,3,2025
+Pennsylvania State University,Rejected,PhD,Full,ME,"Industry Internship
+Full-time Job",1,BUET,3.65,324,0,8,3,2025
+Ohio State University,Rejected,PhD,Full,ME,"Industry Internship
+Full-time Job",1,BUET,3.65,324,0,8,3,2025
+University of Toledo,Accepted,PhD,Full,CE,Full-time Job,2+,BUET,3.16,301,0,6.5,2,2024
+Rice University,Accepted,PhD,Partial,ME,No,1,BUET,3.5,0,107,0,0,2022
+University of Wisconsin-Madison,Accepted,PhD,Partial,ME,No,1,BUET,3.5,0,107,0,0,2022
+Texas A&M University,Accepted,PhD,Full,ME,No,1,BUET,3.5,0,107,0,0,2022
+University of Vermont,Accepted,PhD,Full,URP,"Research internship
+Full-time job",2+,BUET,3.53,311,110,0,5,2024
+University of Illinois Chicago,Accepted,MS,Partial,URP,"Research internship
+Full-time job",2+,BUET,3.53,311,110,0,5,2024
+University of Delaware,Accepted,PhD,Partial,URP,"Research internship
+Full-time job",2+,BUET,3.53,311,110,0,5,2024
+Cornell University,Rejected,PhD,N/A,URP,"Research internship
+Full-time job",2+,BUET,3.53,311,110,0,5,2024
+Syracuse University,Rejected,PhD,N/A,URP,"Research internship
+Full-time job",2+,BUET,3.53,311,110,0,5,2024
+Rutgers University,Rejected,PhD,N/A,URP,"Research internship
+Full-time job",2+,BUET,3.53,311,110,0,5,2024
+Texas Tech University,Accepted,PhD,Full,CE,Full-time Job,1,BUET,3.71,304,91,0,1,2025
+New Jersey Institute of Technology,Accepted,PhD,No,CE,Full-time Job,1,BUET,3.71,304,91,0,1,2025
+University of Houston,Waiting,PhD,N/A,CE,Full-time Job,1,BUET,3.71,304,91,0,1,2025
+Purdue University,Rejected,PhD,N/A,CE,Research Internship,0,BUET,3.65,326,111,0,2,2025
+Northeastern University,Rejected,PhD,N/A,CE,Research Internship,0,BUET,3.65,326,111,0,2,2025
+Virginia Tech,Rejected,PhD,N/A,CE,Research Internship,0,BUET,3.65,326,111,0,2,2025
+University of Illinois Urbana-Champaign,Rejected,PhD,N/A,CE,Research Internship,0,BUET,3.65,326,111,0,2,2025
+University of Connecticut ,Rejected,PhD,N/A,CE,Research Internship,0,BUET,3.65,326,111,0,2,2025
+Johns Hopkins University,Rejected,PhD,N/A,CE,Research Internship,0,BUET,3.65,326,111,0,2,2025
+South Dakota State University,Accepted,PhD,Full,NAME,Full-time Job,1,BUET,3.45,0,88,0,2,2024
+University of Rhode Island,Accepted,PhD,Partial,NAME,Full-time Job,1,BUET,3.45,0,88,0,2,2024
+Dartmouth College,Rejected,PhD,N/A,NAME,Full-time Job,1,BUET,3.45,0,88,0,2,2024
+University of Virginia,Rejected,PhD,N/A,NAME,Full-time Job,1,BUET,3.45,0,88,0,2,2024
+Colorado State University,Rejected,PhD,N/A,NAME,Full-time Job,1,BUET,3.45,0,88,0,2,2024
+University of North Carolina at Chapel Hill,Rejected,PhD,N/A,NAME,Full-time Job,1,BUET,3.45,0,88,0,2,2024
+University of Michigan,Accepted,PhD,Full,EEE,Full-time Job,2+,BUET,3.92,322,105,0,1,2023
+Purdue University,Accepted,PhD,Partial,EEE,Full-time Job,2+,BUET,3.92,322,105,0,1,2023
+Rice University,Accepted,PhD,Partial,EEE,Full-time Job,2+,BUET,3.92,322,105,0,1,2023
+University of Southern California,Accepted,PhD,Partial,EEE,Full-time Job,2+,BUET,3.92,322,105,0,1,2023
+University of Virginia,Accepted,PhD,Partial,EEE,Full-time Job,2+,BUET,3.92,322,105,0,1,2023
+University of Notre Dame,Accepted,PhD,Partial,EEE,Full-time Job,2+,BUET,3.92,322,105,0,1,2023
+Boston University,Accepted,PhD,Partial,EEE,Full-time Job,2+,BUET,3.92,322,105,0,1,2023
+University of Maryland,Accepted,PhD,Partial,EEE,Full-time Job,2+,BUET,3.92,322,105,0,1,2023
+"University of California, Berkeley",Rejected,PhD,N/A,EEE,Full-time Job,2+,BUET,3.92,322,105,0,1,2023
+"University of California, Los Angeles",Rejected,PhD,N/A,EEE,Full-time Job,2+,BUET,3.92,322,105,0,1,2023
+Florida State University,Accepted,MS,Full,ME,Full-time Job,0,BUET,3.11,0,0,6.5,2,2024
+Louisiana State University,Accepted,PhD,Full,ChE,Industry Internship,0,BUET,3.31,329,105,0,2,2025
+Iowa State University,Rejected,PhD,N/A,ChE,Industry Internship,0,BUET,3.31,329,105,0,2,2025
+"University of California, Irvine",Rejected,PhD,N/A,ChE,Industry Internship,0,BUET,3.31,329,105,0,2,2025
+Stony Brook University,Rejected,PhD,N/A,ChE,Industry Internship,0,BUET,3.31,329,105,0,2,2025
+University of Houston,Rejected,PhD,N/A,ChE,Industry Internship,0,BUET,3.31,329,105,0,2,2025
+University of Connecticut ,Rejected,PhD,N/A,ChE,Industry Internship,0,BUET,3.31,329,105,0,2,2025
+Buffalo State University,Rejected,PhD,N/A,ChE,Industry Internship,0,BUET,3.31,329,105,0,2,2025
+University of South Florida,Accepted,MS,Partial,ChE,"Industry Internship
+Full-time Job",1,BUET,2.8,310,0,7.5,8,2025
+Texas Tech University,Rejected,MS,N/A,ChE,"Industry Internship
+Full-time Job",1,BUET,2.8,310,0,7.5,8,2025
+Louisiana State University,Rejected,MS,N/A,ChE,"Industry Internship
+Full-time Job",1,BUET,2.8,310,0,7.5,8,2025
+Washington University in St. Louis,Rejected,MS,N/A,ChE,"Industry Internship
+Full-time Job",1,BUET,2.8,310,0,7.5,8,2025
+Texas A&M University,Accepted,PhD,Full,CE,Full-time Job,2+,BUET,3.75,322,0,8,1,2024
+Virginia Tech,Accepted,PhD,Partial,CE,Full-time Job,2+,BUET,3.75,322,0,8,1,2024
+University of Central Florida,Accepted,PhD,Partial,CE,Full-time Job,2+,BUET,3.75,322,0,8,1,2024
+University of Texas at Austin,Rejected,PhD,N/A,CE,Full-time Job,2+,BUET,3.75,322,0,8,1,2024
+Princeton University,Rejected,PhD,N/A,CE,Full-time Job,2+,BUET,3.75,322,0,8,1,2024
+Cornell University,Rejected,PhD,N/A,CE,Full-time Job,2+,BUET,3.75,322,0,8,1,2024
+Lehigh University,Rejected,PhD,N/A,CE,Full-time Job,2+,BUET,3.75,322,0,8,1,2024
+Rice University,Rejected,PhD,N/A,CE,Full-time Job,2+,BUET,3.75,322,0,8,1,2024
+Johns Hopkins University,Accepted,PhD,Full,EEE,"Research Internship
+Full-time job",2+,BUET,3.89,0,101,0,2,2024
+University of Michigan,Accepted,PhD,Partial,EEE,"Research Internship
+Full-time job",2+,BUET,3.89,0,101,0,2,2024
+Washington University in St. Louis,Accepted,PhD,Partial,EEE,"Research Internship
+Full-time job",2+,BUET,3.89,0,101,0,2,2024
+Massachusetts Institute of Technology,Rejected,PhD,N/A,EEE,"Research Internship
+Full-time job",2+,BUET,3.89,0,101,0,2,2024
+Cornell University,Rejected,PhD,N/A,EEE,"Research Internship
+Full-time job",2+,BUET,3.89,0,101,0,2,2024
+Columbia University,Rejected,PhD,N/A,EEE,"Research Internship
+Full-time job",2+,BUET,3.89,0,101,0,2,2024
+Virginia Tech,Rejected,PhD,N/A,EEE,"Research Internship
+Full-time job",2+,BUET,3.89,0,101,0,2,2024
+Harvard University,Rejected,PhD,N/A,EEE,"Research Internship
+Full-time job",2+,BUET,3.89,0,101,0,2,2024
+New Jersey Institute of Technology,Accepted,PhD,No,MCE,Full-time Job,2+,XUET,2.87,337,119,0,30,2025
+Rensselaer Polytechnic Institute,Accepted,PhD,No,MCE,Full-time Job,2+,XUET,2.87,337,119,0,30,2025
+University of Texas at Arlington,Accepted,PhD,No,MCE,Full-time Job,2+,XUET,2.87,337,119,0,30,2025
+University of Pennsylvania,Rejected,PhD,N/A,MCE,Full-time Job,2+,XUET,2.87,337,119,0,30,2025
+University of Maryland,Rejected,PhD,N/A,MCE,Full-time Job,2+,XUET,2.87,337,119,0,30,2025
+Kansas State University,Accepted,PhD,Partial,ME,No,0,BUET,3.53,327,109,0,1,2024
+Michigan State University,Accepted,PhD,Partial,ME,No,0,BUET,3.53,327,109,0,1,2024
+Arizona State University,Accepted,PhD,Full,ME,No,0,BUET,3.53,327,109,0,1,2024
+Purdue University,Rejected,PhD,N/A,ME,No,0,BUET,3.53,327,109,0,1,2024
+Rice University,Rejected,PhD,N/A,ME,No,0,BUET,3.53,327,109,0,1,2024
+North Carolina State University,Rejected,PhD,N/A,ME,No,0,BUET,3.53,327,109,0,1,2024
+Texas State University,Accepted,PhD,Partial,ME,Full-time Job,2+,BUET,3.82,0,0,6.5,7,2025
+University of Florida,Accepted,PhD,Partial,ME,Full-time Job,2+,BUET,3.82,0,0,6.5,7,2025
+Saint Louis University,Accepted,PhD,Partial,ME,Full-time Job,2+,BUET,3.82,0,0,6.5,7,2025
+King Fahd University of Petroleum and Minerals,Accepted,PhD,Full,ME,Full-time Job,2+,BUET,3.82,0,0,6.5,7,2025
+University of Illinois Urbana-Champaign,Rejected,PhD,N/A,ME,Full-time Job,2+,BUET,3.82,0,0,6.5,7,2025
+The University of Texas at Austin,Rejected,PhD,N/A,ME,Full-time Job,2+,BUET,3.82,0,0,6.5,7,2025
+Texas A&M University,Rejected,PhD,N/A,ME,Full-time Job,2+,BUET,3.82,0,0,6.5,7,2025
+Rice University,Rejected,PhD,N/A,ME,Full-time Job,2+,BUET,3.82,0,0,6.5,7,2025
+Rensselaer Polytechnic Institute,Rejected,PhD,N/A,ME,Full-time Job,2+,BUET,3.82,0,0,6.5,7,2025
+"University of Maryland, Baltimore County",Accepted,PhD,Full,CSE,"Research Internship
+Industry Internship",2+,BUET,3.23,303,93,0,1,2025
+University of Virginia,Rejected,PhD,N/A,CSE,"Research Internship
+Industry Internship",2+,BUET,3.23,303,93,0,1,2025
+University of Tennessee,Rejected,PhD,N/A,CSE,"Research Internship
+Industry Internship",2+,BUET,3.23,303,93,0,1,2025
+George Mason University,Rejected,PhD,N/A,CSE,"Research Internship
+Industry Internship",2+,BUET,3.23,303,93,0,1,2025
+University of Minnesota,Rejected,PhD,N/A,CSE,"Research Internship
+Industry Internship",2+,BUET,3.23,303,93,0,1,2025
+Northeastern University,Rejected,PhD,N/A,CSE,"Research Internship
+Industry Internship",2+,BUET,3.23,303,93,0,1,2025
+University of Utah,Rejected,PhD,N/A,CSE,"Research Internship
+Industry Internship",2+,BUET,3.23,303,93,0,1,2025
+The University of Texas at Arlington,Rejected,PhD,N/A,CSE,"Research Internship
+Industry Internship",2+,BUET,3.23,303,93,0,1,2025

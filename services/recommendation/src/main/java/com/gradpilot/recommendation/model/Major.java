@@ -9,7 +9,7 @@ public class Major {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private Integer id;
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
@@ -23,7 +23,7 @@ public class Major {
     }
 
     // Getters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

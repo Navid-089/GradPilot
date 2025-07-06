@@ -39,14 +39,14 @@ class RecommendationControllerTest {
 
     @Test
     @WithMockUser(username = "test@example.com")
-    void getRecommendations() throws Exception {
+    void getProfessorRecommendations() throws Exception {
         RecommendationDto rec1 = new RecommendationDto("Test University 1", "Dr. Smith", 60, "http://test1.com");
         RecommendationDto rec2 = new RecommendationDto("Test University 2", "Dr. Jones", 0, "http://test2.com");
         List<RecommendationDto> recommendations = List.of(rec1, rec2);
 
-        when(recommendationService.getRecommendations("test@example.com")).thenReturn(recommendations);
+        when(recommendationService.getProfessorRecommendations("test@example.com")).thenReturn(recommendations);
 
-        mockMvc.perform(get("/api/recommendations"))
+        mockMvc.perform(get("/api/recommendations/professors"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(recommendations)));
     }
