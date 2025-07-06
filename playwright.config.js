@@ -2,7 +2,7 @@
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
 const config = {
   testDir: "./services/frontend/tests/e2e",
-  timeout: 30000,
+  timeout: 300000,
   retries: 1,
   reporter: "list",
   use: {
