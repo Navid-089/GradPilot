@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.Random;
 
 public class UniversityRecommendationDto {
-    private Long id;
+    private Integer id;
     private String name;
     private String description;
     private String email;
@@ -19,7 +19,7 @@ public class UniversityRecommendationDto {
     public UniversityRecommendationDto() {
     }
 
-    public UniversityRecommendationDto(Long id, String name, String description, String email, Integer ranking, Double tuitionFees, String country, String address, String websiteUrl, Double matchScore) {
+    public UniversityRecommendationDto(Integer id, String name, String description, String email, Integer ranking, Double tuitionFees, String country, String address, String websiteUrl, Double matchScore) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -47,7 +47,7 @@ public class UniversityRecommendationDto {
     }
 
     // Getters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -92,7 +92,7 @@ public class UniversityRecommendationDto {
     }
 
     // Setters
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

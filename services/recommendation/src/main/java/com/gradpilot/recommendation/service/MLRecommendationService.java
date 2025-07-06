@@ -8,6 +8,7 @@ import com.gradpilot.recommendation.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -27,6 +28,7 @@ public class MLRecommendationService {
         this.userRepository = userRepository;
     }
     
+    @Transactional(readOnly = true)
     public List<UniversityRecommendationDto> getUniversityRecommendations(Integer userId) {
         try {
             User user = userRepository.findById(userId)

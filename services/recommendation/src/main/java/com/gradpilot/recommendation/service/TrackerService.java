@@ -39,9 +39,9 @@ public class TrackerService {
         boolean alreadyExists = taskRepository.existsByUserAndItem(
             user.getUserId(), 
             taskType, 
-            taskType == Task.TaskType.UNIVERSITY ? Long.valueOf(taskId) : null,
-            taskType == Task.TaskType.PROFESSOR ? Long.valueOf(taskId) : null,
-            taskType == Task.TaskType.SCHOLARSHIP ? Long.valueOf(taskId) : null
+            taskType == Task.TaskType.UNIVERSITY ? Integer.valueOf(taskId) : null,
+            taskType == Task.TaskType.PROFESSOR ? Integer.valueOf(taskId) : null,
+            taskType == Task.TaskType.SCHOLARSHIP ? Integer.valueOf(taskId) : null
         );
         
         if (alreadyExists) {
@@ -56,13 +56,13 @@ public class TrackerService {
         // Set the appropriate ID based on task type
         switch (taskType) {
             case UNIVERSITY:
-                task.setUniversityId(Long.valueOf(taskId));
+                task.setUniversityId(Integer.valueOf(taskId));
                 break;
             case PROFESSOR:
-                task.setProfessorId(Long.valueOf(taskId));
+                task.setProfessorId(Integer.valueOf(taskId));
                 break;
             case SCHOLARSHIP:
-                task.setScholarshipId(Long.valueOf(taskId));
+                task.setScholarshipId(Integer.valueOf(taskId));
                 break;
         }
         
@@ -124,9 +124,9 @@ public class TrackerService {
         taskRepository.deleteByUserAndItem(
             user.getUserId(), 
             taskType, 
-            taskType == Task.TaskType.UNIVERSITY ? Long.valueOf(taskId) : null,
-            taskType == Task.TaskType.PROFESSOR ? Long.valueOf(taskId) : null,
-            taskType == Task.TaskType.SCHOLARSHIP ? Long.valueOf(taskId) : null
+            taskType == Task.TaskType.UNIVERSITY ? Integer.valueOf(taskId) : null,
+            taskType == Task.TaskType.PROFESSOR ? Integer.valueOf(taskId) : null,
+            taskType == Task.TaskType.SCHOLARSHIP ? Integer.valueOf(taskId) : null
         );
         
         return getRemoveMessage(type);

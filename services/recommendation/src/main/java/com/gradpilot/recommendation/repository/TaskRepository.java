@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface TaskRepository extends JpaRepository<Task, Integer> {
     
     // Find all tasks for a specific user
     List<Task> findByUser_UserIdOrderByCreatedAtDesc(Integer userId);
@@ -25,9 +25,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
            ":scholarshipId IS NOT NULL AND t.scholarshipId = :scholarshipId)")
     boolean existsByUserAndItem(@Param("userId") Integer userId, 
                                @Param("taskType") Task.TaskType taskType,
-                               @Param("universityId") Long universityId,
-                               @Param("professorId") Long professorId,
-                               @Param("scholarshipId") Long scholarshipId);
+                               @Param("universityId") Integer universityId,
+                               @Param("professorId") Integer professorId,
+                               @Param("scholarshipId") Integer scholarshipId);
     
     // Delete a specific task
     @Modifying
@@ -37,7 +37,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
            ":scholarshipId IS NOT NULL AND t.scholarshipId = :scholarshipId)")
     void deleteByUserAndItem(@Param("userId") Integer userId, 
                            @Param("taskType") Task.TaskType taskType,
-                           @Param("universityId") Long universityId,
-                           @Param("professorId") Long professorId,
-                           @Param("scholarshipId") Long scholarshipId);
+                           @Param("universityId") Integer universityId,
+                           @Param("professorId") Integer professorId,
+                           @Param("scholarshipId") Integer scholarshipId);
 } 

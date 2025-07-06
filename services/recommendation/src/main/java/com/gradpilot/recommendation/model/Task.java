@@ -10,7 +10,7 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "task_id")
-    private Long taskId;
+    private Integer taskId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -21,13 +21,13 @@ public class Task {
     private TaskType taskType;
 
     @Column(name = "university_id")
-    private Long universityId;
+    private Integer universityId;
 
     @Column(name = "professor_id")
-    private Long professorId;
+    private Integer professorId;
 
     @Column(name = "scholarship_id")
-    private Long scholarshipId;
+    private Integer scholarshipId;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -51,11 +51,11 @@ public class Task {
     }
 
     // Getters and Setters
-    public Long getTaskId() {
+    public Integer getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(Long taskId) {
+    public void setTaskId(Integer taskId) {
         this.taskId = taskId;
     }
 
@@ -75,27 +75,27 @@ public class Task {
         this.taskType = taskType;
     }
 
-    public Long getUniversityId() {
+    public Integer getUniversityId() {
         return universityId;
     }
 
-    public void setUniversityId(Long universityId) {
+    public void setUniversityId(Integer universityId) {
         this.universityId = universityId;
     }
 
-    public Long getProfessorId() {
+    public Integer getProfessorId() {
         return professorId;
     }
 
-    public void setProfessorId(Long professorId) {
+    public void setProfessorId(Integer professorId) {
         this.professorId = professorId;
     }
 
-    public Long getScholarshipId() {
+    public Integer getScholarshipId() {
         return scholarshipId;
     }
 
-    public void setScholarshipId(Long scholarshipId) {
+    public void setScholarshipId(Integer scholarshipId) {
         this.scholarshipId = scholarshipId;
     }
 

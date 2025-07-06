@@ -71,51 +71,51 @@ public class RecommendationController {
     }
 
     // Tracker endpoints
-    @PostMapping("/tracker/save")
-    public ResponseEntity<Map<String, String>> saveTask(@RequestBody Map<String, Object> request, Authentication authentication) {
-        try {
-            String userEmail = authentication.getName();
-            String type = (String) request.get("type");
-            String taskId = request.get("taskId").toString();
-            String message = trackerService.saveTask(type, taskId, userEmail);
-            return ResponseEntity.ok(Map.of("message", message));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-    }
+   @PostMapping("/tracker/save")
+   public ResponseEntity<Map<String, String>> saveTask(@RequestBody Map<String, Object> request, Authentication authentication) {
+       try {
+           String userEmail = authentication.getName();
+           String type = (String) request.get("type");
+           String taskId = request.get("taskId").toString();
+           String message = trackerService.saveTask(type, taskId, userEmail);
+           return ResponseEntity.ok(Map.of("message", message));
+       } catch (Exception e) {
+           return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+       }
+   }
 
-    @GetMapping("/tracker/tasks")
-    public ResponseEntity<List<Map<String, Object>>> getUserTasks(Authentication authentication) {
-        try {
-            String userEmail = authentication.getName();
-            List<Map<String, Object>> tasks = trackerService.getUserTasks(userEmail);
-            return ResponseEntity.ok(tasks);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+   @GetMapping("/tracker/tasks")
+   public ResponseEntity<List<Map<String, Object>>> getUserTasks(Authentication authentication) {
+       try {
+           String userEmail = authentication.getName();
+           List<Map<String, Object>> tasks = trackerService.getUserTasks(userEmail);
+           return ResponseEntity.ok(tasks);
+       } catch (Exception e) {
+           return ResponseEntity.badRequest().build();
+       }
+   }
 
-    @GetMapping("/tracker/tasks/{type}")
-    public ResponseEntity<List<Map<String, Object>>> getUserTasksByType(@PathVariable String type, Authentication authentication) {
-        try {
-            String userEmail = authentication.getName();
-            List<Map<String, Object>> tasks = trackerService.getUserTasksByType(userEmail, type);
-            return ResponseEntity.ok(tasks);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+   @GetMapping("/tracker/tasks/{type}")
+   public ResponseEntity<List<Map<String, Object>>> getUserTasksByType(@PathVariable String type, Authentication authentication) {
+       try {
+           String userEmail = authentication.getName();
+           List<Map<String, Object>> tasks = trackerService.getUserTasksByType(userEmail, type);
+           return ResponseEntity.ok(tasks);
+       } catch (Exception e) {
+           return ResponseEntity.badRequest().build();
+       }
+   }
 
-    @DeleteMapping("/tracker/remove")
-    public ResponseEntity<Map<String, String>> removeTask(@RequestBody Map<String, Object> request, Authentication authentication) {
-        try {
-            String userEmail = authentication.getName();
-            String type = (String) request.get("type");
-            String taskId = request.get("taskId").toString();
-            String message = trackerService.removeTask(type, taskId, userEmail);
-            return ResponseEntity.ok(Map.of("message", message));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-    }
+   @DeleteMapping("/tracker/remove")
+   public ResponseEntity<Map<String, String>> removeTask(@RequestBody Map<String, Object> request, Authentication authentication) {
+       try {
+           String userEmail = authentication.getName();
+           String type = (String) request.get("type");
+           String taskId = request.get("taskId").toString();
+           String message = trackerService.removeTask(type, taskId, userEmail);
+           return ResponseEntity.ok(Map.of("message", message));
+       } catch (Exception e) {
+           return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+       }
+   }
 }
