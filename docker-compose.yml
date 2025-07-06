@@ -63,12 +63,12 @@
 #       context: ./services/sop-review-service
 #     container_name: gradpilot-sop-review
 #     ports:
-#       - "8085:8085"
+#       - "8084:8084"
 #     env_file:
 #       - .env
 #     environment:
-#       API_BASE_URL: http://gradpilot.me:8085
-#       NEXT_PUBLIC_API_URL: http://gradpilot.me:8085
+#       API_BASE_URL: http://gradpilot.me:8084
+#       NEXT_PUBLIC_API_URL: http://gradpilot.me:8084
 #       SPRING_DATASOURCE_URL: ${DB_URL}
 #       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
 #       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
@@ -137,12 +137,12 @@ services:
     image: ananyapromi3/gradpilot-sop-review:latest
     container_name: gradpilot-sop-review
     ports:
-      - "8085:8085"
+      - "8084:8084"
     env_file:
       - .env
     environment:
-      API_BASE_URL: http://gradpilot.me:8085
-      NEXT_PUBLIC_API_URL: http://gradpilot.me:8085
+      API_BASE_URL: http://gradpilot.me:8084
+      NEXT_PUBLIC_API_URL: http://gradpilot.me:8084
       SPRING_DATASOURCE_URL: ${DB_URL}
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}

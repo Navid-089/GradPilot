@@ -1,6 +1,5 @@
 // const API_BASE_URL = process.env.NEXT_PUBLIC_SOP_API_URL || 'http://localhost:8084/api/v1/sop';
-const API_BASE_URL = "http://57.159.24.58:8085/api/v1/sop"; // Update this to your actual API base URL
-
+const API_BASE_URL = "http://57.159.24.58:8084/api/v1/sop"; // Update this to your actual API base URL
 
 export const sopService = {
   async reviewSop(sopText) {
