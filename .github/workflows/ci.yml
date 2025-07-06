@@ -51,7 +51,7 @@ jobs:
 
       # - name: Run Playwright E2E tests
       #   working-directory: services/frontend
-      #   run: npx playwright test
+      #   run: npx playwright test #
 
       - name: Build frontend
         working-directory: services/frontend
