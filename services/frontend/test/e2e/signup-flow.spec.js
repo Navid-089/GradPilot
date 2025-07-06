@@ -5,7 +5,10 @@ test("test", async ({ page }) => {
   await page.getByRole("button", { name: "Close notification" }).click();
   await page.getByRole("textbox", { name: "Full Name *" }).fill("Test user");
   await page.getByRole("textbox", { name: "Email *" }).click();
-  await page.getByRole("textbox", { name: "Email *" }).fill("test@gmail.com");
+  // await page.getByRole("textbox", { name: "Email *" }).fill("test@gmail.com");
+  const randomId = Math.floor(Math.random() * 100000);
+  const email = `test${randomId}@gmail.com`;
+  await page.getByRole("textbox", { name: "Email *" }).fill(email);
   await page.getByRole("spinbutton", { name: "GPA" }).click();
   await page.getByRole("spinbutton", { name: "GPA" }).fill("3.46");
   await page.getByPlaceholder("GRE").click();
@@ -48,6 +51,7 @@ test("test", async ({ page }) => {
     .getByRole("textbox", { name: "Confirm Password *" })
     .fill("asdfghjk");
   await page.getByRole("button", { name: "Sign Up" }).click();
+  await page.goto("http://gradpilot.me/signup");
   await page.getByRole("textbox", { name: "Email *" }).click();
   await page
     .getByRole("textbox", { name: "Email *" })

@@ -53,6 +53,10 @@ jobs:
       #   working-directory: services/frontend
       #   run: npx playwright test #
 
+      - name: Run frontend unit tests
+        working-directory: services/frontend
+        run: npm test -- --watchAll=false 
+
       - name: Build frontend
         working-directory: services/frontend
         run: npm run build
@@ -93,24 +97,24 @@ jobs:
           docker build --pull -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:latest \
                        -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:${{ github.sha }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:${{ github.sha }} 
+          docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-frontend:${{ github.sha }}
 
   deploy-to-vm:
     needs: build-test-and-dockerize
     runs-on: ubuntu-latest
-    steps: 
-      - name: Deploy on Azure VM via SSH 
-        uses: appleboy/ssh-action@v1.0.0 
+    steps:
+      - name: Deploy on Azure VM via SSH
+        uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.VM_IP}} 
-          username: seed 
-          key: ${{ secrets.SSH_KEY }} 
-          script: | 
+          host: ${{ secrets.VM_IP}}
+          username: seed
+          key: ${{ secrets.SSH_KEY }}
+          script: |
             cd /home/seed/CSE408/GradPilot
             git checkout main
             git pull origin main
             docker compose down  
             docker image prune -af -f
             docker compose pull
-            docker compose up -d 
+            docker compose up -d
           timeout: 60m
