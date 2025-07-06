@@ -1,5 +1,5 @@
 // const API_BASE_URL = process.env.NEXT_PUBLIC_SOP_API_URL || 'http://localhost:8084/api/v1/sop';
-const API_BASE_URL = "http://gradpilot.me/api/v1/sop"; // Update this to your actual API base URL
+const API_BASE_URL = "http://gradpilot.me:8084/api/v1/sop"; // Update this to your actual API base URL
 
 export const sopService = {
   async reviewSop(sopText) {
