@@ -77,10 +77,11 @@ public class ChatService {
                                         "Database query result - User: " + (user != null ? user.getName() : "Unknown"));
 
                         String customPrompt = (user != null) ? String.format(
-                                        "You are helping %s. They have a CGPA of %s and are interested in applying in %d. Give tailored advice.",
+                                        "Remember, you are an admissions advisor for US MS/PhD applicants. You are helping %s. They have a CGPA of %s and are interested in applying in %d. Give tailored advice based on the next question (This is the actual question %s asked):",
                                         user.getName(),
                                         user.getCgpa() != null ? user.getCgpa() : "not specified",
-                                        user.getApplyYear() != null ? user.getApplyYear() : 2025)
+                                        user.getApplyYear() != null ? user.getApplyYear() : 2025,
+                                        user.getName())
                                         : "You are an admissions advisor for US MS/PhD applicants.";
 
                         System.out.println("Custom Prompt: " + customPrompt);
@@ -123,5 +124,51 @@ public class ChatService {
 
                 String reply = geminiResponse.candidates().get(0).content().parts().get(0).text();
                 return new ChatResponse(reply);
+        }
+
+        @Transactional(readOnly = true)
+        public ChatResponse sopReview(ChatRequest req) {
+                try {
+                        // Get user ID from authentication context
+                        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                        if (authentication == null || !authentication.isAuthenticated()) {
+                                // Return a response for unauthenticated users
+                                String fullPrompt = "You are an SOP reviewer for US MS/PhD applicants. The user is not logged in, so provide general advice.\n\nUser: "
+                                                + req.message();
+                                return generateGeminiResponse(fullPrompt);
+                        }
+
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> principal = (Map<String, Object>) authentication.getPrincipal();
+                        Integer userId = (Integer) principal.get("userId");
+
+                        if (userId == null) {
+                                // If no user ID in principal, treat as unauthenticated
+                                String fullPrompt = "You are an SOP reviewer for US MS/PhD applicants. The user is not properly authenticated, so provide general advice. Give tailored advice based on his/her SOP (This is the SOP he/she uploaded):\n\nUser: "
+                                                + req.message();
+                                return generateGeminiResponse(fullPrompt);
+                        }
+
+                        // Fetch user using UserRepository
+                        User user = userRepo.findById(userId).orElse(null);
+                        System.out.println(
+                                        "Database query result - User: " + (user != null ? user.getName() : "Unknown"));
+
+                        String customPrompt = (user != null) ? String.format(
+                                        "Remember, you are an SOP reviewer for US MS/PhD applicants. You are helping %s. They have a CGPA of %s and are interested in applying in %d. Give tailored advice based on his/her SOP (This is the SOP he/she uploaded):",
+                                        user.getName(),
+                                        user.getCgpa() != null ? user.getCgpa() : "not specified",
+                                        user.getApplyYear() != null ? user.getApplyYear() : 2025,
+                                        user.getName())
+                                        : "You are an SOP reviewer for US MS/PhD applicants. Give tailored advice based on his/her SOP (This is the SOP he/she uploaded):";
+
+                        System.out.println("Custom Prompt: " + customPrompt);
+                        String fullPrompt = customPrompt + "\n\nUser: " + req.message();
+                        return generateGeminiResponse(fullPrompt);
+
+                } catch (Exception e) {
+                        e.printStackTrace(); // Show error in logs
+                        return new ChatResponse("An error occurred: " + e.getMessage());
+                }
         }
 }
