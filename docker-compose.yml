@@ -113,7 +113,7 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_URL: ${DB_URL} 
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       APP_JWT_SECRET: ${JWT_SECRET}
