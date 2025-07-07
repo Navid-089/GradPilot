@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class MLRecommendationService {
     
+    private static final Logger logger = LoggerFactory.getLogger(MLRecommendationService.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final UniversityRepository universityRepository;
     private final UserRepository userRepository;
@@ -31,10 +34,19 @@ public class MLRecommendationService {
     @Transactional(readOnly = true)
     public List<UniversityRecommendationDto> getUniversityRecommendations(Integer userId) {
         try {
+            logger.info("Getting university recommendations for user ID: {}", userId);
+            
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
 
             List<University> universities = universityRepository.findAll();
+            logger.info("Found {} universities in database", universities.size());
+            
+            if (universities.isEmpty()) {
+                logger.warn("No universities found in database, returning empty list");
+                return new ArrayList<>();
+            }
+            
             List<UniversityRecommendationDto> recommendations = new ArrayList<>();
 
             for (University university : universities) {
@@ -59,10 +71,11 @@ public class MLRecommendationService {
 
             // Sort by match score in descending order
             recommendations.sort((a, b) -> Double.compare(b.getMatchScore(), a.getMatchScore()));
-
+            
+            logger.info("Generated {} recommendations", recommendations.size());
             return recommendations;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error getting university recommendations: {}", e.getMessage(), e);
             throw new RuntimeException("Error getting university recommendations: " + e.getMessage());
         }
     }

@@ -23,7 +23,8 @@ public class RecommendationService {
     }
 
     public List<RecommendationDto> getProfessorRecommendations(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow();
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
         List<ResearchInterest> interests = user.getResearchInterests();
         List<String> countries = user.getTargetCountries().stream().map(Country::getName).toList();
         List<String> majors = user.getTargetMajors().stream().map(Major::getName).toList();
@@ -52,12 +53,14 @@ public class RecommendationService {
     }
 
     public List<UniversityRecommendationDto> getUniversityRecommendations(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow();
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
         return mlRecommendationService.getUniversityRecommendations(user.getUserId());
     }
 
     public List<UniversityRecommendationDto> getUniversityRecommendationsByCategory(String email, String category, int limit) {
-        User user = userRepository.findByEmail(email).orElseThrow();
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
         return mlRecommendationService.getRecommendationsByCategory(user.getUserId(), category, limit);
     }
 

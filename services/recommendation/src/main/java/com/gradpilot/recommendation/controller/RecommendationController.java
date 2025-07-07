@@ -2,24 +2,38 @@ package com.gradpilot.recommendation.controller;
 
 import com.gradpilot.recommendation.dto.RecommendationDto;
 import com.gradpilot.recommendation.dto.UniversityRecommendationDto;
+import com.gradpilot.recommendation.model.User;
+import com.gradpilot.recommendation.model.University;
+import com.gradpilot.recommendation.repository.UserRepository;
+import com.gradpilot.recommendation.repository.UniversityRepository;
 import com.gradpilot.recommendation.service.RecommendationService;
 import com.gradpilot.recommendation.service.TrackerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/recommendations")
 public class RecommendationController {
+    private static final Logger logger = LoggerFactory.getLogger(RecommendationController.class);
     private final RecommendationService recommendationService;
     private final TrackerService trackerService;
+    private final UserRepository userRepository;
+    private final UniversityRepository universityRepository;
 
-    public RecommendationController(RecommendationService recommendationService, TrackerService trackerService) {
+    public RecommendationController(RecommendationService recommendationService, TrackerService trackerService, 
+                                  UserRepository userRepository, UniversityRepository universityRepository) {
         this.recommendationService = recommendationService;
         this.trackerService = trackerService;
+        this.userRepository = userRepository;
+        this.universityRepository = universityRepository;
     }
 
     // Existing endpoint for professor recommendations
@@ -32,18 +46,31 @@ public class RecommendationController {
     // New endpoint for university recommendations
     @GetMapping("/universities")
     public ResponseEntity<List<UniversityRecommendationDto>> getUniversityRecommendations(Authentication authentication) {
-        String email = authentication.getName();
-        return ResponseEntity.ok(recommendationService.getUniversityRecommendations(email));
+        try {
+            String email = authentication.getName();
+            List<UniversityRecommendationDto> recommendations = recommendationService.getUniversityRecommendations(email);
+            return ResponseEntity.ok(recommendations);
+        } catch (Exception e) {
+            logger.error("Error in getUniversityRecommendations: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).build();
+        }
     }
 
     // Alternative endpoint for university recommendations with email in request body
     @PostMapping("/universities")
     public ResponseEntity<List<UniversityRecommendationDto>> getUniversityRecommendationsByEmail(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        if (email == null || email.trim().isEmpty()) {
-            return ResponseEntity.badRequest().build();
+        try {
+            String email = request.get("email");
+            if (email == null || email.trim().isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+            logger.info("Getting university recommendations for email: {}", email);
+            List<UniversityRecommendationDto> recommendations = recommendationService.getUniversityRecommendations(email);
+            return ResponseEntity.ok(recommendations);
+        } catch (Exception e) {
+            logger.error("Error in getUniversityRecommendationsByEmail: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).build();
         }
-        return ResponseEntity.ok(recommendationService.getUniversityRecommendations(email));
     }
 
     // Get university recommendations by category
@@ -118,4 +145,38 @@ public class RecommendationController {
            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
        }
    }
+
+    // Debug endpoints
+    @GetMapping("/debug/user/{email}")
+    public ResponseEntity<Map<String, Object>> debugUser(@PathVariable String email) {
+        try {
+            User user = userRepository.findByEmail(email).orElse(null);
+            Map<String, Object> result = new HashMap<>();
+            result.put("userExists", user != null);
+            if (user != null) {
+                result.put("userId", user.getUserId());
+                result.put("name", user.getName());
+                result.put("email", user.getEmail());
+            }
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/debug/universities/count")
+    public ResponseEntity<Map<String, Object>> debugUniversities() {
+        try {
+            List<University> universities = universityRepository.findAll();
+            Map<String, Object> result = new HashMap<>();
+            result.put("count", universities.size());
+            result.put("universities", universities.stream()
+                .limit(5)
+                .map(u -> Map.of("id", u.getId(), "name", u.getName()))
+                .collect(Collectors.toList()));
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
 }
