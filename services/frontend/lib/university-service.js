@@ -9,7 +9,7 @@ export async function getUniversityMatches(userEmail = null) {
     const user = JSON.parse(localStorage.getItem('user') || '{}')
     
     // Use the authenticated user's email if available
-    const email = userEmail || user.email || 'test@example.com'
+    const email = userEmail || user.email 
     
     console.log('Making API call to:', `${API_BASE_URL}/api/recommendations/universities`)
     console.log('With email:', email)
