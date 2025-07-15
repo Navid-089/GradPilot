@@ -71,11 +71,22 @@ def predict_probabilities(user_profile, model_data):
         
         universities = df['University'].dropna().unique()
         
+        # Filter universities based on user preferences if provided
+        user_target_countries = user_profile.get('Target_Countries', '').split(',')
+        user_target_majors = user_profile.get('Target_Majors', '').split(',')
+        user_research_interests = user_profile.get('Research_Interests', '').split(',')
+        
         # Create test data for all universities
         test_data = []
         for uni in universities:
             test_row = user_profile.copy()
             test_row['University'] = uni
+            
+            # Remove our custom fields that the ML model doesn't expect
+            test_row.pop('Target_Countries', None)
+            test_row.pop('Target_Majors', None)
+            test_row.pop('Research_Interests', None)
+            
             test_data.append(test_row)
         
         test_df = pd.DataFrame(test_data)
@@ -84,19 +95,59 @@ def predict_probabilities(user_profile, model_data):
         # Make predictions
         probabilities = model.predict_proba(test_df)[:, 1]
         
-        # Create results
+        # Apply preference-based scoring adjustments
+        adjusted_probabilities = []
+        for i, uni in enumerate(universities):
+            prob = float(probabilities[i])
+            
+            # Boost probability for universities matching user preferences
+            boost_factor = 1.0
+            
+            # Country preference boost
+            if user_target_countries and user_target_countries[0].strip():
+                # This is a simplified country matching - in a real system, 
+                # you'd have a university-to-country mapping
+                for country in user_target_countries:
+                    if country.strip().lower() in uni.lower():
+                        boost_factor *= 1.2
+                        break
+            
+            # Apply CGPA-based filtering for realistic recommendations
+            user_cgpa = user_profile.get('CGPA', 3.5)
+            if user_cgpa >= 3.7 and 'MIT' in uni or 'Harvard' in uni or 'Stanford' in uni:
+                boost_factor *= 1.3  # High CGPA gets boost for top universities
+            elif user_cgpa < 3.3 and ('MIT' in uni or 'Harvard' in uni or 'Stanford' in uni):
+                boost_factor *= 0.7  # Lower CGPA gets penalty for top universities
+            
+            # Research interest boost (simplified)
+            if user_research_interests and user_research_interests[0].strip():
+                if any('tech' in interest.lower() or 'engineering' in interest.lower() 
+                      for interest in user_research_interests):
+                    if 'MIT' in uni or 'Carnegie Mellon' in uni or 'Georgia Tech' in uni:
+                        boost_factor *= 1.2
+            
+            adjusted_prob = min(prob * boost_factor, 0.95)  # Cap at 95%
+            adjusted_probabilities.append(adjusted_prob)
+        
+        # Create results with personalized scores
         results = []
         for i, uni in enumerate(universities):
             results.append({
                 'University': uni,
-                'Admission_Probability': float(probabilities[i]),
-                'Recommendation_Score': float(probabilities[i])  # Using probability as score for now
+                'Admission_Probability': adjusted_probabilities[i],
+                'Recommendation_Score': adjusted_probabilities[i],
+                'Match_Reason': f"Based on CGPA: {user_profile.get('CGPA', 'N/A')}, GRE: {user_profile.get('GRE', 'N/A')}"
             })
+        
+        # Sort by adjusted probability
+        results.sort(key=lambda x: x['Admission_Probability'], reverse=True)
         
         return results
         
     except Exception as e:
         print(f"Error in prediction: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
         return []
 
 def main():

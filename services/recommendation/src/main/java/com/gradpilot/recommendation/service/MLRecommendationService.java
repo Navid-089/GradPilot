@@ -3,8 +3,10 @@ package com.gradpilot.recommendation.service;
 import com.gradpilot.recommendation.dto.UniversityRecommendationDto;
 import com.gradpilot.recommendation.model.University;
 import com.gradpilot.recommendation.model.User;
+import com.gradpilot.recommendation.model.UserScore;
 import com.gradpilot.recommendation.repository.UniversityRepository;
 import com.gradpilot.recommendation.repository.UserRepository;
+import com.gradpilot.recommendation.repository.UserScoreRepository;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,38 +25,24 @@ public class MLRecommendationService {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final UniversityRepository universityRepository;
     private final UserRepository userRepository;
+    private final UserScoreRepository userScoreRepository;
     
-    public MLRecommendationService(UniversityRepository universityRepository, UserRepository userRepository) {
+    public MLRecommendationService(UniversityRepository universityRepository, UserRepository userRepository, UserScoreRepository userScoreRepository) {
         this.universityRepository = universityRepository;
         this.userRepository = userRepository;
+        this.userScoreRepository = userScoreRepository;
     }
     
     @Transactional(readOnly = true)
     public List<UniversityRecommendationDto> getUniversityRecommendations(Integer userId) {
         try {
-            logger.info("Getting university recommendations for user ID: {}", userId);
-            
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
 
-            // Log user preferences for debugging
-            logger.info("User preferences - Email: {}, CGPA: {}, Apply Year: {}", 
-                user.getEmail(), user.getCgpa(), user.getApplyYear());
-            logger.info("Target Countries: {}", 
-                user.getTargetCountries() != null ? 
-                    user.getTargetCountries().stream().map(c -> c.getName()).toList() : "None");
-            logger.info("Target Majors: {}", 
-                user.getTargetMajors() != null ? 
-                    user.getTargetMajors().stream().map(m -> m.getName()).toList() : "None");
-            logger.info("Research Interests: {}", 
-                user.getResearchInterests() != null ? 
-                    user.getResearchInterests().stream().map(r -> r.getName()).toList() : "None");
-
             List<University> universities = universityRepository.findAll();
-            logger.info("Found {} universities in database", universities.size());
             
             if (universities.isEmpty()) {
-                logger.warn("No universities found in database, returning empty list");
+                logger.warn("No universities found in database");
                 return new ArrayList<>();
             }
             
@@ -63,11 +51,10 @@ public class MLRecommendationService {
             
             // If ML fails, fallback to rule-based scoring
             if (recommendations.isEmpty()) {
-                logger.warn("ML predictions failed, falling back to rule-based scoring");
+                logger.info("ML predictions unavailable, using rule-based scoring for user: {}", user.getEmail());
                 recommendations = getRuleBasedRecommendations(user, universities);
             }
             
-            logger.info("Generated {} recommendations", recommendations.size());
             return recommendations;
         } catch (Exception e) {
             logger.error("Error getting university recommendations: {}", e.getMessage(), e);
@@ -78,70 +65,75 @@ public class MLRecommendationService {
     private double calculateMatchScore(User user, University university) {
         double score = 0.0;
         
-        // 1. Country preference match (30% weight)
+        // 1. Country preference match (35% weight)
         if (user.getTargetCountries() != null && !user.getTargetCountries().isEmpty()) {
             boolean countryMatch = user.getTargetCountries().stream()
                 .anyMatch(country -> country.getName().equalsIgnoreCase(university.getCountry()));
             if (countryMatch) {
-                score += 0.3;
+                score += 0.35;
             }
         }
         
-        // 2. Ranking score (25% weight) - lower ranking is better
-        if (university.getRanking() != null) {
-            if (university.getRanking() <= 10) {
-                score += 0.25;
-            } else if (university.getRanking() <= 50) {
-                score += 0.20;
-            } else if (university.getRanking() <= 100) {
-                score += 0.15;
-            } else if (university.getRanking() <= 200) {
-                score += 0.10;
-            } else {
-                score += 0.05;
-            }
-        }
-        
-        // 3. Tuition affordability (20% weight)
-        if (university.getTuitionFees() != null) {
-            if (university.getTuitionFees() < 10000) {
-                score += 0.20; // Very affordable
-            } else if (university.getTuitionFees() < 30000) {
-                score += 0.15; // Affordable
-            } else if (university.getTuitionFees() < 50000) {
-                score += 0.10; // Moderate
-            } else {
-                score += 0.05; // Expensive
-            }
-        }
-        
-        // 4. GPA-based university tier matching (15% weight)
-        if (user.getCgpa() != null) {
+        // 2. CGPA-based university tier matching (30% weight)
+        if (user.getCgpa() != null && university.getRanking() != null) {
             double gpa = user.getCgpa().doubleValue();
-            if (gpa >= 3.7 && university.getRanking() != null && university.getRanking() <= 50) {
-                score += 0.15; // High GPA matches top universities
-            } else if (gpa >= 3.3 && university.getRanking() != null && university.getRanking() <= 100) {
-                score += 0.12; // Good GPA matches good universities
-            } else if (gpa >= 3.0) {
-                score += 0.08; // Decent GPA matches decent universities
+            int ranking = university.getRanking();
+            
+            if (gpa >= 3.8 && ranking <= 10) {
+                score += 0.30;
+            } else if (gpa >= 3.6 && ranking <= 30) {
+                score += 0.25;
+            } else if (gpa >= 3.4 && ranking <= 50) {
+                score += 0.20;
+            } else if (gpa >= 3.2 && ranking <= 100) {
+                score += 0.15;
+            } else if (gpa >= 3.0 && ranking > 100) {
+                score += 0.10;
+            } else if (gpa < 3.5 && ranking <= 20) {
+                score -= 0.1; // Penalty for low GPA targeting top universities
             }
         }
         
-        // 5. Research interest match (10% weight)
-        // This is simplified - in a real system, you'd have university research areas
+        // 3. Tuition affordability (15% weight)
+        if (university.getTuitionFees() != null) {
+            if (university.getTuitionFees() < 15000) {
+                score += 0.15;
+            } else if (university.getTuitionFees() < 30000) {
+                score += 0.12;
+            } else if (university.getTuitionFees() < 50000) {
+                score += 0.08;
+            } else {
+                score += 0.03;
+            }
+        }
+        
+        // 4. Research interest match (15% weight)
         if (user.getResearchInterests() != null && !user.getResearchInterests().isEmpty()) {
-            // For now, give bonus to top-tier universities for research
             if (university.getRanking() != null && university.getRanking() <= 20) {
-                score += 0.10; // Top universities likely have good research
+                score += 0.15;
             } else if (university.getRanking() != null && university.getRanking() <= 50) {
+                score += 0.10;
+            } else if (university.getRanking() != null && university.getRanking() <= 100) {
                 score += 0.05;
             }
         }
         
-        // Add small random factor to break ties and create some variety
-        score += new Random(user.getUserId()).nextDouble() * 0.05; // Seeded by user ID for consistency
+        // 5. User-specific randomization for variety (5% weight)
+        java.util.Random userRandom = new java.util.Random(user.getUserId().longValue());
+        double randomFactor = userRandom.nextDouble() * 0.05;
+        score += randomFactor;
         
-        return Math.min(score, 1.0); // Cap at 1.0
+        // 6. Apply year consideration
+        if (user.getApplyYear() != null) {
+            int currentYear = java.time.Year.now().getValue();
+            int yearsToApply = user.getApplyYear() - currentYear;
+            if (yearsToApply >= 1 && yearsToApply <= 2) {
+                score += 0.05;
+            }
+        }
+        
+        // Cap the score at 1.0 and ensure minimum of 0.0
+        return Math.max(0.0, Math.min(score, 1.0));
     }
     
     public List<UniversityRecommendationDto> getRecommendationsByCategory(Integer userId, String category, int limit) {
@@ -156,8 +148,6 @@ public class MLRecommendationService {
     
     private List<UniversityRecommendationDto> getMLPredictions(User user, List<University> universities) {
         try {
-            logger.info("Attempting to get ML predictions for user {}", user.getEmail());
-            
             // Create user profile JSON for ML model
             Map<String, Object> userProfile = createUserProfileForML(user);
             
@@ -171,71 +161,135 @@ public class MLRecommendationService {
                 "--profile", tempFile.getAbsolutePath(),
                 "--model", "ml/models/improved_university_recommender.pkl"
             );
+            
             processBuilder.directory(new File("."));
+            Map<String, String> env = processBuilder.environment();
+            env.put("PYTHONPATH", ".");
             
             Process process = processBuilder.start();
             
-            // Read the output
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader outputReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            
             StringBuilder output = new StringBuilder();
+            StringBuilder errorOutput = new StringBuilder();
             String line;
-            while ((line = reader.readLine()) != null) {
+            
+            while ((line = outputReader.readLine()) != null) {
                 output.append(line).append("\n");
             }
             
-            // Wait for process to complete
-            int exitCode = process.waitFor();
+            while ((line = errorReader.readLine()) != null) {
+                errorOutput.append(line).append("\n");
+            }
             
-            // Clean up temp file
+            int exitCode = process.waitFor();
             tempFile.delete();
             
             if (exitCode == 0) {
-                // Parse ML results
                 String jsonOutput = output.toString().trim();
+                
                 if (!jsonOutput.isEmpty()) {
-                    List<Map<String, Object>> mlResults = objectMapper.readValue(
-                        jsonOutput, new TypeReference<List<Map<String, Object>>>() {}
-                    );
-                    
-                    return convertMLResultsToRecommendations(mlResults, universities);
+                    try {
+                        List<Map<String, Object>> mlResults = objectMapper.readValue(
+                            jsonOutput, new TypeReference<List<Map<String, Object>>>() {}
+                        );
+                        
+                        return convertMLResultsToRecommendations(mlResults, universities);
+                    } catch (Exception parseException) {
+                        logger.error("Failed to parse ML output: {}", parseException.getMessage());
+                        return new ArrayList<>();
+                    }
                 }
             } else {
                 logger.error("ML script failed with exit code: {}", exitCode);
-                // Read error stream
-                BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                StringBuilder errorOutput = new StringBuilder();
-                while ((line = errorReader.readLine()) != null) {
-                    errorOutput.append(line).append("\n");
+                if (errorOutput.length() > 0) {
+                    logger.error("ML error: {}", errorOutput.toString());
                 }
-                logger.error("ML script error output: {}", errorOutput.toString());
             }
             
+            return new ArrayList<>();
+            
         } catch (Exception e) {
-            logger.error("Failed to execute ML predictions: {}", e.getMessage(), e);
+            logger.error("ML execution failed: {}", e.getMessage());
+            return new ArrayList<>();
         }
-        
-        return new ArrayList<>();
     }
     
     private Map<String, Object> createUserProfileForML(User user) {
         Map<String, Object> profile = new HashMap<>();
         
-        // Basic info
+        // Basic info - use actual user CGPA
         profile.put("CGPA", user.getCgpa() != null ? user.getCgpa().doubleValue() : 3.5);
         
-        // Default test scores (you might want to get these from user_scores table)
-        profile.put("GRE", 320); // Default, should be fetched from user_scores
-        profile.put("TOEFL", 100); // Default, should be fetched from user_scores
-        profile.put("IELTS", 0); // Default
+        // Fetch actual test scores from user_scores table
+        List<UserScore> userScores = userScoreRepository.findByUserId(user.getUserId());
+        Map<String, String> scoresMap = new HashMap<>();
+        for (UserScore score : userScores) {
+            scoresMap.put(score.getTestName().toUpperCase(), score.getScore());
+        }
         
-        // Experience and research
-        profile.put("Paper", 0); // Default, should be from user profile
-        profile.put("Work_Experience", "No"); // Default, should be from user profile
-        profile.put("Gap_year", 0); // Default
+        // Parse test scores with proper defaults
+        profile.put("GRE", parseScore(scoresMap.get("GRE"), 320)); // Default GRE score
+        profile.put("TOEFL", parseScore(scoresMap.get("TOEFL"), 100)); // Default TOEFL score
+        profile.put("IELTS", parseScore(scoresMap.get("IELTS"), 0)); // Default IELTS score (0 if not taken)
         
-        // You can add more fields based on your ML model requirements
-        logger.info("Created ML user profile: {}", profile);
+        // Research experience based on user's research interests
+        int researchInterestCount = user.getResearchInterests() != null ? user.getResearchInterests().size() : 0;
+        profile.put("Paper", Math.min(researchInterestCount, 3)); // Estimate papers based on research interests
+        
+        // Work experience estimation (could be enhanced with actual work experience field)
+        profile.put("Work_Experience", researchInterestCount > 2 ? "Yes" : "No");
+        
+        // Gap year calculation based on apply year
+        int currentYear = java.time.Year.now().getValue();
+        int targetApplyYear = user.getApplyYear() != null ? user.getApplyYear() : currentYear + 1;
+        profile.put("Gap_year", Math.max(0, targetApplyYear - currentYear - 1));
+        
+        // Add target countries as additional context (for ML model enhancement)
+        if (user.getTargetCountries() != null && !user.getTargetCountries().isEmpty()) {
+            profile.put("Target_Countries", user.getTargetCountries().stream()
+                .map(country -> country.getName())
+                .collect(java.util.stream.Collectors.joining(",")));
+        } else {
+            profile.put("Target_Countries", "USA"); // Default
+        }
+        
+        // Add target majors as additional context
+        if (user.getTargetMajors() != null && !user.getTargetMajors().isEmpty()) {
+            profile.put("Target_Majors", user.getTargetMajors().stream()
+                .map(major -> major.getName())
+                .collect(java.util.stream.Collectors.joining(",")));
+        } else {
+            profile.put("Target_Majors", "Computer Science"); // Default
+        }
+        
+        // Add research interests as additional context
+        if (user.getResearchInterests() != null && !user.getResearchInterests().isEmpty()) {
+            profile.put("Research_Interests", user.getResearchInterests().stream()
+                .map(interest -> interest.getName())
+                .collect(java.util.stream.Collectors.joining(",")));
+        } else {
+            profile.put("Research_Interests", "Machine Learning"); // Default
+        }
+        
+        logger.info("Created ML user profile for user: {}", user.getEmail());
         return profile;
+    }
+    
+    /**
+     * Helper method to parse score strings to double values
+     */
+    private double parseScore(String scoreStr, double defaultValue) {
+        if (scoreStr == null || scoreStr.trim().isEmpty()) {
+            return defaultValue;
+        }
+        try {
+            return Double.parseDouble(scoreStr.trim());
+        } catch (NumberFormatException e) {
+            logger.warn("Failed to parse score '{}', using default value {}", scoreStr, defaultValue);
+            return defaultValue;
+        }
     }
     
     private List<UniversityRecommendationDto> convertMLResultsToRecommendations(
@@ -272,7 +326,6 @@ public class MLRecommendationService {
         // Sort by ML prediction score (admission probability)
         recommendations.sort((a, b) -> Double.compare(b.getMatchScore(), a.getMatchScore()));
         
-        logger.info("Converted {} ML results to recommendations", recommendations.size());
         return recommendations;
     }
     
