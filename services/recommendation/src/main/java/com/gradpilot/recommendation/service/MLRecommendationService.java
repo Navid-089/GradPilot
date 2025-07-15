@@ -228,7 +228,7 @@ public class MLRecommendationService {
         for (UserScore score : userScores) {
             scoresMap.put(score.getTestName().toUpperCase(), score.getScore());
         }
-        
+        // 
         // Parse test scores with proper defaults
         profile.put("GRE", parseScore(scoresMap.get("GRE"), 320)); // Default GRE score
         profile.put("TOEFL", parseScore(scoresMap.get("TOEFL"), 100)); // Default TOEFL score
