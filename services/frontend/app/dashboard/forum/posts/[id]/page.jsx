@@ -263,11 +263,11 @@ export default function PostPage() {
                 <Clock className="w-3 h-3" />
                 {formatDate(post.createdAt)}
               </div>
-              {post.updatedAt !== post.createdAt && (
+              {/* {post.updatedAt !== post.createdAt && (
                 <span className="text-xs">
                   (edited {formatDate(post.updatedAt)})
                 </span>
-              )}
+              )} */}
             </div>
           </div>
         </CardHeader>
