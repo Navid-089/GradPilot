@@ -3,18 +3,18 @@ FROM eclipse-temurin:17-jdk AS builder
 
 WORKDIR /app
 COPY . .
+# Fix line endings for Windows-created files
+RUN sed -i 's/\r$//' mvnw
 RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
-# Use a base image with both Java and Python
-FROM openjdk:17-slim
+# Use Amazon Corretto Java 17 base image
+FROM amazoncorretto:17
 
 # Install Python and pip
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    python3-venv \
-    && rm -rf /var/lib/apt/lists/*
+RUN yum update -y && \
+    yum install -y python3 python3-pip && \
+    yum clean all
 
 WORKDIR /app
 

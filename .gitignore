@@ -36,6 +36,10 @@ Thumbs.db
 
 # Docker
 **/frontend@0.1.0
+docker-compose.yml
+
+# Documentation
+commands.md
 
 # Misc
 *.local
