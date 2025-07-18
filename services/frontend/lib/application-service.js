@@ -1,15 +1,15 @@
 const API_BASE_URL = "http://localhost:8083";
 
-export const trackerService = {
-  // Save a task (university, professor, or scholarship)
-  async saveTask(type, taskId) {
+export const applicationService = {
+  // Apply to a scholarship
+  async applyToScholarship(scholarshipId) {
     try {
       const token = localStorage.getItem('token');
-      console.log("=== TRACKER SERVICE DEBUG ===");
+      console.log("=== APPLICATION SERVICE - APPLY ===");
       console.log("TOKEN:", token);
       console.log('Token present:', token ? 'YES' : 'NO');
       console.log('API URL:', API_BASE_URL);
-      console.log('Type:', type, 'TaskId:', taskId);
+      console.log('ScholarshipId:', scholarshipId);
       
       if (!token) {
         console.error('No authentication token found');
@@ -17,12 +17,11 @@ export const trackerService = {
       }
 
       const requestBody = {
-        type: type,
-        taskId: taskId
+        scholarshipId: scholarshipId
       };
       console.log('Request body:', requestBody);
 
-      const url = `${API_BASE_URL}/api/recommendations/tracker/save`;
+      const url = `${API_BASE_URL}/api/recommendations/applications/apply`;
       console.log('Request URL:', url);
 
       const response = await fetch(url, {
@@ -36,7 +35,6 @@ export const trackerService = {
 
       console.log('Response status:', response.status);
       console.log('Response ok:', response.ok);
-      console.log('Response headers:', response.headers);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -48,29 +46,29 @@ export const trackerService = {
           errorData = { error: errorText };
         }
         console.error('Error data:', errorData);
-        throw new Error(errorData.error || 'Failed to save task');
+        throw new Error(errorData.error || 'Failed to apply to scholarship');
       }
 
       const data = await response.json();
       console.log('Success data:', data);
       return data;
     } catch (error) {
-      console.error('=== TRACKER SERVICE ERROR ===');
-      console.error('Error saving task:', error);
+      console.error('=== APPLICATION SERVICE ERROR ===');
+      console.error('Error applying to scholarship:', error);
       console.error('Error stack:', error.stack);
       throw error;
     }
   },
 
-  // Get all tasks for the current user
-  async getUserTasks() {
+  // Get all user applications
+  async getUserApplications() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/recommendations/tracker/tasks`, {
+      const response = await fetch(`${API_BASE_URL}/api/recommendations/applications`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -78,104 +76,73 @@ export const trackerService = {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch tasks');
+        throw new Error('Failed to fetch applications');
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      console.error('Error fetching applications:', error);
       throw error;
     }
   },
 
-  // Get tasks by type (university, professor, or scholarship)
-  async getUserTasksByType(type) {
+  // Remove an application
+  async removeApplication(scholarshipId) {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No authentication token found');
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/recommendations/tracker/tasks/${type}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch tasks');
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching tasks by type:', error);
-      throw error;
-    }
-  },
-
-  // Remove a task
-  async removeTask(type, taskId) {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const response = await fetch(`${API_BASE_URL}/api/recommendations/tracker/remove`, {
+      const response = await fetch(`${API_BASE_URL}/api/recommendations/applications/remove`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          type: type,
-          taskId: taskId
+          scholarshipId: scholarshipId
         })
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to remove task');
+        throw new Error(errorData.error || 'Failed to remove application');
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('Error removing task:', error);
+      console.error('Error removing application:', error);
       throw error;
     }
   },
 
-  // Check if an item is saved
-  async isItemSaved(type, taskId) {
+  // Check if user has applied to a scholarship
+  async hasUserApplied(scholarshipId) {
     try {
-      const tasks = await this.getUserTasksByType(type);
-      console.log('Tasks fetched for type:', type, tasks);
-      
-      return tasks.some(task => {
-        // Get the appropriate ID based on task type
-        let savedTaskId;
-        switch (type) {
-          case 'university':
-            savedTaskId = task.universityId;
-            break;
-          case 'professor':
-            savedTaskId = task.professorId;
-            break;
-          case 'scholarship':
-            savedTaskId = task.scholarshipId;
-            break;
-          default:
-            savedTaskId = task.taskId;
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/recommendations/applications/check/${scholarshipId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-        return savedTaskId && savedTaskId.toString() === taskId.toString();
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to check application status');
+      }
+
+      const data = await response.json();
+      return data.hasApplied;
     } catch (error) {
-      console.error('Error checking if item is saved:', error);
+      console.error('Error checking application status:', error);
       return false;
     }
   }
-}; 
+};

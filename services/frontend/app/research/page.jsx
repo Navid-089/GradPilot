@@ -14,14 +14,19 @@ import { Label } from "@/components/ui/label"
 import { Users, Search, School, Mail, ExternalLink, BookOpen, Star, GraduationCap } from "lucide-react"
 import { getProfessorSuggestions, getProfessorsByResearchInterests } from "@/lib/professor-service"
 import { getUserResearchInterests } from "@/lib/user-research-service"
+import { trackerService } from "@/lib/tracker-service"
+import { useAuth } from "@/lib/auth-context"
 
 export default function ResearchPage() {
+  const { user } = useAuth()
   const [professors, setProfessors] = useState([])
   const [filteredProfessors, setFilteredProfessors] = useState([])
+  const [savedProfessors, setSavedProfessors] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [availableResearchAreas, setAvailableResearchAreas] = useState([])
   const [userResearchInterests, setUserResearchInterests] = useState([])
+  const [activeTab, setActiveTab] = useState("all")
 
   const [filters, setFilters] = useState({
     universities: [],
@@ -71,6 +76,11 @@ export default function ResearchPage() {
           )
         )
         setFilteredProfessors(initialFiltered)
+        
+        // Load saved professors
+        if (user) {
+          await loadSavedProfessors(data)
+        }
       } catch (error) {
         console.error("Error fetching professor data:", error)
         // Fallback: show all professors if filtering fails
@@ -81,11 +91,69 @@ export default function ResearchPage() {
     }
 
     fetchData()
-  }, [])
+  }, [user])
+
+  // Load saved professors from backend
+  const loadSavedProfessors = async (allProfessors = professors) => {
+    try {
+      const savedTasks = await trackerService.getUserTasksByType('professor')
+      const savedProfessorIds = savedTasks.map(task => task.professorId)
+      const saved = allProfessors.filter(prof => savedProfessorIds.includes(prof.id))
+      setSavedProfessors(saved)
+    } catch (error) {
+      console.error("Error loading saved professors:", error)
+    }
+  }
+
+  // Save a professor
+  const handleSaveProfessor = async (professorId) => {
+    try {
+      await trackerService.saveTask('professor', professorId)
+      await loadSavedProfessors()
+      
+      // Remove from filtered professors if in "all" tab
+      if (activeTab === "all") {
+        setFilteredProfessors(prev => prev.filter(prof => prof.id !== professorId))
+      }
+    } catch (error) {
+      console.error("Error saving professor:", error)
+      alert("Failed to save professor")
+    }
+  }
+
+  // Unsave a professor
+  const handleUnsaveProfessor = async (professorId) => {
+    try {
+      await trackerService.removeTask('professor', professorId)
+      setSavedProfessors(prev => prev.filter(prof => prof.id !== professorId))
+      
+      // Add back to all professors if in "all" tab
+      if (activeTab === "all") {
+        const professorToAdd = professors.find(prof => prof.id === professorId)
+        if (professorToAdd) {
+          setFilteredProfessors(prev => [...prev, professorToAdd])
+        }
+      }
+    } catch (error) {
+      console.error("Error unsaving professor:", error)
+      alert("Failed to unsave professor")
+    }
+  }
+
+  // Check if professor is saved
+  const isProfessorSaved = (professorId) => {
+    return savedProfessors.some(prof => prof.id === professorId)
+  }
 
   useEffect(() => {
     // Apply filters and search
     let result = [...professors]
+
+    // Exclude saved professors from "all" tab
+    if (activeTab === "all") {
+      const savedProfessorIds = savedProfessors.map(prof => prof.id)
+      result = result.filter(prof => !savedProfessorIds.includes(prof.id))
+    }
 
     // Apply search query
     if (searchQuery) {
@@ -94,7 +162,7 @@ export default function ResearchPage() {
         (prof) =>
           prof.name?.toLowerCase().includes(query) ||
           prof.university?.toLowerCase().includes(query) ||
-          (prof.researchAreas && prof.researchAreas.some((area) => area.toLowerCase().includes(query))),
+          (prof.researchAreas && prof.researchAreas.some((area) => area.toLowerCase().includes(query)))
       )
     }
 
@@ -111,7 +179,7 @@ export default function ResearchPage() {
     }
 
     setFilteredProfessors(result)
-  }, [searchQuery, filters, professors])
+  }, [searchQuery, filters, professors, savedProfessors, activeTab])
 
   const handleUniversityChange = (university) => {
     setFilters((prev) => {
@@ -235,13 +303,13 @@ export default function ResearchPage() {
             <div className="md:col-span-3 space-y-6">
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search professors..."
-                    className="pl-10"
+                    className="pr-8"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
+                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
                 </div>
                 <Select defaultValue="relevance">
                   <SelectTrigger className="w-[180px]">
@@ -255,11 +323,11 @@ export default function ResearchPage() {
                 </Select>
               </div>
 
-              <Tabs defaultValue="all">
+              <Tabs defaultValue="all" onValueChange={setActiveTab}>
                 <TabsList>
-                  <TabsTrigger value="all">All Professors</TabsTrigger>
-                  <TabsTrigger value="saved">Saved</TabsTrigger>
-                  <TabsTrigger value="contacted">Contacted</TabsTrigger>
+                  <TabsTrigger value="all">Professors</TabsTrigger>
+                  <TabsTrigger value="saved">Saved ({savedProfessors.length})</TabsTrigger>
+                  
                 </TabsList>
                 <TabsContent value="all" className="space-y-4 mt-4">
                   {isLoading ? (
@@ -267,7 +335,15 @@ export default function ResearchPage() {
                       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                     </div>
                   ) : filteredProfessors.length > 0 ? (
-                    filteredProfessors.map((professor) => <ProfessorCard key={professor.id} professor={professor} />)
+                    filteredProfessors.map((professor) => (
+                      <ProfessorCard 
+                        key={professor.id} 
+                        professor={professor} 
+                        onSave={handleSaveProfessor}
+                        onUnsave={handleUnsaveProfessor}
+                        isSaved={isProfessorSaved(professor.id)}
+                      />
+                    ))
                   ) : (
                     <div className="text-center py-10">
                       <Users className="h-12 w-12 mx-auto text-muted-foreground" />
@@ -277,11 +353,23 @@ export default function ResearchPage() {
                   )}
                 </TabsContent>
                 <TabsContent value="saved" className="space-y-4 mt-4">
-                  <div className="text-center py-10">
-                    <Star className="h-12 w-12 mx-auto text-muted-foreground" />
-                    <h3 className="mt-4 text-lg font-medium">No saved professors</h3>
-                    <p className="text-muted-foreground">Save professors to track them here</p>
-                  </div>
+                  {savedProfessors.length > 0 ? (
+                    savedProfessors.map((professor) => (
+                      <ProfessorCard 
+                        key={professor.id} 
+                        professor={professor} 
+                        onSave={handleSaveProfessor}
+                        onUnsave={handleUnsaveProfessor}
+                        isSaved={true}
+                      />
+                    ))
+                  ) : (
+                    <div className="text-center py-10">
+                      <Star className="h-12 w-12 mx-auto text-muted-foreground" />
+                      <h3 className="mt-4 text-lg font-medium">No saved professors</h3>
+                      <p className="text-muted-foreground">Save professors to track them here</p>
+                    </div>
+                  )}
                 </TabsContent>
                 <TabsContent value="contacted" className="space-y-4 mt-4">
                   <div className="text-center py-10">
@@ -325,7 +413,15 @@ export default function ResearchPage() {
   )
 }
 
-function ProfessorCard({ professor }) {
+function ProfessorCard({ professor, onSave, onUnsave, isSaved }) {
+  const handleSaveToggle = () => {
+    if (isSaved) {
+      onUnsave(professor.id)
+    } else {
+      onSave(professor.id)
+    }
+  }
+
   return (
     <Card>
       <CardContent className="p-6">
@@ -358,33 +454,31 @@ function ProfessorCard({ professor }) {
               </div>
             </div>
 
-<div className="space-y-2">
-  <p className="text-sm font-semibold text-gray-800">Recent Papers</p>
-  <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-    {professor.recentPapers && professor.recentPapers.length > 0 ? (
-      professor.recentPapers.map((paper, index) => (
-        <li key={index}>
-          {paper.url ? (
-            <a
-              href={paper.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 hover:underline"
-            >
-              {paper.title}
-            </a>
-          ) : (
-            <span>{paper.title}</span>
-          )}
-        </li>
-      ))
-    ) : (
-      <li>No recent papers available</li>
-    )}
-  </ul>
-</div>
-
-
+            <div className="space-y-2">
+              <p className="text-sm font-semibold text-gray-800">Recent Papers</p>
+              <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                {professor.recentPapers && professor.recentPapers.length > 0 ? (
+                  professor.recentPapers.map((paper, index) => (
+                    <li key={index}>
+                      {paper.url ? (
+                        <a
+                          href={paper.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          {paper.title}
+                        </a>
+                      ) : (
+                        <span>{paper.title}</span>
+                      )}
+                    </li>
+                  ))
+                ) : (
+                  <li>No recent papers available</li>
+                )}
+              </ul>
+            </div>
 
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" size="sm" asChild>
@@ -409,9 +503,14 @@ function ProfessorCard({ professor }) {
                   </a>
                 </Button>
               )}
-              <Button variant="outline" size="sm">
+              <Button 
+                variant={isSaved ? "default" : "outline"} 
+                size="sm" 
+                onClick={handleSaveToggle}
+                className={isSaved ? "bg-yellow-500 hover:bg-yellow-600 text-white" : ""}
+              >
                 <Star className="mr-2 h-4 w-4" />
-                Save
+                {isSaved ? "Unsave" : "Save"}
               </Button>
             </div>
           </div>

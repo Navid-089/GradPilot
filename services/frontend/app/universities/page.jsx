@@ -14,12 +14,18 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { School, Search, MapPin, Calendar, DollarSign, GraduationCap, Star, BookOpen } from "lucide-react"
 import { getUniversityMatches } from "@/lib/university-service"
+import { trackerService } from "@/lib/tracker-service"
+import { useAuth } from "@/lib/auth-context"
 
 export default function UniversitiesPage() {
+  const { user } = useAuth()
   const [universities, setUniversities] = useState([])
   const [filteredUniversities, setFilteredUniversities] = useState([])
+  const [savedUniversities, setSavedUniversities] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [activeTab, setActiveTab] = useState("all")
+  const [sortBy, setSortBy] = useState("match")
 
   const countries = [
     "United States",
@@ -47,6 +53,11 @@ export default function UniversitiesPage() {
         const data = await getUniversityMatches()
         setUniversities(data)
         setFilteredUniversities(data)
+        
+        // Load saved universities
+        if (user) {
+          await loadSavedUniversities(data)
+        }
       } catch (error) {
         console.error("Error fetching university data:", error)
       } finally {
@@ -54,14 +65,73 @@ export default function UniversitiesPage() {
       }
     }
     fetchData()
-  }, [])
+  }, [user])
+
+  // Load saved universities from backend
+  const loadSavedUniversities = async (allUniversities = universities) => {
+    try {
+      const savedTasks = await trackerService.getUserTasksByType('university')
+      const savedUniversityIds = savedTasks.map(task => task.universityId)
+      const saved = allUniversities.filter(uni => savedUniversityIds.includes(uni.id))
+      setSavedUniversities(saved)
+    } catch (error) {
+      console.error("Error loading saved universities:", error)
+    }
+  }
+
+  // Save a university
+  const handleSaveUniversity = async (universityId) => {
+    try {
+      await trackerService.saveTask('university', universityId)
+      await loadSavedUniversities()
+      
+      // Remove from filtered universities if in "all" tab
+      if (activeTab === "all") {
+        setFilteredUniversities(prev => prev.filter(uni => uni.id !== universityId))
+      }
+    } catch (error) {
+      console.error("Error saving university:", error)
+      alert("Failed to save university")
+    }
+  }
+
+  // Unsave a university
+  const handleUnsaveUniversity = async (universityId) => {
+    try {
+      await trackerService.removeTask('university', universityId)
+      setSavedUniversities(prev => prev.filter(uni => uni.id !== universityId))
+      
+      // Add back to all universities if in "all" tab
+      if (activeTab === "all") {
+        const universityToAdd = universities.find(uni => uni.id === universityId)
+        if (universityToAdd) {
+          setFilteredUniversities(prev => [...prev, universityToAdd])
+        }
+      }
+    } catch (error) {
+      console.error("Error unsaving university:", error)
+      alert("Failed to unsave university")
+    }
+  }
+
+  // Check if university is saved
+  const isUniversitySaved = (universityId) => {
+    return savedUniversities.some(uni => uni.id === universityId)
+  }
 
   useEffect(() => {
     let result = [...universities]
+    
+    // Exclude saved universities from "all" tab
+    if (activeTab === "all") {
+      const savedUniversityIds = savedUniversities.map(uni => uni.id)
+      result = result.filter(uni => !savedUniversityIds.includes(uni.id))
+    }
+    
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      result = result.filter(
-        (uni) => uni.name.toLowerCase().includes(query) || uni.address.toLowerCase().includes(query),
+      result = result.filter((uni) => 
+        uni.name.toLowerCase().includes(query)
       )
     }
     if (filters.countries.length > 0) {
@@ -69,8 +139,27 @@ export default function UniversitiesPage() {
     }
     result = result.filter((uni) => uni.matchScore >= filters.minMatchScore)
     result = result.filter((uni) => uni.tuitionFees <= filters.maxTuition)
+    
+    // Apply sorting
+    switch (sortBy) {
+      case "match":
+        result.sort((a, b) => b.matchScore - a.matchScore)
+        break
+      case "ranking":
+        result.sort((a, b) => a.ranking - b.ranking)
+        break
+      case "deadline":
+        result.sort((a, b) => new Date(a.applicationDeadline) - new Date(b.applicationDeadline))
+        break
+      case "tuition":
+        result.sort((a, b) => (a.tuitionFees || 0) - (b.tuitionFees || 0))
+        break
+      default:
+        break
+    }
+    
     setFilteredUniversities(result)
-  }, [searchQuery, filters, universities])
+  }, [searchQuery, filters, universities, savedUniversities, activeTab, sortBy])
 
   const handleCountryChange = (country) => {
     setFilters((prev) => {
@@ -163,18 +252,22 @@ export default function UniversitiesPage() {
             </Card>
             {/* University List */}
             <div className="md:col-span-3 space-y-6">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              {/* Search and Sort */}
+              <div className="flex gap-4 items-center">
+                {/* Search Field */}
+                <div className="relative flex-1 max-w-md">
                   <Input
-                    placeholder="Search universities..."
-                    className="pl-10"
+                    placeholder="Search universities by name..."
+                    className="pr-8 h-12 text-base font-medium"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
+                  <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 </div>
-                <Select defaultValue="match">
-                  <SelectTrigger className="w-[180px]">
+                
+                {/* Sort Dropdown */}
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-48 h-12 text-base">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
@@ -185,24 +278,58 @@ export default function UniversitiesPage() {
                   </SelectContent>
                 </Select>
               </div>
-              {/* Only show all universities, no saved/applied tabs */}
-              <div className="space-y-4 mt-4">
-                {isLoading ? (
-                  <div className="flex items-center justify-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                  </div>
-                ) : filteredUniversities.length > 0 ? (
-                  filteredUniversities.map((university) => (
-                    <UniversityCard key={university.id} university={university} />
-                  ))
-                ) : (
-                  <div className="text-center py-10">
-                    <School className="h-12 w-12 mx-auto text-muted-foreground" />
-                    <h3 className="mt-4 text-lg font-medium">No universities found</h3>
-                    <p className="text-muted-foreground">Try adjusting your filters or search query</p>
-                  </div>
-                )}
-              </div>
+              
+              {/* Add tabs for All Universities and Saved */}
+              <Tabs defaultValue="all" onValueChange={setActiveTab}>
+                <TabsList>
+                  <TabsTrigger value="all">All Universities</TabsTrigger>
+                  <TabsTrigger value="saved">Saved ({savedUniversities.length})</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="all" className="space-y-4 mt-4">
+                  {isLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    </div>
+                  ) : filteredUniversities.length > 0 ? (
+                    filteredUniversities.map((university) => (
+                      <UniversityCard 
+                        key={university.id} 
+                        university={university} 
+                        onSave={handleSaveUniversity}
+                        onUnsave={handleUnsaveUniversity}
+                        isSaved={isUniversitySaved(university.id)}
+                      />
+                    ))
+                  ) : (
+                    <div className="text-center py-10">
+                      <School className="h-12 w-12 mx-auto text-muted-foreground" />
+                      <h3 className="mt-4 text-lg font-medium">No universities found</h3>
+                      <p className="text-muted-foreground">Try adjusting your filters or search query</p>
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="saved" className="space-y-4 mt-4">
+                  {savedUniversities.length > 0 ? (
+                    savedUniversities.map((university) => (
+                      <UniversityCard 
+                        key={university.id} 
+                        university={university} 
+                        onSave={handleSaveUniversity}
+                        onUnsave={handleUnsaveUniversity}
+                        isSaved={true}
+                      />
+                    ))
+                  ) : (
+                    <div className="text-center py-10">
+                      <Star className="h-12 w-12 mx-auto text-muted-foreground" />
+                      <h3 className="mt-4 text-lg font-medium">No saved universities</h3>
+                      <p className="text-muted-foreground">Save universities to track them here</p>
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
             </div>
           </div>
         </div>
@@ -236,7 +363,15 @@ export default function UniversitiesPage() {
   )
 }
 
-function UniversityCard({ university }) {
+function UniversityCard({ university, onSave, onUnsave, isSaved }) {
+  const handleSaveToggle = () => {
+    if (isSaved) {
+      onUnsave(university.id)
+    } else {
+      onSave(university.id)
+    }
+  }
+
   return (
     <Card>
       <CardContent className="p-6">
@@ -292,6 +427,15 @@ function UniversityCard({ university }) {
                   <BookOpen className="mr-2 h-4 w-4" />
                   Visit Website
                 </a>
+              </Button>
+              <Button 
+                variant={isSaved ? "default" : "outline"} 
+                size="sm" 
+                onClick={handleSaveToggle}
+                className={isSaved ? "bg-yellow-500 hover:bg-yellow-600 text-white" : ""}
+              >
+                <Star className="mr-2 h-4 w-4" />
+                {isSaved ? "Unsave" : "Save"}
               </Button>
             </div>
           </div>
