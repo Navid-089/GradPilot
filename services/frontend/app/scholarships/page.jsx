@@ -26,6 +26,7 @@ export default function ScholarshipsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("all")
+  const [sortBy, setSortBy] = useState("deadline")
 
   const [filters, setFilters] = useState({
     providers: [],
@@ -223,9 +224,74 @@ export default function ScholarshipsPage() {
       console.log(`After coverage filter: ${result.length} (was ${beforeCount})`)
     }
 
+    // Apply sorting
+    switch (sortBy) {
+      case "deadline":
+        result.sort((a, b) => {
+          const dateA = new Date(a.deadline)
+          const dateB = new Date(b.deadline)
+          return dateA.getTime() - dateB.getTime() // Soonest first
+        })
+        break
+      case "amount":
+        result.sort((a, b) => {
+          // Extract numeric values from amount strings for comparison
+          const getAmountValue = (amount) => {
+            if (!amount || amount === 'Contact for details') return 0
+            
+            const amountLower = amount.toLowerCase()
+            let value = 0
+            
+            // Base tuition values
+            if (amountLower.includes('full tuition')) {
+              value += 50000 // Base value for full tuition
+            } else if (amountLower.includes('partial tuition')) {
+              value += 25000 // Base value for partial tuition
+            } else if (amountLower.includes('tuition')) {
+              value += 30000 // Generic tuition
+            }
+            
+            // Extract specific dollar amounts
+            const dollarMatches = amountLower.match(/\$[\d,]+/g)
+            if (dollarMatches) {
+              dollarMatches.forEach(match => {
+                const numValue = parseInt(match.replace(/[$,]/g, ''))
+                value += numValue
+              })
+            }
+            
+            // Add values for additional benefits
+            if (amountLower.includes('monthly stipend') || amountLower.includes('living allowance')) {
+              value += 15000 // Annual equivalent of monthly stipend
+            }
+            if (amountLower.includes('stipend') && !amountLower.includes('monthly')) {
+              value += 12000 // General stipend
+            }
+            if (amountLower.includes('airfare') || amountLower.includes('travel')) {
+              value += 2000 // Travel allowance
+            }
+            if (amountLower.includes('health insurance') || amountLower.includes('insurance')) {
+              value += 3000 // Health insurance value
+            }
+            if (amountLower.includes('monthly allowance')) {
+              value += 18000 // Annual equivalent
+            }
+            
+            return value
+          }
+          return getAmountValue(b.amount) - getAmountValue(a.amount) // Highest first
+        })
+        break
+      case "title":
+        result.sort((a, b) => a.title.localeCompare(b.title)) // A-Z
+        break
+      default:
+        break
+    }
+
     console.log("Final filtered scholarships:", result.length)
     setFilteredScholarships(result)
-  }, [searchQuery, filters, scholarships, savedScholarships, appliedScholarships, activeTab])
+  }, [searchQuery, filters, scholarships, savedScholarships, appliedScholarships, activeTab, sortBy])
 
   const handleProviderChange = (provider) => {
     setFilters((prev) => {
@@ -340,7 +406,7 @@ export default function ScholarshipsPage() {
                   />
                   <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
                 </div>
-                <Select defaultValue="deadline">
+                <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
@@ -494,7 +560,7 @@ function ScholarshipCard({ scholarship, onSave, onUnsave, onApply, onRemoveAppli
                 <h3 className="text-xl font-bold">{scholarship.title}</h3>
                 <p className="text-muted-foreground">Provider: {scholarship.provider}</p>
               </div>
-              <Badge variant="outline" className="w-fit">
+              <Badge variant="outline" className={`w-fit ${getDeadlineColor(scholarship.deadline)}`}>
                 {getDaysUntilDeadline(scholarship.deadline)} days left
               </Badge>
             </div>
@@ -564,4 +630,19 @@ function getDaysUntilDeadline(deadlineStr) {
   const diffTime = deadline.getTime() - today.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   return diffDays > 0 ? diffDays : 0
+}
+
+function getDeadlineColor(deadlineStr) {
+  const days = getDaysUntilDeadline(deadlineStr)
+  
+  if (days <= 30) {
+    // Within 1 month - red/urgent
+    return "bg-red-100 text-red-800 border-red-200 hover:bg-red-100"
+  } else if (days <= 90) {
+    // 1-3 months - yellow/warning  
+    return "bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-100"
+  } else {
+    // More than 3 months - default/white
+    return "bg-white text-gray-800 border-gray-200 hover:bg-gray-50"
+  }
 }

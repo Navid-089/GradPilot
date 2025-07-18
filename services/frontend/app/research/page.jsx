@@ -27,6 +27,7 @@ export default function ResearchPage() {
   const [availableResearchAreas, setAvailableResearchAreas] = useState([])
   const [userResearchInterests, setUserResearchInterests] = useState([])
   const [activeTab, setActiveTab] = useState("all")
+  const [sortBy, setSortBy] = useState("relevance")
 
   const [filters, setFilters] = useState({
     universities: [],
@@ -178,8 +179,34 @@ export default function ResearchPage() {
       result = result.filter((prof) => prof.researchAreas && prof.researchAreas.some((area) => filters.researchAreas.includes(area)))
     }
 
+    // Apply sorting
+    switch (sortBy) {
+      case "relevance":
+        // Sort by number of matching research areas (if user has research interests)
+        if (userResearchInterests.length > 0) {
+          result.sort((a, b) => {
+            const aMatches = a.researchAreas ? a.researchAreas.filter(area => 
+              userResearchInterests.some(interest => interest.toLowerCase() === area.toLowerCase())
+            ).length : 0
+            const bMatches = b.researchAreas ? b.researchAreas.filter(area => 
+              userResearchInterests.some(interest => interest.toLowerCase() === area.toLowerCase())
+            ).length : 0
+            return bMatches - aMatches // Higher matches first
+          })
+        }
+        break
+      case "name":
+        result.sort((a, b) => a.name?.localeCompare(b.name || "") || 0)
+        break
+      case "university":
+        result.sort((a, b) => a.university?.localeCompare(b.university || "") || 0)
+        break
+      default:
+        break
+    }
+
     setFilteredProfessors(result)
-  }, [searchQuery, filters, professors, savedProfessors, activeTab])
+  }, [searchQuery, filters, professors, savedProfessors, activeTab, sortBy, userResearchInterests])
 
   const handleUniversityChange = (university) => {
     setFilters((prev) => {
@@ -311,7 +338,7 @@ export default function ResearchPage() {
                   />
                   <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
                 </div>
-                <Select defaultValue="relevance">
+                <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>

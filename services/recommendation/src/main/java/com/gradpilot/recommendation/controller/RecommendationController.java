@@ -244,9 +244,10 @@ public class RecommendationController {
             
             // Log scholarship details for debugging
             for (Scholarship scholarship : scholarships) {
-                logger.info("Scholarship: {} - University: {}", 
+                logger.info("Scholarship: {} - University: {} - Deadline: {}", 
                     scholarship.getName(), 
-                    scholarship.getUniversity() != null ? scholarship.getUniversity().getName() : "NULL");
+                    scholarship.getUniversity() != null ? scholarship.getUniversity().getName() : "NULL",
+                    scholarship.getDeadline());
             }
             
             return ResponseEntity.ok(scholarships);

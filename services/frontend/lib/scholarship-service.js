@@ -26,6 +26,11 @@ export async function getScholarships() {
     console.log("=== SCHOLARSHIP SERVICE DEBUG ===")
     console.log("Raw scholarships from backend:", scholarships)
     
+    // Log deadline information specifically
+    scholarships.forEach(scholarship => {
+      console.log(`Scholarship ID ${scholarship.id}: deadline = "${scholarship.deadline}"`)
+    })
+    
     // Transform backend data to match frontend expectations
     const transformedScholarships = scholarships.map(scholarship => {
       // Map provider based on university or default to the scholarship name prefix
@@ -64,17 +69,20 @@ export async function getScholarships() {
         }
       }
       
-      return {
+      const transformedScholarship = {
         id: scholarship.id,
         title: scholarship.name,
         provider: provider,
         universityName: scholarship.university ? scholarship.university.name : null, // Keep university name for display
         amount: scholarship.coverage || 'Contact for details',
-        deadline: '2025-12-31', // Default deadline - you may want to add this field to the backend
+        deadline: scholarship.deadline || '2025-12-31', // Use real deadline from backend
         applyLink: scholarship.applyLink || '#',
         description: scholarship.description || 'No description available',
         eligibility: scholarship.eligibility || 'Contact for eligibility details'
       }
+      
+      console.log(`Transformed scholarship ${scholarship.id}: deadline = "${transformedScholarship.deadline}"`)
+      return transformedScholarship
     })
     
     console.log("Transformed scholarships:", transformedScholarships)
