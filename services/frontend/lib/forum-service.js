@@ -1,5 +1,5 @@
-const API_BASE_URL = "http://localhost:8085";
-// const API_BASE_URL = "http://gradpilot.me:8085"; // Uncomment this for production
+// const API_BASE_URL = "http://localhost:8085";
+const API_BASE_URL = "http://gradpilot.me:8085"; // Uncomment this for production
 
 class ForumService {
   // Get auth token from localStorage

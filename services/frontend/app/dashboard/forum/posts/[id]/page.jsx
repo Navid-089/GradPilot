@@ -468,7 +468,7 @@ export default function PostPage() {
                     </div>
                     {user &&
                       post &&
-                      Number(user.userId) === Number(post.userId) && (
+                      Number(user.userId) === Number(comment.userId) && (
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
