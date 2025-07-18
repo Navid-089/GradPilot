@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
     try {
-        const response = await fetch('http://localhost:8182/api/majors');
+        const response = await fetch('http://login-reg:8082/api/majors');
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
