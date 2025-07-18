@@ -32,6 +32,7 @@ export default function SignupPage() {
     researchInterests: [],
     deadlineYear: ""
   })
+
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
@@ -39,24 +40,16 @@ export default function SignupPage() {
   const [currentInterest, setCurrentInterest] = useState("");
   const [currentMajor, setCurrentMajor] = useState("");
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target
-  //   setFormData((prev) => ({ ...prev, [name]: value }))
-  // }
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
-    
     setFormData(prev => {
       const currentCountries = prev.targetCountries || [];
-      
       if (checked) {
-        // Add country if checked
         return {
           ...prev,
           targetCountries: [...currentCountries, value]
         };
       } else {
-        // Remove country if unchecked
         return {
           ...prev,
           targetCountries: currentCountries.filter(country => country !== value)
@@ -64,15 +57,12 @@ export default function SignupPage() {
       }
     });
   };
-  
-  // Alternative: If you want to integrate with your existing handleChange
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
     if (type === "checkbox" && name === "targetCountries") {
       setFormData(prev => {
         const currentCountries = prev.targetCountries || [];
-        
         if (checked) {
           return {
             ...prev,
@@ -97,72 +87,74 @@ export default function SignupPage() {
     e.preventDefault()
     setError("")
 
-    // Validate GPA/CGPA
+    // === Required fields ===
+    if (!formData.name.trim()) {
+      setError("Full Name is required.")
+      return
+    }
+    if (!formData.email.trim()) {
+      setError("Email is required.")
+      return
+    }
+    if (!formData.password) {
+      setError("Password is required.")
+      return
+    }
+    if (!formData.confirmPassword) {
+      setError("Please confirm your password.")
+      return
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords don't match")
+      return
+    }
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long")
+      return
+    }
+
+    // === Optional fields: Validate only if not empty ===
     if (
-      !formData.gpa ||
-      isNaN(formData.gpa) ||
-      formData.gpa < 0 ||
-      formData.gpa > 4
+      formData.gpa &&
+      (isNaN(formData.gpa) || formData.gpa < 0 || formData.gpa > 4)
     ) {
       setError("Please enter a valid GPA between 0 and 4.0.");
       return;
     }
-    
-    // Validate GRE
+
     if (
-      !formData.testScores.GRE ||
-      isNaN(formData.testScores.GRE) ||
-      formData.testScores.GRE < 260 ||
-      formData.testScores.GRE > 340
+      formData.testScores.GRE &&
+      (isNaN(formData.testScores.GRE) || formData.testScores.GRE < 260 || formData.testScores.GRE > 340)
     ) {
       setError("Please enter a valid GRE score between 260 and 340.");
       return;
     }
 
-    // Validate IELTS
     if (
-      !formData.testScores.IELTS ||
-      isNaN(formData.testScores.IELTS) ||
-      formData.testScores.IELTS < 0 ||
-      formData.testScores.IELTS > 9
+      formData.testScores.IELTS &&
+      (isNaN(formData.testScores.IELTS) || formData.testScores.IELTS < 0 || formData.testScores.IELTS > 9)
     ) {
       setError("Please enter a valid IELTS score between 0 and 9.");
       return;
     }
 
-    // Validate TOEFL
     if (
-      !formData.testScores.TOFEL ||
-      isNaN(formData.testScores.TOFEL) ||
-      formData.testScores.TOFEL < 0 ||
-      formData.testScores.TOFEL > 120
+      formData.testScores.TOFEL &&
+      (isNaN(formData.testScores.TOFEL) || formData.testScores.TOFEL < 0 || formData.testScores.TOFEL > 120)
     ) {
       setError("Please enter a valid TOEFL score between 0 and 120.");
       return;
     }
 
-    // Validate Deadline
     const currentYear = new Date().getFullYear();
     if (
-      !formData.deadlineYear ||
-      isNaN(formData.deadlineYear) ||
-      formData.deadlineYear < currentYear ||
-      formData.deadlineYear > currentYear + 10
+      formData.deadlineYear &&
+      (isNaN(formData.deadlineYear) ||
+        formData.deadlineYear < currentYear ||
+        formData.deadlineYear > currentYear + 10)
     ) {
       setError(`Please enter a valid deadline year between ${currentYear} and ${currentYear + 10}.`);
       return;
-    }
-
-    // Validate passwords match
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords don't match")
-      return
-    }
-
-    // Validate password length
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long")
-      return
     }
 
     setIsLoading(true)
@@ -181,7 +173,6 @@ export default function SignupPage() {
       })
 
       if (result.success) {
-        // Redirect to dashboard or profile setup
         router.push("/dashboard")
       } else {
         setError(result.error || "Failed to create account. Please try again.")
@@ -194,12 +185,8 @@ export default function SignupPage() {
     }
   }
 
-  // Handler for input change
-  const handleInterestInputChange = (e) => {
-    setCurrentInterest(e.target.value);
-  };
-
-  // Handler for key down (Enter)
+  // Handlers for researchInterests & targetMajors
+  const handleInterestInputChange = (e) => setCurrentInterest(e.target.value);
   const handleInterestKeyDown = (e) => {
     if (e.key === "Enter" && currentInterest.trim()) {
       e.preventDefault();
@@ -210,21 +197,13 @@ export default function SignupPage() {
       setCurrentInterest("");
     }
   };
-
-  // Handler to remove a tag
   const handleRemoveInterest = (interest) => {
     setFormData((prev) => ({
       ...prev,
       researchInterests: prev.researchInterests.filter((i) => i !== interest),
     }));
   };
-
-  // Handler for major input change
-  const handleMajorInputChange = (e) => {
-    setCurrentMajor(e.target.value);
-  };
-
-  // Handler for key down (Enter) for major
+  const handleMajorInputChange = (e) => setCurrentMajor(e.target.value);
   const handleMajorKeyDown = (e) => {
     if (e.key === "Enter" && currentMajor.trim()) {
       e.preventDefault();
@@ -235,8 +214,6 @@ export default function SignupPage() {
       setCurrentMajor("");
     }
   };
-
-  // Handler to remove a major
   const handleRemoveMajor = (major) => {
     setFormData((prev) => ({
       ...prev,
@@ -407,53 +384,37 @@ export default function SignupPage() {
                   onChange={handleChange}
                 />
               </div>
-        
-{/* 
-              <div className="space-y-2">
-                <Label htmlFor="targetCountries">Target Countries</Label>
-                <Input
-                  id="targetCountries"
-                  name="targetCountries"
-                  type="select"
-                  options={["USA", "Canada", "UK", "Australia", "New Zealand", "Other"]}
-                
-                  placeholder="Select countries"
-                  value={formData.targetCountries}
-                  onChange={handleChange}
-                />
-              </div> */}
 
-<div className="space-y-2">
-  <Label>Target Countries</Label>
-  <div className="border rounded-md p-3 space-y-2 max-h-48 overflow-y-auto">
-    {countries.map((country) => (
-      <div key={country} className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          id={`country-${country}`}
-          name="targetCountries"
-          value={country}
-          checked={formData.targetCountries?.includes(country) || false}
-          onChange={handleCheckboxChange}
-          className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-        />
-        <label 
-          htmlFor={`country-${country}`} 
-          className="text-sm font-medium cursor-pointer"
-        >
-          {country}
-        </label>
-      </div>
-    ))}
-  </div>
-  
-  {/* Show selected countries */}
-  {formData.targetCountries && formData.targetCountries.length > 0 && (
-    <div className="text-sm text-gray-600">
-      Selected: {formData.targetCountries.join(", ")}
-    </div>
-  )}
-</div>   
+              <div className="space-y-2">
+                <Label>Target Countries</Label>
+                <div className="border rounded-md p-3 space-y-2 max-h-48 overflow-y-auto">
+                  {countries.map((country) => (
+                    <div key={country} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`country-${country}`}
+                        name="targetCountries"
+                        value={country}
+                        checked={formData.targetCountries?.includes(country) || false}
+                        onChange={handleCheckboxChange}
+                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <label 
+                        htmlFor={`country-${country}`} 
+                        className="text-sm font-medium cursor-pointer"
+                      >
+                        {country}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                {/* Show selected countries */}
+                {formData.targetCountries && formData.targetCountries.length > 0 && (
+                  <div className="text-sm text-gray-600">
+                    Selected: {formData.targetCountries.join(", ")}
+                  </div>
+                )}
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="password">Password <span className="text-destructive">*</span></Label>
@@ -480,7 +441,8 @@ export default function SignupPage() {
                   required
                   minLength={6}
                 />
-              </div>            </CardContent>
+              </div>
+            </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
