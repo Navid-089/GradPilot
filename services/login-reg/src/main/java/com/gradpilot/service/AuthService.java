@@ -1,30 +1,50 @@
 package com.gradpilot.service;
 
-import com.gradpilot.dto.LoginRequest;
-import com.gradpilot.dto.LoginResponse;
-import com.gradpilot.dto.RegisterRequest;
-import com.gradpilot.dto.RegisterResponse;
-import com.gradpilot.dto.UpdateProfileResponse;
-import com.gradpilot.dto.UserProfileUpdate;
-import com.gradpilot.model.*;
-import com.gradpilot.repository.*;
-import com.gradpilot.security.JwtTokenProvider;
+import java.time.LocalDateTime;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Map;
+import com.gradpilot.dto.LoginRequest;
+import com.gradpilot.dto.LoginResponse;
+import com.gradpilot.dto.RegisterRequest;
+import com.gradpilot.dto.RegisterResponse;
+import com.gradpilot.dto.UpdateProfileResponse;
+import com.gradpilot.dto.UserProfileUpdate;
+import com.gradpilot.model.User;
+import com.gradpilot.model.UserResearchInterest;
+import com.gradpilot.model.UserScore;
+import com.gradpilot.model.UserTargetCountry;
+import com.gradpilot.model.UserTargetMajor;
+import com.gradpilot.repository.CountryRepository;
+import com.gradpilot.repository.MajorRepository;
+import com.gradpilot.repository.ResearchInterestRepository;
+import com.gradpilot.repository.UserRepository;
+import com.gradpilot.repository.UserResearchInterestRepository;
+import com.gradpilot.repository.UserScoreRepository;
+import com.gradpilot.repository.UserTargetCountryRepository;
+import com.gradpilot.repository.UserTargetMajorRepository;
+import com.gradpilot.security.JwtTokenProvider;
 
 @Service
 public class AuthService {
+
+    @Autowired
+    private UserTargetMajorRepository userTargetMajorRepository;
+
+    @Autowired
+    private UserTargetCountryRepository userTargetCountryRepository;
+
+    @Autowired
+    private UserResearchInterestRepository userResearchInterestRepository;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -81,38 +101,27 @@ public class AuthService {
                 }
             }
 
-            // Save research interests (create if not exist)
+            // Save research interests (IDs)
             if (registerRequest.getResearchInterests() != null) {
-                for (String interestName : registerRequest.getResearchInterests()) {
-                    ResearchInterest interest = researchInterestRepository.findByName(interestName)
-                            .orElseGet(() -> researchInterestRepository.save(new ResearchInterest(interestName)));
-
-                    // Insert into user_research_interests table (you'll need to create this entity
-                    // too)
-                    // For now, we'll skip this step to keep it simple
+                for (Integer interestId : registerRequest.getResearchInterests()) {
+                    UserResearchInterest userResearchInterest = new UserResearchInterest(savedUser.getUserId(), interestId);
+                    userResearchInterestRepository.save(userResearchInterest);
                 }
             }
 
-            // Save target countries (create if not exist)
+            // Save target countries (IDs)
             if (registerRequest.getTargetCountries() != null) {
-                for (String countryName : registerRequest.getTargetCountries()) {
-                    Country country = countryRepository.findByName(countryName)
-                            .orElseGet(() -> countryRepository.save(new Country(countryName)));
-
-                    // Insert into user_target_countries table (you'll need to create this entity
-                    // too)
-                    // For now, we'll skip this step to keep it simple
+                for (Integer countryId : registerRequest.getTargetCountries()) {
+                    UserTargetCountry userTargetCountry = new UserTargetCountry(savedUser.getUserId(), countryId);
+                    userTargetCountryRepository.save(userTargetCountry);
                 }
             }
 
-            // Save target majors (create if not exist)
+            // Save target majors (IDs)
             if (registerRequest.getTargetMajors() != null) {
-                for (String majorName : registerRequest.getTargetMajors()) {
-                    Major major = majorRepository.findByName(majorName)
-                            .orElseGet(() -> majorRepository.save(new Major(majorName)));
-
-                    // Insert into user_target_majors table (you'll need to create this entity too)
-                    // For now, we'll skip this step to keep it simple
+                for (Integer majorId : registerRequest.getTargetMajors()) {
+                    UserTargetMajor userTargetMajor = new UserTargetMajor(savedUser.getUserId(), majorId);
+                    userTargetMajorRepository.save(userTargetMajor);
                 }
             }
 
@@ -204,7 +213,6 @@ public class AuthService {
             // user.getCgpa() != null ? user.getCgpa() : "not specified",
             // user.getApplyYear() != null ? user.getApplyYear() : 2025)
             // : "You are an admissions advisor for US MS/PhD applicants.";
-
             // System.out.println("Custom Prompt: " + customPrompt);
             // String fullPrompt = customPrompt + "\n\nUser: " + req.message();
             // return generateGeminiResponse(fullPrompt);
@@ -231,7 +239,6 @@ public class AuthService {
                 // userScoreRepository.save(userScore);
                 // }
                 // }
-
                 // Save research interests (create if not exist)
                 // if (dto.getResearchInterests() != null) {
                 // for (String interestName : dto.getResearchInterests()) {
@@ -239,44 +246,37 @@ public class AuthService {
                 // researchInterestRepository.findByName(interestName)
                 // .orElseGet(() -> researchInterestRepository.save(new
                 // ResearchInterest(interestName)));
-
                 // // Insert into user_research_interests table (you'll need to create this
                 // entity
                 // // too)
                 // // For now, we'll skip this step to keep it simple
                 // }
                 // }
-
                 // Save target countries (create if not exist)
                 // if (dto.getTargetCountries() != null) {
                 // for (String countryName : dto.getTargetCountries()) {
                 // Country country = countryRepository.findByName(countryName)
                 // .orElseGet(() -> countryRepository.save(new Country(countryName)));
-
                 // // Insert into user_target_countries table (you'll need to create this entity
                 // // too)
                 // // For now, we'll skip this step to keep it simple
                 // }
                 // }
-
                 // Save target majors (create if not exist)
                 // if (dto.getTargetMajors() != null) {
                 // for (String majorName : dto.getTargetMajors()) {
                 // Major major = majorRepository.findByName(majorName)
                 // .orElseGet(() -> majorRepository.save(new Major(majorName)));
-
                 // // Insert into user_target_majors table (you'll need to create this entity
                 // too)
                 // // For now, we'll skip this step to keep it simple
                 // }
                 // }
-
                 // Generate JWT token
                 // UserDetails userDetails = savedUser;
                 // User userDetails = savedUser; // Assuming User implements UserDetails
                 // String token = jwtTokenProvider.generateToken(userDetails);
                 // String token = jwtTokenProvider.generateToken(user);
-
                 // Create user info for response
                 UpdateProfileResponse.UserInfo userInfo = new UpdateProfileResponse.UserInfo(
                         updatedUser.getUserId().toString(),
@@ -300,16 +300,13 @@ public class AuthService {
         // user.setEmail(dto.getEmail());
         // user.setCgpa(dto.getCgpa());
         // user.setApplyYear(dto.getApplyYear());
-
         // User updatedUser = userRepository.save(user);
-
         // UpdateProfileResponse.UserInfo userInfo = new UpdateProfileResponse.UserInfo(
         // updatedUser.getUserId(),
         // updatedUser.getName(),
         // updatedUser.getEmail(),
         // updatedUser.getCgpa(),
         // updatedUser.getApplyYear());
-
         // return new UpdateProfileResponse("Profile updated successfully", userInfo);
     }
 

@@ -1,0 +1,467 @@
+{
+    "info": {
+        "name": "GradPilot Signup API Tests",
+        "description": "Comprehensive test suite for GradPilot user registration",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_postman_id": "gradpilot-signup-tests",
+        "version": "1.0.0"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8182",
+            "type": "string"
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Set base URL if not already set",
+                    "if (!pm.environment.get(\"baseUrl\")) {",
+                    "    pm.environment.set(\"baseUrl\", \"http://localhost:8182\");",
+                    "}",
+                    "",
+                    "// Generate unique identifier for this test run",
+                    "if (!pm.environment.get(\"testRunId\")) {",
+                    "    pm.environment.set(\"testRunId\", Date.now());",
+                    "}"
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Global tests that run after every request",
+                    "pm.test(\"Response time is less than 2000ms\", function () {",
+                    "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                    "});",
+                    "",
+                    "pm.test(\"Response has valid JSON\", function () {",
+                    "    try {",
+                    "        pm.response.json();",
+                    "    } catch (e) {",
+                    "        pm.expect.fail(\"Response is not valid JSON\");",
+                    "    }",
+                    "});",
+                    "",
+                    "// Log response for debugging",
+                    "console.log(\"Response:\", pm.response.json());"
+                ]
+            }
+        }
+    ],
+    "item": [
+        {
+            "name": "✅ 1. Minimal Valid Registration",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securePassword123\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/v1/auth/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "v1", "auth", "register"]
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            "pm.test(\"Status code is 201\", function () {",
+                            "    pm.response.to.have.status(201);",
+                            "});",
+                            "",
+                            "pm.test(\"Response has success message\", function () {",
+                            "    const jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.message).to.equal(\"Registration successful\");",
+                            "});",
+                            "",
+                            "pm.test(\"Response has user info\", function () {",
+                            "    const jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.user).to.have.property('userId');",
+                            "    pm.expect(jsonData.user).to.have.property('name');",
+                            "    pm.expect(jsonData.user).to.have.property('email');",
+                            "});",
+                            "",
+                            "pm.test(\"Response has JWT token\", function () {",
+                            "    const jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.token).to.be.a('string');",
+                            "    pm.expect(jsonData.token.length).to.be.greaterThan(50);",
+                            "});"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "✅ 2. Registration with Selections",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"Simple Test\",\n  \"email\": \"simple.test@example.com\",\n  \"password\": \"password123\",\n  \"targetCountries\": [1],\n  \"targetMajors\": [1],\n  \"researchInterests\": [1]\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/v1/auth/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "v1", "auth", "register"]
+                }
+            }
+        },
+        {
+            "name": "✅ 3. Full Registration with All Fields",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"John Doe Full\",\n  \"email\": \"john.doe.full@example.com\",\n  \"password\": \"securePassword123\",\n  \"gpa\": 3.75,\n  \"targetCountries\": [1, 2, 5],\n  \"targetMajors\": [1, 2, 6],\n  \"researchInterests\": [1, 2, 5, 14],\n  \"deadlineYear\": 2025\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/v1/auth/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "v1", "auth", "register"]
+                }
+            }
+        },
+        {
+            "name": "✅ 4. Registration with Test Scores",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"Test Score User\",\n  \"email\": \"testscore@example.com\",\n  \"password\": \"password123\",\n  \"gpa\": 3.9,\n  \"testScores\": {\n    \"GRE\": \"325\",\n    \"IELTS\": \"8.5\",\n    \"TOEFL\": \"110\"\n  },\n  \"targetCountries\": [1, 5],\n  \"targetMajors\": [1, 2],\n  \"researchInterests\": [1, 7, 14],\n  \"deadlineYear\": 2026\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/v1/auth/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "v1", "auth", "register"]
+                }
+            }
+        },
+        {
+            "name": "🔄 5. Dynamic Email Generation",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            "// Generate unique email to avoid duplicates",
+                            "const timestamp = Date.now();",
+                            "const randomNum = Math.floor(Math.random() * 1000);",
+                            "const uniqueEmail = `testuser${timestamp}${randomNum}@example.com`;",
+                            "pm.environment.set(\"uniqueEmail\", uniqueEmail);",
+                            "console.log(\"Generated unique email:\", uniqueEmail);"
+                        ]
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"Dynamic User\",\n  \"email\": \"{{uniqueEmail}}\",\n  \"password\": \"password123\",\n  \"gpa\": 3.5\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/v1/auth/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "v1", "auth", "register"]
+                }
+            }
+        },
+        {
+            "name": "❌ 6. Invalid Email Format (400)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"Invalid User\",\n  \"email\": \"invalid-email\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/v1/auth/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "v1", "auth", "register"]
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            "pm.test(\"Status code is 400\", function () {",
+                            "    pm.response.to.have.status(400);",
+                            "});",
+                            "",
+                            "pm.test(\"Error message for invalid email\", function () {",
+                            "    const jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.message).to.include(\"Email format is invalid\");",
+                            "});"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "❌ 7. Password Too Short (400)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"Short Pass\",\n  \"email\": \"short@example.com\",\n  \"password\": \"123\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/v1/auth/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "v1", "auth", "register"]
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            "pm.test(\"Status code is 400\", function () {",
+                            "    pm.response.to.have.status(400);",
+                            "});",
+                            "",
+                            "pm.test(\"Error message for short password\", function () {",
+                            "    const jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.message).to.include(\"6 characters\");",
+                            "});"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "❌ 8. Missing Required Fields (400)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"missing@example.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/v1/auth/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "v1", "auth", "register"]
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            "pm.test(\"Status code is 400\", function () {",
+                            "    pm.response.to.have.status(400);",
+                            "});",
+                            "",
+                            "pm.test(\"Error message for missing name\", function () {",
+                            "    const jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.message).to.include(\"Name is required\");",
+                            "});"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "❌ 9. GPA Out of Range (400)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"High GPA\",\n  \"email\": \"highgpa@example.com\",\n  \"password\": \"password123\",\n  \"gpa\": 5.0\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/v1/auth/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "v1", "auth", "register"]
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            "pm.test(\"Status code is 400\", function () {",
+                            "    pm.response.to.have.status(400);",
+                            "});",
+                            "",
+                            "pm.test(\"Error message for high GPA\", function () {",
+                            "    const jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.message).to.include(\"4.0\");",
+                            "});"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "❌ 10. Invalid Year Range (400)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"Future Year\",\n  \"email\": \"future@example.com\",\n  \"password\": \"password123\",\n  \"deadlineYear\": 2040\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/v1/auth/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "v1", "auth", "register"]
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            "pm.test(\"Status code is 400\", function () {",
+                            "    pm.response.to.have.status(400);",
+                            "});",
+                            "",
+                            "pm.test(\"Error message for invalid year\", function () {",
+                            "    const jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.message).to.include(\"future\");",
+                            "});"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "❌ 11. Duplicate Email (400)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"Duplicate User\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/v1/auth/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "v1", "auth", "register"]
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                            "pm.test(\"Status code is 400 for duplicate email\", function () {",
+                            "    pm.response.to.have.status(400);",
+                            "});",
+                            "",
+                            "pm.test(\"Error message for duplicate email\", function () {",
+                            "    const jsonData = pm.response.json();",
+                            "    pm.expect(jsonData.message).to.include(\"Email already exists\");",
+                            "});"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🧪 12. Edge Case - Empty Arrays",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"name\": \"Empty Arrays\",\n  \"email\": \"empty@example.com\",\n  \"password\": \"password123\",\n  \"targetCountries\": [],\n  \"targetMajors\": [],\n  \"researchInterests\": []\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/api/v1/auth/register",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "v1", "auth", "register"]
+                }
+            }
+        }
+    ]
+}

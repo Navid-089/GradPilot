@@ -9,7 +9,7 @@ export async function loginUser(email, password) {
   let response;
 
   try {
-    response = await fetch("http://57.159.24.58:8082/api/v1/auth/login", {
+    response = await fetch("http://localhost:8182/api/v1/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export async function registerUser(userData) {
 
   let response;
   try {
-    response = await fetch("http://57.159.24.58:8082/api/v1/auth/register", {
+    response = await fetch("http://localhost:8182/api/v1/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

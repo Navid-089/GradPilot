@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Select from "react-select"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,12 +11,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { GraduationCap, Loader2 } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 
-const countries = [
-  "United States", "Canada", "United Kingdom", "Australia"
-  // ...add all countries you want
-];
-
 export default function SignupPage() {
+  // Option states
+  const [majorOptions, setMajorOptions] = useState([])
+  const [interestOptions, setInterestOptions] = useState([])
+  const [countryOptions, setCountryOptions] = useState([])
+
+  // Selected values (ID arrays)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,11 +27,11 @@ export default function SignupPage() {
     testScores: {
       GRE: "",
       IELTS: "",
-      TOFEL: ""
+      TOEFL: ""
     },
-    targetCountries: [],
     targetMajors: [],
     researchInterests: [],
+    targetCountries: [],
     deadlineYear: ""
   })
 
@@ -37,57 +39,79 @@ export default function SignupPage() {
   const [error, setError] = useState("")
   const router = useRouter()
   const { register } = useAuth()
-  const [currentInterest, setCurrentInterest] = useState("");
-  const [currentMajor, setCurrentMajor] = useState("");
 
-  const handleCheckboxChange = (e) => {
-    const { value, checked } = e.target;
-    setFormData(prev => {
-      const currentCountries = prev.targetCountries || [];
-      if (checked) {
-        return {
-          ...prev,
-          targetCountries: [...currentCountries, value]
-        };
-      } else {
-        return {
-          ...prev,
-          targetCountries: currentCountries.filter(country => country !== value)
-        };
+  // Fetch options on mount
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        // You can replace with your actual API endpoints
+        const [majorsRes, interestsRes, countriesRes] = await Promise.all([
+          fetch("/api/majors"),
+          fetch("/api/research-interests"),
+          fetch("/api/countries")
+        ])
+        const majors = await majorsRes.json()
+        const interests = await interestsRes.json()
+        const countries = await countriesRes.json()
+
+        setMajorOptions(
+          majors.map(m => ({ value: m.id, label: m.name }))
+        )
+        setInterestOptions(
+          interests.map(i => ({ value: i.id, label: i.name }))
+        )
+        setCountryOptions(
+          countries.map(c => ({ value: c.id, label: c.name }))
+        )
+      } catch (err) {
+        setError("Failed to fetch options from server. Please refresh.")
       }
-    });
-  };
+    }
+    fetchOptions()
+  }, [])
 
+  // Text fields and test scores
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    if (type === "checkbox" && name === "targetCountries") {
-      setFormData(prev => {
-        const currentCountries = prev.targetCountries || [];
-        if (checked) {
-          return {
-            ...prev,
-            targetCountries: [...currentCountries, value]
-          };
-        } else {
-          return {
-            ...prev,
-            targetCountries: currentCountries.filter(country => country !== value)
-          };
-        }
-      });
+    const { name, value } = e.target
+    if (["GRE", "IELTS", "TOEFL"].includes(name)) {
+      setFormData(prev => ({
+        ...prev,
+        testScores: { ...prev.testScores, [name]: value }
+      }))
     } else {
       setFormData(prev => ({
         ...prev,
         [name]: value
-      }));
+      }))
     }
-  };
+  }
 
+  // Multi-select handlers
+  const handleMajorChange = (selected) => {
+    setFormData(prev => ({
+      ...prev,
+      targetMajors: selected ? selected.map(opt => opt.value) : []
+    }))
+  }
+  const handleInterestChange = (selected) => {
+    setFormData(prev => ({
+      ...prev,
+      researchInterests: selected ? selected.map(opt => opt.value) : []
+    }))
+  }
+  const handleCountryChange = (selected) => {
+    setFormData(prev => ({
+      ...prev,
+      targetCountries: selected ? selected.map(opt => opt.value) : []
+    }))
+  }
+
+  // Form submit/validation (as before)
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError("")
 
-    // === Required fields ===
+    // Required
     if (!formData.name.trim()) {
       setError("Full Name is required.")
       return
@@ -113,62 +137,63 @@ export default function SignupPage() {
       return
     }
 
-    // === Optional fields: Validate only if not empty ===
+    // Optional but validate if entered
     if (
       formData.gpa &&
       (isNaN(formData.gpa) || formData.gpa < 0 || formData.gpa > 4)
     ) {
-      setError("Please enter a valid GPA between 0 and 4.0.");
-      return;
+      setError("Please enter a valid GPA between 0 and 4.0.")
+      return
     }
 
     if (
       formData.testScores.GRE &&
       (isNaN(formData.testScores.GRE) || formData.testScores.GRE < 260 || formData.testScores.GRE > 340)
     ) {
-      setError("Please enter a valid GRE score between 260 and 340.");
-      return;
+      setError("Please enter a valid GRE score between 260 and 340.")
+      return
     }
 
     if (
       formData.testScores.IELTS &&
       (isNaN(formData.testScores.IELTS) || formData.testScores.IELTS < 0 || formData.testScores.IELTS > 9)
     ) {
-      setError("Please enter a valid IELTS score between 0 and 9.");
-      return;
+      setError("Please enter a valid IELTS score between 0 and 9.")
+      return
     }
 
     if (
-      formData.testScores.TOFEL &&
-      (isNaN(formData.testScores.TOFEL) || formData.testScores.TOFEL < 0 || formData.testScores.TOFEL > 120)
+      formData.testScores.TOEFL &&
+      (isNaN(formData.testScores.TOEFL) || formData.testScores.TOEFL < 0 || formData.testScores.TOEFL > 120)
     ) {
-      setError("Please enter a valid TOEFL score between 0 and 120.");
-      return;
+      setError("Please enter a valid TOEFL score between 0 and 120.")
+      return
     }
 
-    const currentYear = new Date().getFullYear();
+    const currentYear = new Date().getFullYear()
     if (
       formData.deadlineYear &&
       (isNaN(formData.deadlineYear) ||
         formData.deadlineYear < currentYear ||
         formData.deadlineYear > currentYear + 10)
     ) {
-      setError(`Please enter a valid deadline year between ${currentYear} and ${currentYear + 10}.`);
-      return;
+      setError(`Please enter a valid deadline year between ${currentYear} and ${currentYear + 10}.`)
+      return
     }
 
     setIsLoading(true)
 
     try {
+      // Send selected IDs in arrays
       const result = await register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         gpa: formData.gpa,
         testScores: formData.testScores,
-        targetCountries: formData.targetCountries,
-        targetMajors: formData.targetMajors,
-        researchInterests: formData.researchInterests,
+        targetMajors: formData.targetMajors, // Array of IDs
+        researchInterests: formData.researchInterests, // Array of IDs
+        targetCountries: formData.targetCountries, // Array of IDs
         deadlineYear: formData.deadlineYear
       })
 
@@ -184,42 +209,6 @@ export default function SignupPage() {
       setIsLoading(false)
     }
   }
-
-  // Handlers for researchInterests & targetMajors
-  const handleInterestInputChange = (e) => setCurrentInterest(e.target.value);
-  const handleInterestKeyDown = (e) => {
-    if (e.key === "Enter" && currentInterest.trim()) {
-      e.preventDefault();
-      setFormData((prev) => ({
-        ...prev,
-        researchInterests: [...(prev.researchInterests || []), currentInterest.trim()],
-      }));
-      setCurrentInterest("");
-    }
-  };
-  const handleRemoveInterest = (interest) => {
-    setFormData((prev) => ({
-      ...prev,
-      researchInterests: prev.researchInterests.filter((i) => i !== interest),
-    }));
-  };
-  const handleMajorInputChange = (e) => setCurrentMajor(e.target.value);
-  const handleMajorKeyDown = (e) => {
-    if (e.key === "Enter" && currentMajor.trim()) {
-      e.preventDefault();
-      setFormData((prev) => ({
-        ...prev,
-        targetMajors: [...(prev.targetMajors || []), currentMajor.trim()],
-      }));
-      setCurrentMajor("");
-    }
-  };
-  const handleRemoveMajor = (major) => {
-    setFormData((prev) => ({
-      ...prev,
-      targetMajors: prev.targetMajors.filter((m) => m !== major),
-    }));
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
@@ -283,12 +272,7 @@ export default function SignupPage() {
                     type="number"
                     placeholder="GRE"
                     value={formData.testScores.GRE}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        testScores: { ...prev.testScores, GRE: e.target.value }
-                      }))
-                    }
+                    onChange={handleChange}
                   />
                   <Input
                     id="ielts"
@@ -296,81 +280,51 @@ export default function SignupPage() {
                     type="number"
                     placeholder="IELTS"
                     value={formData.testScores.IELTS}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        testScores: { ...prev.testScores, IELTS: e.target.value }
-                      }))
-                    }
+                    onChange={handleChange}
                   />
                   <Input
-                    id="tofel"
-                    name="TOFEL"
+                    id="toefl"
+                    name="TOEFL"
                     type="number"
-                    placeholder="TOFEL"
-                    value={formData.testScores.TOFEL}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        testScores: { ...prev.testScores, TOFEL: e.target.value }
-                      }))
-                    }
+                    placeholder="TOEFL"
+                    value={formData.testScores.TOEFL}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
 
+              {/* Majors Multi-Select */}
               <div className="space-y-2">
                 <Label htmlFor="targetMajors">Target Majors</Label>
-                <Input
+                <Select
                   id="targetMajors"
-                  name="targetMajors"
-                  type="text"
-                  value={currentMajor}
-                  onChange={handleMajorInputChange}
-                  onKeyDown={handleMajorKeyDown}
-                  placeholder="Type and press Enter to add"
+                  isMulti
+                  options={majorOptions}
+                  onChange={handleMajorChange}
+                  value={majorOptions.filter(opt => formData.targetMajors.includes(opt.value))}
+                  placeholder="Select one or more majors"
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  isClearable={true}
+                  closeMenuOnSelect={false}
                 />
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.targetMajors.map((major, idx) => (
-                    <span key={idx} className="bg-green-100 text-green-800 px-2 py-1 rounded flex items-center">
-                      {major}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveMajor(major)}
-                        className="ml-1 text-red-500 hover:text-red-700"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
               </div>
 
+              {/* Research Interests Multi-Select */}
               <div className="space-y-2">
                 <Label htmlFor="researchInterests">Research Interests</Label>
-                <Input
+                <Select
                   id="researchInterests"
-                  name="researchInterests"
-                  type="text"
-                  value={currentInterest}
-                  onChange={handleInterestInputChange}
-                  onKeyDown={handleInterestKeyDown}
-                  placeholder="Type and press Enter to add"
+                  isMulti
+                  options={interestOptions}
+                  onChange={handleInterestChange}
+                  value={interestOptions.filter(opt => formData.researchInterests.includes(opt.value))}
+                  placeholder="Select one or more interests"
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  isClearable={true}
+                  closeMenuOnSelect={false}
                 />
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.researchInterests.map((interest, idx) => (
-                    <span key={idx} className="bg-blue-100 text-blue-800 px-2 py-1 rounded flex items-center">
-                      {interest}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveInterest(interest)}
-                        className="ml-1 text-red-500 hover:text-red-700"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
               </div>
 
               <div className="space-y-2">
@@ -385,35 +339,21 @@ export default function SignupPage() {
                 />
               </div>
 
+              {/* Countries Multi-Select */}
               <div className="space-y-2">
-                <Label>Target Countries</Label>
-                <div className="border rounded-md p-3 space-y-2 max-h-48 overflow-y-auto">
-                  {countries.map((country) => (
-                    <div key={country} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id={`country-${country}`}
-                        name="targetCountries"
-                        value={country}
-                        checked={formData.targetCountries?.includes(country) || false}
-                        onChange={handleCheckboxChange}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <label 
-                        htmlFor={`country-${country}`} 
-                        className="text-sm font-medium cursor-pointer"
-                      >
-                        {country}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-                {/* Show selected countries */}
-                {formData.targetCountries && formData.targetCountries.length > 0 && (
-                  <div className="text-sm text-gray-600">
-                    Selected: {formData.targetCountries.join(", ")}
-                  </div>
-                )}
+                <Label htmlFor="targetCountries">Target Countries</Label>
+                <Select
+                  id="targetCountries"
+                  isMulti
+                  options={countryOptions}
+                  onChange={handleCountryChange}
+                  value={countryOptions.filter(opt => formData.targetCountries.includes(opt.value))}
+                  placeholder="Select one or more countries"
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  isClearable={true}
+                  closeMenuOnSelect={false}
+                />
               </div>
 
               <div className="space-y-2">

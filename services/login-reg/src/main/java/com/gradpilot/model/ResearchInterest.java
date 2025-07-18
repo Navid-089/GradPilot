@@ -1,6 +1,11 @@
 package com.gradpilot.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "research_interests")
@@ -14,7 +19,8 @@ public class ResearchInterest {
     private String name;
 
     // Constructors
-    public ResearchInterest() {}
+    public ResearchInterest() {
+    }
 
     public ResearchInterest(String name) {
         this.name = name;
