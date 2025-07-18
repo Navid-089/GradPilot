@@ -282,11 +282,26 @@ function ProfessorCard({ professor }) {
             <div className="space-y-2">
               <p className="text-sm font-medium">Recent Papers</p>
               <ul className="space-y-1">
-                {professor.recentPapers.map((paper, index) => (
-                  <li key={index} className="text-sm text-muted-foreground">
-                    • {paper}
-                  </li>
-                ))}
+                {professor.recentPapers && professor.recentPapers.length > 0 ? (
+                  professor.recentPapers.map((paper, index) => (
+                    <li key={index} className="text-sm text-muted-foreground">
+                      • {paper.url ? (
+                        <a 
+                          href={paper.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          {paper.title}
+                        </a>
+                      ) : (
+                        paper.title
+                      )}
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-sm text-muted-foreground">No recent papers available</li>
+                )}
               </ul>
             </div>
 

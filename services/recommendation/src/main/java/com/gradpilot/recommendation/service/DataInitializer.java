@@ -3,11 +3,10 @@ package com.gradpilot.recommendation.service;
 import com.gradpilot.recommendation.model.University;
 import com.gradpilot.recommendation.repository.UniversityRepository;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component
+//@Component
 public class DataInitializer implements CommandLineRunner {
     
     private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);

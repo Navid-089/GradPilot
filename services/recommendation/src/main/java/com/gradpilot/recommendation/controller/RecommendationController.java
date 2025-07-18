@@ -4,6 +4,7 @@ import com.gradpilot.recommendation.dto.RecommendationDto;
 import com.gradpilot.recommendation.dto.UniversityRecommendationDto;
 import com.gradpilot.recommendation.model.User;
 import com.gradpilot.recommendation.model.University;
+import com.gradpilot.recommendation.model.Professor;
 import com.gradpilot.recommendation.repository.UserRepository;
 import com.gradpilot.recommendation.repository.UniversityRepository;
 import com.gradpilot.recommendation.service.RecommendationService;
@@ -41,6 +42,20 @@ public class RecommendationController {
     public ResponseEntity<List<RecommendationDto>> getProfessorRecommendations(Authentication authentication) {
         String email = authentication.getName();
         return ResponseEntity.ok(recommendationService.getProfessorRecommendations(email));
+    }
+
+    // New endpoint for professors filtered by research interests
+    @GetMapping("/professors/research")
+    public ResponseEntity<List<Professor>> getProfessorsByResearchInterests(Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            logger.info("Getting professor recommendations by research interests for email: {}", email);
+            List<Professor> professors = recommendationService.getProfessorRecommendationsByInterests(email);
+            return ResponseEntity.ok(professors);
+        } catch (Exception e) {
+            logger.error("Error in getProfessorsByResearchInterests: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).build();
+        }
     }
 
     // New endpoint for university recommendations
@@ -86,8 +101,16 @@ public class RecommendationController {
     // Get all recommendations (both professors and universities)
     @GetMapping("/all")
     public ResponseEntity<Map<String, Object>> getAllRecommendations(Authentication authentication) {
-        String email = authentication.getName();
-        return ResponseEntity.ok(recommendationService.getAllRecommendations(email));
+        try {
+            String email = authentication.getName();
+            Map<String, Object> allRecommendations = new HashMap<>();
+            allRecommendations.put("professors", recommendationService.getProfessorRecommendationsByInterests(email));
+            allRecommendations.put("universities", recommendationService.getUniversityRecommendations(email));
+            return ResponseEntity.ok(allRecommendations);
+        } catch (Exception e) {
+            logger.error("Error in getAllRecommendations: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).build();
+        }
     }
 
     // Legacy endpoint for backward compatibility
