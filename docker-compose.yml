@@ -164,6 +164,22 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       APP_JWT_SECRET: ${JWT_SECRET}
 
+  forum:
+    image: ananyapromi3/gradpilot-forum:latest
+    container_name: gradpilot-forum
+    ports:
+      - "8085:8085"
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      APP_JWT_SECRET: ${JWT_SECRET}
+      CLOUDINARY_URL: ${CLOUDINARY_URL}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+
   frontend:
     image: ananyapromi3/gradpilot-frontend:latest
     ports:
