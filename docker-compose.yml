@@ -1,156 +1,66 @@
-version: '3.8'
-services:
-  # db:
-  #   image: postgres
-  #   container_name: gradpilot-db
-  #   environment:
-  #     POSTGRES_DB: gradPilot
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
-  #   ports:
-  #     - "5433:5432"
-  #   volumes:
-  #     - pgdata:/var/lib/postgresql/data
-  #     - ./db-init-scripts:/docker-entrypoint-initdb.d
-  chatbot: 
-    build:
-      context: ./services/chatbot
-    container_name: gradpilot-chatbot
-    ports:
-      - "8081:8081"
-    env_file:
-      - .env
-    # depends_on:
-    #   - db
-    environment:
-      SPRING_DATASOURCE_URL: ${DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      GEMINI_API_KEY: ${GEMINI_API_KEY}
-      APP_JWT_SECRET: ${JWT_SECRET}
-  
-  login-reg:
-    build:
-      context: ./services/login-reg
-      dockerfile: Dockerfile
-    container_name: gradpilot-login-reg
-    ports:
-      - "8082:8082"
-    env_file:
-      - .env
-    environment:
-      SPRING_DATASOURCE_URL: ${DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      APP_JWT_SECRET: ${JWT_SECRET}
-
-  recommendation:
-    build:
-      context: ./services/recommendation
-    container_name: gradpilot-recommendation
-    ports:
-      - "8083:8083"
-    env_file:
-      - .env
-    environment:
-      SPRING_DATASOURCE_URL: ${DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      APP_JWT_SECRET: ${JWT_SECRET}
-
-  sop-review-service:
-    build:
-      context: ./services/sop-review-service
-    container_name: gradpilot-sop-review
-    ports:
-      - "8084:8084"
-    env_file:
-      - .env
-    environment:
-      API_BASE_URL: http://gradpilot.me:8084
-      NEXT_PUBLIC_API_URL: http://gradpilot.me:8084
-      SPRING_DATASOURCE_URL: ${DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      APP_JWT_SECRET: ${JWT_SECRET}   
-
-  forum:
-    image: ananyapromi3/gradpilot-forum:latest
-    container_name: gradpilot-forum
-    ports:
-      - "8085:8085"
-    env_file:
-      - .env
-    environment:
-      SPRING_DATASOURCE_URL: ${DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      APP_JWT_SECRET: ${JWT_SECRET}
-      CLOUDINARY_URL: ${CLOUDINARY_URL}
-      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
-      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
-
-  frontend:
-    build: ./services/frontend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - chatbot
-
-volumes:
-  pgdata: 
-
-
-
-
-###################################
 # version: '3.8'
-
 # services:
-#   chatbot:
-#     image: ananyapromi3/gradpilot-chatbot:latest
+#   # db:
+#   #   image: postgres
+#   #   container_name: gradpilot-db
+#   #   environment:
+#   #     POSTGRES_DB: gradPilot
+#   #     POSTGRES_USER: postgres
+#   #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+#   #   ports:
+#   #     - "5433:5432"
+#   #   volumes:
+#   #     - pgdata:/var/lib/postgresql/data
+#   #     - ./db-init-scripts:/docker-entrypoint-initdb.d
+#   chatbot: 
+#     build:
+#       context: ./services/chatbot
 #     container_name: gradpilot-chatbot
 #     ports:
 #       - "8081:8081"
 #     env_file:
 #       - .env
+#     # depends_on:
+#     #   - db
 #     environment:
 #       SPRING_DATASOURCE_URL: ${DB_URL}
 #       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
 #       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
 #       GEMINI_API_KEY: ${GEMINI_API_KEY}
 #       APP_JWT_SECRET: ${JWT_SECRET}
-
+  
 #   login-reg:
-#     image: ananyapromi3/gradpilot-login-reg:latest
+#     build:
+#       context: ./services/login-reg
+#       dockerfile: Dockerfile
 #     container_name: gradpilot-login-reg
 #     ports:
 #       - "8082:8082"
 #     env_file:
 #       - .env
 #     environment:
-#       SPRING_DATASOURCE_URL: ${DB_URL} 
+#       SPRING_DATASOURCE_URL: ${DB_URL}
 #       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
 #       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
 #       APP_JWT_SECRET: ${JWT_SECRET}
 
 #   recommendation:
-#     image: ananyapromi3/gradpilot-recommendation:latest
+#     build:
+#       context: ./services/recommendation
 #     container_name: gradpilot-recommendation
 #     ports:
 #       - "8083:8083"
 #     env_file:
 #       - .env
 #     environment:
-#       API_BASE_URL: http://gradpilot.me:8083
-#       NEXT_PUBLIC_API_URL: http://gradpilot.me:8083
 #       SPRING_DATASOURCE_URL: ${DB_URL}
 #       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
 #       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
 #       APP_JWT_SECRET: ${JWT_SECRET}
 
 #   sop-review-service:
-#     image: ananyapromi3/gradpilot-sop-review:latest
+#     build:
+#       context: ./services/sop-review-service
 #     container_name: gradpilot-sop-review
 #     ports:
 #       - "8084:8084"
@@ -162,11 +72,101 @@ volumes:
 #       SPRING_DATASOURCE_URL: ${DB_URL}
 #       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
 #       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+#       APP_JWT_SECRET: ${JWT_SECRET}   
+
+#   forum:
+#     image: ananyapromi3/gradpilot-forum:latest
+#     container_name: gradpilot-forum
+#     ports:
+#       - "8085:8085"
+#     env_file:
+#       - .env
+#     environment:
+#       SPRING_DATASOURCE_URL: ${DB_URL}
+#       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+#       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
 #       APP_JWT_SECRET: ${JWT_SECRET}
+#       CLOUDINARY_URL: ${CLOUDINARY_URL}
+#       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+#       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
 
 #   frontend:
-#     image: ananyapromi3/gradpilot-frontend:latest
+#     build: ./services/frontend
 #     ports:
-#       - "80:3000"
+#       - "3000:3000"
 #     depends_on:
 #       - chatbot
+
+# volumes:
+#   pgdata: 
+
+
+
+
+###################################
+version: '3.8'
+
+services:
+  chatbot:
+    image: ananyapromi3/gradpilot-chatbot:latest
+    container_name: gradpilot-chatbot
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      APP_JWT_SECRET: ${JWT_SECRET}
+
+  login-reg:
+    image: ananyapromi3/gradpilot-login-reg:latest
+    container_name: gradpilot-login-reg
+    ports:
+      - "8082:8082"
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: ${DB_URL} 
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      APP_JWT_SECRET: ${JWT_SECRET}
+
+  recommendation:
+    image: ananyapromi3/gradpilot-recommendation:latest
+    container_name: gradpilot-recommendation
+    ports:
+      - "8083:8083"
+    env_file:
+      - .env
+    environment:
+      API_BASE_URL: http://gradpilot.me:8083
+      NEXT_PUBLIC_API_URL: http://gradpilot.me:8083
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      APP_JWT_SECRET: ${JWT_SECRET}
+
+  sop-review-service:
+    image: ananyapromi3/gradpilot-sop-review:latest
+    container_name: gradpilot-sop-review
+    ports:
+      - "8084:8084"
+    env_file:
+      - .env
+    environment:
+      API_BASE_URL: http://gradpilot.me:8084
+      NEXT_PUBLIC_API_URL: http://gradpilot.me:8084
+      SPRING_DATASOURCE_URL: ${DB_URL}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      APP_JWT_SECRET: ${JWT_SECRET}
+
+  frontend:
+    image: ananyapromi3/gradpilot-frontend:latest
+    ports:
+      - "80:3000"
+    depends_on:
+      - chatbot
