@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { Users, Search, School, Mail, ExternalLink, BookOpen, Star, GraduationCap } from "lucide-react"
+import { Users, Search, School, Mail, ExternalLink, BookOpen, Star, GraduationCap, ChevronLeft, ChevronRight } from "lucide-react"
 import { getProfessorSuggestions, getProfessorsByResearchInterests } from "@/lib/professor-service"
 import { getUserResearchInterests } from "@/lib/user-research-service"
 import { trackerService } from "@/lib/tracker-service"
@@ -28,6 +28,12 @@ export default function ResearchPage() {
   const [userResearchInterests, setUserResearchInterests] = useState([])
   const [activeTab, setActiveTab] = useState("all")
   const [sortBy, setSortBy] = useState("relevance")
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
+  const pageSize = 6
 
   const [filters, setFilters] = useState({
     universities: [],
@@ -106,9 +112,17 @@ export default function ResearchPage() {
     }
   }
 
-  // Save a professor
+  // Save a professor with blur effect
   const handleSaveProfessor = async (professorId) => {
     try {
+      // Add visual feedback with blur effect
+      const professorElement = document.querySelector(`[data-professor-id="${professorId}"]`)
+      if (professorElement) {
+        professorElement.style.filter = 'blur(2px)'
+        professorElement.style.opacity = '0.7'
+        professorElement.style.transition = 'all 0.3s ease-in-out'
+      }
+
       await trackerService.saveTask('professor', professorId)
       await loadSavedProfessors()
       
@@ -119,12 +133,27 @@ export default function ResearchPage() {
     } catch (error) {
       console.error("Error saving professor:", error)
       alert("Failed to save professor")
+      
+      // Reset visual feedback on error
+      const professorElement = document.querySelector(`[data-professor-id="${professorId}"]`)
+      if (professorElement) {
+        professorElement.style.filter = 'none'
+        professorElement.style.opacity = '1'
+      }
     }
   }
 
-  // Unsave a professor
+  // Unsave a professor with blur effect
   const handleUnsaveProfessor = async (professorId) => {
     try {
+      // Add visual feedback with blur effect
+      const professorElement = document.querySelector(`[data-professor-id="${professorId}"]`)
+      if (professorElement) {
+        professorElement.style.filter = 'blur(2px)'
+        professorElement.style.opacity = '0.7'
+        professorElement.style.transition = 'all 0.3s ease-in-out'
+      }
+
       await trackerService.removeTask('professor', professorId)
       setSavedProfessors(prev => prev.filter(prof => prof.id !== professorId))
       
@@ -138,6 +167,13 @@ export default function ResearchPage() {
     } catch (error) {
       console.error("Error unsaving professor:", error)
       alert("Failed to unsave professor")
+      
+      // Reset visual feedback on error
+      const professorElement = document.querySelector(`[data-professor-id="${professorId}"]`)
+      if (professorElement) {
+        professorElement.style.filter = 'none'
+        professorElement.style.opacity = '1'
+      }
     }
   }
 
@@ -147,7 +183,7 @@ export default function ResearchPage() {
   }
 
   useEffect(() => {
-    // Apply filters and search
+    // Apply filters and search with pagination
     let result = [...professors]
 
     // Exclude saved professors from "all" tab
@@ -205,8 +241,24 @@ export default function ResearchPage() {
         break
     }
 
-    setFilteredProfessors(result)
-  }, [searchQuery, filters, professors, savedProfessors, activeTab, sortBy, userResearchInterests])
+    // Calculate pagination
+    setTotalElements(result.length)
+    setTotalPages(Math.ceil(result.length / pageSize))
+
+    // Apply pagination
+    const startIndex = currentPage * pageSize
+    const endIndex = startIndex + pageSize
+    const paginatedResult = result.slice(startIndex, endIndex)
+
+    setFilteredProfessors(paginatedResult)
+  }, [searchQuery, filters, professors, savedProfessors, activeTab, sortBy, userResearchInterests, currentPage, pageSize])
+
+  // Reset pagination when search or filters change
+  useEffect(() => {
+    if (currentPage !== 0) {
+      setCurrentPage(0)
+    }
+  }, [searchQuery, filters, sortBy])
 
   const handleUniversityChange = (university) => {
     setFilters((prev) => {
@@ -350,6 +402,14 @@ export default function ResearchPage() {
                 </Select>
               </div>
 
+              {/* Page Info */}
+              {!isLoading && totalElements > 0 && (
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>Showing {currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, totalElements)} of {totalElements} professors</span>
+                  <span>Page {currentPage + 1} of {totalPages}</span>
+                </div>
+              )}
+
               <Tabs defaultValue="all" onValueChange={setActiveTab}>
                 <TabsList>
                   <TabsTrigger value="all">Professors</TabsTrigger>
@@ -376,6 +436,68 @@ export default function ResearchPage() {
                       <Users className="h-12 w-12 mx-auto text-muted-foreground" />
                       <h3 className="mt-4 text-lg font-medium">No professors found</h3>
                       <p className="text-muted-foreground">Try adjusting your filters or search query</p>
+                    </div>
+                  )}
+                  
+                  {/* Pagination Controls */}
+                  {!isLoading && totalPages > 1 && (
+                    <div className="flex items-center justify-center space-x-2 mt-8">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCurrentPage(prev => Math.max(0, prev - 1))
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                        disabled={currentPage === 0 || isLoading}
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        Previous
+                      </Button>
+                      
+                      <div className="flex space-x-1">
+                        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                          let page;
+                          if (totalPages <= 5) {
+                            page = i;
+                          } else if (currentPage <= 2) {
+                            page = i;
+                          } else if (currentPage >= totalPages - 3) {
+                            page = totalPages - 5 + i;
+                          } else {
+                            page = currentPage - 2 + i;
+                          }
+                          
+                          return (
+                            <Button
+                              key={page}
+                              variant={currentPage === page ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => {
+                                setCurrentPage(page)
+                                window.scrollTo({ top: 0, behavior: 'smooth' })
+                              }}
+                              className="w-8 h-8 p-0"
+                              disabled={isLoading}
+                            >
+                              {page + 1}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                        disabled={currentPage >= totalPages - 1 || isLoading}
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
                     </div>
                   )}
                 </TabsContent>
@@ -450,7 +572,7 @@ function ProfessorCard({ professor, onSave, onUnsave, isSaved }) {
   }
 
   return (
-    <Card>
+    <Card data-professor-id={professor.id}>
       <CardContent className="p-6">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0 w-16 h-16 rounded-full bg-muted flex items-center justify-center">

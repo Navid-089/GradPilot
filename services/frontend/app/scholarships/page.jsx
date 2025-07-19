@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { Award, Search, Calendar, DollarSign, ExternalLink, Star, Check, GraduationCap } from "lucide-react"
+import { Award, Search, Calendar, DollarSign, ExternalLink, Star, Check, GraduationCap, ChevronLeft, ChevronRight } from "lucide-react"
 import { getScholarships } from "@/lib/scholarship-service"
 import { trackerService } from "@/lib/tracker-service"
 import { applicationService } from "@/lib/application-service"
@@ -27,6 +27,12 @@ export default function ScholarshipsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("all")
   const [sortBy, setSortBy] = useState("deadline")
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
+  const pageSize = 6
 
   const [filters, setFilters] = useState({
     providers: [],
@@ -79,9 +85,17 @@ export default function ScholarshipsPage() {
     }
   }
 
-  // Save a scholarship
+  // Save a scholarship with blur effect
   const handleSaveScholarship = async (scholarshipId) => {
     try {
+      // Add visual feedback with blur effect
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'blur(2px)'
+        scholarshipElement.style.opacity = '0.7'
+        scholarshipElement.style.transition = 'all 0.3s ease-in-out'
+      }
+
       await trackerService.saveTask('scholarship', scholarshipId)
       await loadSavedScholarships()
       
@@ -92,12 +106,27 @@ export default function ScholarshipsPage() {
     } catch (error) {
       console.error("Error saving scholarship:", error)
       alert("Failed to save scholarship")
+      
+      // Reset visual feedback on error
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'none'
+        scholarshipElement.style.opacity = '1'
+      }
     }
   }
 
-  // Unsave a scholarship
+  // Unsave a scholarship with blur effect
   const handleUnsaveScholarship = async (scholarshipId) => {
     try {
+      // Add visual feedback with blur effect
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'blur(2px)'
+        scholarshipElement.style.opacity = '0.7'
+        scholarshipElement.style.transition = 'all 0.3s ease-in-out'
+      }
+
       await trackerService.removeTask('scholarship', scholarshipId)
       setSavedScholarships(prev => prev.filter(scholarship => scholarship.id !== scholarshipId))
       
@@ -111,6 +140,13 @@ export default function ScholarshipsPage() {
     } catch (error) {
       console.error("Error unsaving scholarship:", error)
       alert("Failed to unsave scholarship")
+      
+      // Reset visual feedback on error
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'none'
+        scholarshipElement.style.opacity = '1'
+      }
     }
   }
 
@@ -126,9 +162,17 @@ export default function ScholarshipsPage() {
     }
   }
 
-  // Apply to a scholarship
+  // Apply to a scholarship with blur effect
   const handleApplyToScholarship = async (scholarshipId) => {
     try {
+      // Add visual feedback with blur effect
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'blur(2px)'
+        scholarshipElement.style.opacity = '0.7'
+        scholarshipElement.style.transition = 'all 0.3s ease-in-out'
+      }
+
       await applicationService.applyToScholarship(scholarshipId)
       await loadAppliedScholarships()
       
@@ -139,6 +183,13 @@ export default function ScholarshipsPage() {
     } catch (error) {
       console.error("Error applying to scholarship:", error)
       alert("Failed to apply to scholarship")
+      
+      // Reset visual feedback on error
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'none'
+        scholarshipElement.style.opacity = '1'
+      }
     }
   }
 
@@ -290,8 +341,25 @@ export default function ScholarshipsPage() {
     }
 
     console.log("Final filtered scholarships:", result.length)
-    setFilteredScholarships(result)
-  }, [searchQuery, filters, scholarships, savedScholarships, appliedScholarships, activeTab, sortBy])
+    
+    // Calculate pagination
+    setTotalElements(result.length)
+    setTotalPages(Math.ceil(result.length / pageSize))
+
+    // Apply pagination
+    const startIndex = currentPage * pageSize
+    const endIndex = startIndex + pageSize
+    const paginatedResult = result.slice(startIndex, endIndex)
+
+    setFilteredScholarships(paginatedResult)
+  }, [searchQuery, filters, scholarships, savedScholarships, appliedScholarships, activeTab, sortBy, currentPage, pageSize])
+
+  // Reset pagination when search or filters change
+  useEffect(() => {
+    if (currentPage !== 0) {
+      setCurrentPage(0)
+    }
+  }, [searchQuery, filters, sortBy])
 
   const handleProviderChange = (provider) => {
     setFilters((prev) => {
@@ -418,6 +486,14 @@ export default function ScholarshipsPage() {
                 </Select>
               </div>
 
+              {/* Page Info */}
+              {!isLoading && totalElements > 0 && (
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>Showing {currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, totalElements)} of {totalElements} scholarships</span>
+                  <span>Page {currentPage + 1} of {totalPages}</span>
+                </div>
+              )}
+
               <Tabs defaultValue="all" onValueChange={setActiveTab}>
                 <TabsList>
                   <TabsTrigger value="all">All Scholarships</TabsTrigger>
@@ -447,6 +523,68 @@ export default function ScholarshipsPage() {
                       <Award className="h-12 w-12 mx-auto text-muted-foreground" />
                       <h3 className="mt-4 text-lg font-medium">No scholarships found</h3>
                       <p className="text-muted-foreground">Try adjusting your filters or search query</p>
+                    </div>
+                  )}
+                  
+                  {/* Pagination Controls */}
+                  {!isLoading && totalPages > 1 && activeTab === "all" && (
+                    <div className="flex items-center justify-center space-x-2 mt-8">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCurrentPage(prev => Math.max(0, prev - 1))
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                        disabled={currentPage === 0 || isLoading}
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        Previous
+                      </Button>
+                      
+                      <div className="flex space-x-1">
+                        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                          let page;
+                          if (totalPages <= 5) {
+                            page = i;
+                          } else if (currentPage <= 2) {
+                            page = i;
+                          } else if (currentPage >= totalPages - 3) {
+                            page = totalPages - 5 + i;
+                          } else {
+                            page = currentPage - 2 + i;
+                          }
+                          
+                          return (
+                            <Button
+                              key={page}
+                              variant={currentPage === page ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => {
+                                setCurrentPage(page)
+                                window.scrollTo({ top: 0, behavior: 'smooth' })
+                              }}
+                              className="w-8 h-8 p-0"
+                              disabled={isLoading}
+                            >
+                              {page + 1}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                        disabled={currentPage >= totalPages - 1 || isLoading}
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
                     </div>
                   )}
                 </TabsContent>
@@ -547,7 +685,7 @@ function ScholarshipCard({ scholarship, onSave, onUnsave, onApply, onRemoveAppli
   }
 
   return (
-    <Card>
+    <Card data-scholarship-id={scholarship.id}>
       <CardContent className="p-6">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0 w-16 h-16 rounded-full bg-muted flex items-center justify-center">

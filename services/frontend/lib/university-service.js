@@ -69,6 +69,204 @@ export async function getUniversityMatches(userEmail = null) {
   }
 }
 
+// Paginated version of getUniversityMatches with filtering and sorting
+export async function getUniversityMatchesPaginated(page = 0, size = 30, filters = {}, sortBy = 'match', searchQuery = '', userEmail = null) {
+  try {
+    // Get authentication token
+    const token = localStorage.getItem('token')
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    
+    // Use the authenticated user's email if available
+    const email = userEmail || user.email 
+    
+    // Build query parameters
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString()
+    })
+    
+    // Add search query if provided
+    if (searchQuery && searchQuery.trim()) {
+      queryParams.append('search', searchQuery.trim())
+    }
+    
+    // Add filters if provided
+    if (filters.countries && filters.countries.length > 0) {
+      queryParams.append('countries', filters.countries.join(','))
+    }
+    if (filters.minMatchScore !== undefined && filters.minMatchScore > 0) {
+      queryParams.append('minMatchScore', filters.minMatchScore.toString())
+    }
+    if (filters.maxTuition !== undefined && filters.maxTuition < 100000) {
+      queryParams.append('maxTuition', filters.maxTuition.toString())
+    }
+    
+    // Add sorting if provided
+    if (sortBy && sortBy !== 'match') {
+      queryParams.append('sortBy', sortBy)
+    }
+    
+    console.log('Making paginated API call to:', `${API_BASE_URL}/api/recommendations/universities/paginated`)
+    console.log('Page:', page, 'Size:', size, 'Filters:', filters, 'Sort:', sortBy, 'Search:', searchQuery)
+    
+    if (!token) {
+      throw new Error('No authentication token available')
+    }
+    
+    // Call the paginated ML-powered university recommendation API
+    const response = await fetch(`${API_BASE_URL}/api/recommendations/universities/paginated?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+    console.log('Paginated response status:', response.status)
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`Paginated API call failed: ${response.status} - ${response.statusText}`)
+      console.error('Error response:', errorText)
+      throw new Error(`Paginated API call failed: ${response.status} - ${errorText}`)
+    }
+
+    const paginatedData = await response.json()
+    console.log('Received paginated university data:', paginatedData)
+    
+    // Transform the content to match the frontend expected format
+    const transformedContent = paginatedData.content.map((rec, index) => ({
+      id: rec.id || (page * size + index + 1),
+      name: rec.name,
+      address: rec.address,
+      country: rec.country,
+      matchScore: Math.round((rec.matchScore || 0) * 100), // Convert 0-1 score to percentage
+      tuitionFees: rec.tuitionFees,
+      ranking: rec.ranking,
+      description: rec.description,
+      websiteUrl: rec.websiteUrl,
+      applicationDeadline: getApplicationDeadline(rec.name),
+    }))
+    
+    return {
+      content: transformedContent,
+      page: paginatedData.page,
+      size: paginatedData.size,
+      totalElements: paginatedData.totalElements,
+      totalPages: paginatedData.totalPages,
+      first: paginatedData.first,
+      last: paginatedData.last
+    }
+  } catch (error) {
+    console.error('Error fetching paginated university recommendations:', error)
+    
+    // Fallback to regular function and manually paginate with filtering and sorting
+    console.log('Falling back to manual pagination with full dataset')
+    const allUniversities = await getUniversityMatches(userEmail)
+    
+    // Apply client-side filtering
+    let filteredUniversities = allUniversities
+    
+    // Apply search filter
+    if (searchQuery && searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim()
+      filteredUniversities = filteredUniversities.filter(uni => 
+        uni.name.toLowerCase().includes(query) ||
+        uni.address.toLowerCase().includes(query) ||
+        uni.country.toLowerCase().includes(query)
+      )
+    }
+    
+    // Apply country filter
+    if (filters.countries && filters.countries.length > 0) {
+      filteredUniversities = filteredUniversities.filter(uni => 
+        filters.countries.includes(uni.country)
+      )
+    }
+    
+    // Apply match score filter
+    if (filters.minMatchScore !== undefined && filters.minMatchScore > 0) {
+      filteredUniversities = filteredUniversities.filter(uni => 
+        uni.matchScore >= filters.minMatchScore
+      )
+    }
+    
+    // Apply tuition filter
+    if (filters.maxTuition !== undefined && filters.maxTuition < 100000) {
+      filteredUniversities = filteredUniversities.filter(uni => 
+        uni.tuitionFees <= filters.maxTuition
+      )
+    }
+    
+    // Apply sorting
+    if (sortBy) {
+      filteredUniversities.sort((a, b) => {
+        switch (sortBy) {
+          case 'ranking':
+            return a.ranking - b.ranking
+          case 'tuition':
+            return a.tuitionFees - b.tuitionFees
+          case 'deadline':
+            return new Date(a.applicationDeadline) - new Date(b.applicationDeadline)
+          case 'match':
+          default:
+            return b.matchScore - a.matchScore
+        }
+      })
+    }
+    
+    // Apply pagination
+    const startIndex = page * size
+    const endIndex = Math.min(startIndex + size, filteredUniversities.length)
+    const pageContent = filteredUniversities.slice(startIndex, endIndex)
+    
+    return {
+      content: pageContent,
+      page: page,
+      size: size,
+      totalElements: filteredUniversities.length,
+      totalPages: Math.ceil(filteredUniversities.length / size),
+      first: page === 0,
+      last: endIndex >= filteredUniversities.length
+    }
+  }
+}
+
+// Helper function to get application deadline
+function getApplicationDeadline(universityName) {
+  // Generate a reasonable deadline based on university tier/ranking
+  const deadlineMap = {
+    'Massachusetts Institute of Technology': 'Dec 1, 2025',
+    'Stanford University': 'Dec 1, 2025',
+    'Harvard University': 'Dec 1, 2025',
+    'University of California, Berkeley': 'Dec 8, 2025',
+    'University of California, Los Angeles': 'Dec 8, 2025',
+    'Carnegie Mellon University': 'Dec 15, 2025',
+    'University of Michigan': 'Dec 15, 2025',
+    'Georgia Institute of Technology': 'Jan 1, 2026',
+    'University of Illinois at Urbana-Champaign': 'Jan 1, 2026',
+    'University of Texas at Austin': 'Jan 1, 2026',
+    'University of Washington': 'Jan 15, 2026',
+    'Cornell University': 'Dec 15, 2025',
+    'University of Wisconsin-Madison': 'Jan 1, 2026',
+    'University of Maryland': 'Jan 15, 2026',
+    'Purdue University': 'Jan 15, 2026',
+    'University of Pennsylvania': 'Dec 15, 2025',
+    'Columbia University': 'Dec 15, 2025',
+    'Princeton University': 'Dec 1, 2025',
+    'Yale University': 'Dec 1, 2025',
+    'Duke University': 'Dec 1, 2025',
+    'University of Oxford': 'Jan 20, 2026',
+    'University of Cambridge': 'Jan 20, 2026',
+    'Imperial College London': 'Jan 20, 2026',
+    'ETH Zurich': 'Jan 15, 2026',
+    'National University of Singapore': 'Jan 31, 2026',
+    'Technical University of Munich': 'Jan 15, 2026',
+  }
+  
+  return deadlineMap[universityName] || 'Dec 15, 2025'
+}
+
 // Helper function to extract location from university name
 function getLocationFromUniversity(universityName) {
   const locationMap = {

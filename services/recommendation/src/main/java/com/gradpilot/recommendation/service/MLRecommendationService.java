@@ -194,7 +194,9 @@ public class MLRecommendationService {
                         List<Map<String, Object>> mlResults = objectMapper.readValue(
                             jsonOutput, new TypeReference<List<Map<String, Object>>>() {}
                         );
-                        
+                        // print mlResults for debugging
+                        logger.info("ML results: {}", mlResults);
+
                         return convertMLResultsToRecommendations(mlResults, universities);
                     } catch (Exception parseException) {
                         logger.error("Failed to parse ML output: {}", parseException.getMessage());
@@ -299,13 +301,15 @@ public class MLRecommendationService {
         
         // Create a map for quick university lookup by name
         Map<String, University> universityMap = universities.stream()
-            .collect(Collectors.toMap(University::getName, u -> u, (u1, u2) -> u1));
+            .collect(Collectors.toMap(u -> u.getName().toLowerCase().trim(), u -> u, (u1, u2) -> u1));
+
         
         for (Map<String, Object> result : mlResults) {
             String universityName = (String) result.get("University");
             Double admissionProb = (Double) result.get("Admission_Probability");
             
-            University university = universityMap.get(universityName);
+            University university = universityMap.get(universityName.toLowerCase().trim());
+
             if (university != null && admissionProb != null) {
                 UniversityRecommendationDto dto = new UniversityRecommendationDto(
                     university.getId(),

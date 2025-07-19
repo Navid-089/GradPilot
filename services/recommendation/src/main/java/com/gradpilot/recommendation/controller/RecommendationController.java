@@ -79,6 +79,40 @@ public class RecommendationController {
         }
     }
 
+    // New paginated endpoint for university recommendations
+    @GetMapping("/universities/paginated")
+    public ResponseEntity<Map<String, Object>> getUniversityRecommendationsPaginated(
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "30") int size) {
+        try {
+            String email = authentication.getName();
+            List<UniversityRecommendationDto> allRecommendations = recommendationService.getUniversityRecommendations(email);
+            
+            // Calculate pagination
+            int totalElements = allRecommendations.size();
+            int totalPages = (int) Math.ceil((double) totalElements / size);
+            int startIndex = page * size;
+            int endIndex = Math.min(startIndex + size, totalElements);
+            
+            List<UniversityRecommendationDto> pageContent = allRecommendations.subList(startIndex, endIndex);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("content", pageContent);
+            response.put("page", page);
+            response.put("size", size);
+            response.put("totalElements", totalElements);
+            response.put("totalPages", totalPages);
+            response.put("first", page == 0);
+            response.put("last", page >= totalPages - 1);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error in getUniversityRecommendationsPaginated: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).build();
+        }
+    }
+
     // Alternative endpoint for university recommendations with email in request body
     @PostMapping("/universities")
     public ResponseEntity<List<UniversityRecommendationDto>> getUniversityRecommendationsByEmail(@RequestBody Map<String, String> request) {
