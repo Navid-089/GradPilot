@@ -39,6 +39,7 @@ import {
   DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { NotificationMenu } from "@/components/notification/notification-menu";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
@@ -424,16 +425,8 @@ export function MainNav() {
                 </Link>
               </Button> */}
 
-              <Button variant="ghost" size="icon" className="relative" asChild>
-                <Link href="/dashboard/notifications">
-                  <Bell className="h-5 w-5" />
-                  {notifications > 0 && (
-                    <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                      {notifications}
-                    </Badge>
-                  )}
-                </Link>
-              </Button>
+              {/* Notification Dropdown */}
+              <NotificationMenu userId={user?.userId} />
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
