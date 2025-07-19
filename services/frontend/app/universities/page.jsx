@@ -77,6 +77,14 @@ export default function UniversitiesPage() {
         // Store all universities
         setAllUniversities(data)
         
+        // Debug: Log unique countries in the data
+        const uniqueCountries = [...new Set(data.map(uni => uni.country))].sort()
+        console.log('=== COUNTRIES IN DATA ===')
+        console.log('Unique countries found:', uniqueCountries)
+        console.log('Countries in filter list:', countries)
+        console.log('Countries not in data:', countries.filter(c => !uniqueCountries.includes(c)))
+        console.log('Countries in data but not in filter:', uniqueCountries.filter(c => !countries.includes(c)))
+        
         console.log('Fetched all university data:', {
           totalUniversities: data.length
         })
@@ -98,30 +106,60 @@ export default function UniversitiesPage() {
   useEffect(() => {
     if (!allUniversities.length) return
 
+    console.log('=== FILTERING DEBUG START ===')
     console.log('Processing filters, sort, and pagination...', {
       search: debouncedSearchQuery,
       filters,
       sortBy,
-      currentPage
+      currentPage,
+      totalUniversities: allUniversities.length
     })
 
     let result = [...allUniversities]
+    console.log(`Starting with ${result.length} universities`)
 
     // Apply search filter
     if (debouncedSearchQuery && debouncedSearchQuery.trim()) {
       const query = debouncedSearchQuery.toLowerCase().trim()
+      const beforeSearch = result.length
       result = result.filter(uni => 
         uni.name.toLowerCase().includes(query) ||
         uni.address.toLowerCase().includes(query) ||
         uni.country.toLowerCase().includes(query)
       )
+      console.log(`Search filter: ${beforeSearch} -> ${result.length} universities`)
     }
 
-    // Apply country filter
+    // Apply country filter - only apply when some but not all countries are selected
     if (filters.countries && filters.countries.length > 0 && filters.countries.length < countries.length) {
-      result = result.filter(uni => 
-        filters.countries.includes(uni.country)
-      )
+      console.log('Applying country filter. Selected countries:', filters.countries)
+      console.log('Available countries in data:')
+      const uniqueCountriesInResult = [...new Set(result.map(uni => uni.country || 'Unknown'))].sort()
+      console.log('Unique countries in current result:', uniqueCountriesInResult)
+      
+      const beforeFilter = result.length
+      result = result.filter(uni => {
+        // Safeguard against null/undefined country values
+        const uniCountry = uni.country || 'Unknown'
+        const matchesFilter = filters.countries.includes(uniCountry)
+        if (!matchesFilter) {
+          console.log(`University "${uni.name}" with country "${uniCountry}" filtered out`)
+        }
+        return matchesFilter
+      })
+      console.log(`Country filter: ${beforeFilter} -> ${result.length} universities`)
+      
+      // If no universities remain after filtering, there might be a country name mismatch
+      if (result.length === 0 && beforeFilter > 0) {
+        console.warn('⚠️ NO UNIVERSITIES AFTER COUNTRY FILTER - POSSIBLE COUNTRY NAME MISMATCH!')
+        console.warn('Selected countries:', filters.countries)
+        console.warn('Countries in data:', uniqueCountriesInResult)
+      }
+    } else if (filters.countries && filters.countries.length === 0) {
+      console.log('No countries selected - showing no results')
+      result = []
+    } else {
+      console.log('All countries selected or no country filter - showing all results')
     }
 
     // Apply match score filter
@@ -171,11 +209,13 @@ export default function UniversitiesPage() {
     setUniversities(paginatedResult)
     setFilteredUniversities(paginatedResult)
 
+    console.log('=== FINAL RESULTS ===')
     console.log('Processed results:', {
       totalFiltered: result.length,
       currentPageResults: paginatedResult.length,
       totalPages: Math.ceil(result.length / pageSize)
     })
+    console.log('=== FILTERING DEBUG END ===')
   }, [allUniversities, debouncedSearchQuery, filters, sortBy, currentPage, pageSize, activeTab, savedUniversities, countries.length])
 
   // Reset pagination when search or filters change

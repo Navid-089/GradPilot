@@ -1199,4 +1199,130 @@ Johns Hopkins University,3.86,329,110,0,0,CSE,Full-time Job,PhD,1,Full,UIUC,Acce
 Johns Hopkins University,3.96,331,112,0,0,CSE,Internship,PhD,2,Full,KAIST,Accepted
 Johns Hopkins University,3.92,340,112,0,0,ME,Full-time Job,PhD,5,None,BUET,Accepted
 Johns Hopkins University,3.88,329,116,0,0,CSE,Internship,PhD,4,Partial,KAIST,Accepted
+Imperial College London,3.86,329,120,0,1,ECE,Full-time Job,MS,5,None,IIT Delhi,Accepted
+Imperial College London,3.93,338,110,0,0,ECE,Internship,PhD,1,Full,IIT Delhi,Accepted
+Imperial College London,3.88,326,116,0,1,EEE,Internship,PhD,3,Partial,BUET,Accepted
+Imperial College London,3.96,338,111,0,1,ECE,Internship,PhD,5,Partial,IIT Delhi,Accepted
+Imperial College London,3.99,329,114,0,0,CSE,Full-time Job,PhD,1,Full,UIUC,Accepted
+University of Toronto,3.85,336,114,0,0,CSE,No,MS,3,None,KAIST,Accepted
+University of Toronto,3.94,329,115,0,1,CSE,Full-time Job,PhD,4,Partial,KAIST,Accepted
+University of Toronto,3.96,331,120,0,1,ECE,No,PhD,4,Full,KAIST,Accepted
+University of Toronto,3.9,326,113,0,0,ECE,Internship,MS,3,None,NTU,Accepted
+University of Toronto,3.88,334,118,0,1,ECE,Full-time Job,PhD,3,None,KAIST,Accepted
+University of British Columbia,3.88,337,119,0,1,EEE,No,MS,1,Full,Tsinghua,Accepted
+University of British Columbia,3.99,331,116,0,0,CSE,No,MS,1,Full,KAIST,Accepted
+University of British Columbia,3.99,335,118,0,1,ME,No,PhD,3,Partial,Tsinghua,Accepted
+University of British Columbia,3.94,337,118,0,0,ME,Full-time Job,MS,3,None,UIUC,Accepted
+University of British Columbia,3.9,332,111,0,1,EEE,Full-time Job,MS,2,Full,KAIST,Accepted
+McGill University,3.96,340,118,0,0,EEE,Internship,MS,5,Full,KAIST,Accepted
+McGill University,3.88,336,111,0,0,EEE,Full-time Job,MS,1,None,UIUC,Accepted
+McGill University,3.91,338,120,0,0,ECE,Internship,PhD,1,Partial,Tsinghua,Accepted
+McGill University,3.97,333,119,0,1,ECE,Internship,MS,5,None,Tsinghua,Accepted
+McGill University,3.9,334,119,0,0,CSE,No,MS,2,Partial,KAIST,Accepted
+Technical University of Munich,3.89,334,120,0,0,EEE,Internship,PhD,1,None,BUET,Accepted
+Technical University of Munich,3.9,334,118,0,0,EEE,Full-time Job,PhD,5,None,Tsinghua,Accepted
+Technical University of Munich,3.94,340,118,0,1,ME,No,PhD,4,None,KAIST,Accepted
+Technical University of Munich,3.96,331,118,0,0,CSE,No,PhD,1,Full,Tsinghua,Accepted
+Technical University of Munich,3.86,332,118,0,0,CSE,Full-time Job,PhD,5,Full,IIT Delhi,Accepted
+RWTH Aachen University,3.92,337,115,0,1,CSE,Full-time Job,PhD,1,None,KAIST,Accepted
+RWTH Aachen University,3.85,330,115,0,1,CSE,Full-time Job,PhD,2,None,UIUC,Accepted
+RWTH Aachen University,3.95,338,110,0,0,ECE,No,MS,4,Full,KAIST,Accepted
+RWTH Aachen University,3.98,325,117,0,0,ECE,Internship,PhD,2,Full,KAIST,Accepted
+RWTH Aachen University,3.93,338,119,0,1,ME,No,MS,2,Partial,IIT Delhi,Accepted
+Heidelberg University,3.87,335,116,0,1,ECE,No,PhD,4,Partial,BUET,Accepted
+Heidelberg University,3.9,329,112,0,0,ME,No,PhD,5,Full,UIUC,Accepted
+Heidelberg University,3.89,333,110,0,1,EEE,No,PhD,3,None,KAIST,Accepted
+Heidelberg University,3.97,326,110,0,1,EEE,No,MS,4,Partial,UIUC,Accepted
+Heidelberg University,3.93,328,110,0,1,ECE,Full-time Job,MS,3,Partial,NTU,Accepted
+University of Melbourne,3.96,326,120,0,0,ME,Full-time Job,MS,1,Full,UIUC,Accepted
+University of Melbourne,3.87,333,118,0,0,ECE,Full-time Job,PhD,2,Full,KAIST,Accepted
+University of Melbourne,3.92,332,115,0,1,ME,No,PhD,5,None,BUET,Accepted
+University of Melbourne,3.89,336,110,0,1,ME,No,MS,5,None,NTU,Accepted
+University of Melbourne,3.85,327,120,0,1,ECE,Full-time Job,PhD,3,None,NTU,Accepted
+University of Sydney,3.96,331,112,0,0,ECE,Internship,PhD,1,Partial,UIUC,Accepted
+University of Sydney,3.92,340,117,0,1,CSE,Internship,MS,3,Partial,UIUC,Accepted
+University of Sydney,3.86,337,113,0,1,EEE,Full-time Job,MS,1,None,Tsinghua,Accepted
+University of Sydney,3.96,329,120,0,1,EEE,Full-time Job,MS,2,None,KAIST,Accepted
+University of Sydney,3.9,328,110,0,1,CSE,Internship,MS,3,Full,UIUC,Accepted
+Australian National University,3.96,337,116,0,1,ME,Internship,PhD,4,None,IIT Delhi,Accepted
+Australian National University,3.89,325,118,0,1,ECE,Internship,PhD,3,Partial,KAIST,Accepted
+Australian National University,3.92,333,120,0,0,ME,Full-time Job,MS,5,None,IIT Delhi,Accepted
+Australian National University,3.89,330,118,0,0,ECE,Internship,PhD,1,Full,NTU,Accepted
+Australian National University,3.92,335,110,0,0,EEE,Internship,PhD,1,Full,UIUC,Accepted
+National University of Singapore,3.98,336,118,0,1,ME,Full-time Job,MS,1,None,UIUC,Accepted
+National University of Singapore,3.97,337,116,0,1,EEE,Full-time Job,PhD,1,Full,NTU,Accepted
+National University of Singapore,3.87,334,113,0,1,ME,Internship,MS,4,Full,IIT Delhi,Accepted
+National University of Singapore,3.94,330,110,0,0,EEE,No,PhD,1,None,BUET,Accepted
+National University of Singapore,3.94,336,113,0,0,ECE,Internship,MS,4,Partial,UIUC,Accepted
+Nanyang Technological University,3.88,325,120,0,0,ME,No,PhD,5,None,BUET,Accepted
+Nanyang Technological University,3.98,340,119,0,1,EEE,No,PhD,5,Partial,UIUC,Accepted
+Nanyang Technological University,3.88,333,111,0,0,EEE,Full-time Job,MS,3,Full,Tsinghua,Accepted
+Nanyang Technological University,3.98,325,120,0,1,ME,No,PhD,2,Partial,Tsinghua,Accepted
+Nanyang Technological University,3.87,340,112,0,0,CSE,Full-time Job,MS,5,Partial,KAIST,Accepted
+University of Tokyo,3.99,328,110,0,1,ECE,Full-time Job,MS,4,None,IIT Delhi,Accepted
+University of Tokyo,3.9,332,111,0,0,EEE,Internship,MS,3,Full,NTU,Accepted
+University of Tokyo,3.88,334,114,0,1,EEE,No,PhD,2,None,UIUC,Accepted
+University of Tokyo,3.94,336,116,0,0,CSE,Full-time Job,PhD,3,None,IIT Delhi,Accepted
+University of Tokyo,3.94,337,112,0,1,EEE,Internship,MS,1,None,KAIST,Accepted
+Kyoto University,3.99,340,112,0,1,EEE,Internship,PhD,4,Full,Tsinghua,Accepted
+Kyoto University,3.9,329,115,0,1,ME,No,MS,5,Full,IIT Delhi,Accepted
+Kyoto University,3.91,333,113,0,1,CSE,Full-time Job,MS,2,None,BUET,Accepted
+Kyoto University,3.98,338,110,0,0,CSE,Internship,MS,1,Partial,UIUC,Accepted
+Kyoto University,3.95,332,114,0,1,CSE,Full-time Job,PhD,1,Partial,BUET,Accepted
+Osaka University,3.98,325,115,0,0,CSE,No,MS,5,None,NTU,Accepted
+Osaka University,3.95,325,110,0,1,EEE,Internship,PhD,4,Partial,NTU,Accepted
+Osaka University,3.92,335,114,0,1,ME,No,MS,3,None,BUET,Accepted
+Osaka University,4.0,336,114,0,1,ECE,No,MS,1,Full,NTU,Accepted
+Osaka University,3.87,326,118,0,1,CSE,Full-time Job,PhD,4,Full,Tsinghua,Accepted
+Tsinghua University,3.88,339,111,0,0,ME,No,PhD,4,Partial,Tsinghua,Accepted
+Tsinghua University,3.91,334,114,0,0,CSE,Internship,PhD,1,None,KAIST,Accepted
+Tsinghua University,3.94,325,114,0,0,ME,No,PhD,4,Partial,IIT Delhi,Accepted
+Tsinghua University,3.98,336,110,0,0,EEE,Internship,PhD,5,Partial,UIUC,Accepted
+Tsinghua University,3.94,332,110,0,1,ECE,Internship,MS,1,None,NTU,Accepted
+Peking University,3.94,333,119,0,0,CSE,No,MS,4,None,BUET,Accepted
+Peking University,3.98,325,112,0,1,CSE,Internship,PhD,4,Full,BUET,Accepted
+Peking University,3.96,325,111,0,1,EEE,No,MS,4,Partial,IIT Delhi,Accepted
+Peking University,3.88,336,112,0,0,CSE,No,MS,2,None,NTU,Accepted
+Peking University,3.87,333,113,0,1,ECE,No,PhD,3,None,IIT Delhi,Accepted
+Fudan University,3.88,328,115,0,0,ECE,Full-time Job,MS,4,Partial,Tsinghua,Accepted
+Fudan University,3.96,333,117,0,0,CSE,Full-time Job,MS,5,Full,UIUC,Accepted
+Fudan University,3.96,326,113,0,0,CSE,Internship,MS,2,None,BUET,Accepted
+Fudan University,3.89,325,110,0,1,CSE,Internship,PhD,1,None,UIUC,Accepted
+Fudan University,3.88,332,119,0,0,ECE,Internship,PhD,1,Partial,BUET,Accepted
+KAIST,3.91,340,113,0,0,EEE,Internship,MS,5,Partial,NTU,Accepted
+KAIST,3.86,330,120,0,1,EEE,Full-time Job,MS,5,Partial,KAIST,Accepted
+KAIST,3.95,335,114,0,0,EEE,No,PhD,5,Full,IIT Delhi,Accepted
+KAIST,3.99,338,117,0,0,CSE,Internship,MS,3,Partial,Tsinghua,Accepted
+KAIST,3.92,330,112,0,0,CSE,No,PhD,2,Partial,Tsinghua,Accepted
+Seoul National University,3.98,333,114,0,1,ME,Full-time Job,PhD,3,Partial,UIUC,Accepted
+Seoul National University,3.92,339,111,0,1,ME,Internship,MS,4,Partial,NTU,Accepted
+Seoul National University,3.85,340,120,0,1,EEE,No,PhD,4,Full,NTU,Accepted
+Seoul National University,3.92,335,120,0,1,EEE,No,MS,2,Partial,Tsinghua,Accepted
+Seoul National University,3.98,325,117,0,1,EEE,Full-time Job,PhD,1,Partial,NTU,Accepted
+POSTECH,3.98,334,115,0,1,EEE,No,MS,5,Partial,Tsinghua,Accepted
+POSTECH,3.9,333,110,0,1,CSE,Internship,PhD,2,None,KAIST,Accepted
+POSTECH,4.0,337,113,0,0,ME,No,PhD,4,Full,KAIST,Accepted
+POSTECH,3.9,327,119,0,0,ME,Full-time Job,MS,5,Full,NTU,Accepted
+POSTECH,3.91,337,118,0,0,EEE,Internship,MS,1,Partial,Tsinghua,Accepted
+ETH Zurich,3.95,328,116,0,1,ME,No,MS,5,None,KAIST,Accepted
+ETH Zurich,3.87,331,120,0,1,ECE,No,MS,1,Partial,IIT Delhi,Accepted
+ETH Zurich,3.98,338,119,0,0,ME,Internship,PhD,4,Full,UIUC,Accepted
+ETH Zurich,3.98,328,119,0,0,ME,No,PhD,1,Full,Tsinghua,Accepted
+ETH Zurich,3.87,325,119,0,0,ME,Internship,MS,1,None,KAIST,Accepted
+EPFL,3.88,340,111,0,0,EEE,Full-time Job,MS,4,None,Tsinghua,Accepted
+EPFL,3.97,338,117,0,1,EEE,No,MS,2,None,BUET,Accepted
+EPFL,3.94,335,114,0,0,ECE,Internship,PhD,4,Full,UIUC,Accepted
+EPFL,3.88,327,114,0,1,ECE,Full-time Job,PhD,3,Partial,BUET,Accepted
+EPFL,3.85,328,110,0,1,CSE,No,PhD,5,Full,NTU,Accepted
+KU Leuven,3.95,338,110,0,1,ECE,Full-time Job,MS,3,Partial,KAIST,Accepted
+KU Leuven,3.9,327,118,0,1,EEE,Full-time Job,MS,5,None,UIUC,Accepted
+KU Leuven,4.0,325,112,0,0,ME,No,PhD,2,Full,IIT Delhi,Accepted
+KU Leuven,3.97,338,116,0,0,ME,Full-time Job,MS,2,None,IIT Delhi,Accepted
+KU Leuven,3.9,337,120,0,1,EEE,Internship,MS,2,Partial,KAIST,Accepted
+Ghent University,3.86,333,119,0,1,ECE,Full-time Job,PhD,5,Partial,KAIST,Accepted
+Ghent University,4.0,327,116,0,1,ECE,Full-time Job,PhD,5,Full,IIT Delhi,Accepted
+Ghent University,3.88,329,118,0,0,ME,No,PhD,1,Partial,BUET,Accepted
+Ghent University,3.86,338,118,0,1,ME,No,MS,2,Full,IIT Delhi,Accepted
+Ghent University,3.87,329,112,0,0,EEE,Internship,PhD,2,Partial,IIT Delhi,Accepted
+
 

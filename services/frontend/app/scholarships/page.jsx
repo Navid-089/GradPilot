@@ -193,9 +193,17 @@ export default function ScholarshipsPage() {
     }
   }
 
-  // Remove application from a scholarship
+  // Remove application from a scholarship with blur effect
   const handleRemoveApplication = async (scholarshipId) => {
     try {
+      // Add visual feedback with blur effect
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'blur(2px)'
+        scholarshipElement.style.opacity = '0.7'
+        scholarshipElement.style.transition = 'all 0.3s ease-in-out'
+      }
+
       await applicationService.removeApplication(scholarshipId)
       setAppliedScholarships(prev => prev.filter(scholarship => scholarship.id !== scholarshipId))
       
@@ -209,6 +217,13 @@ export default function ScholarshipsPage() {
     } catch (error) {
       console.error("Error removing application:", error)
       alert("Failed to remove application")
+      
+      // Reset visual feedback on error
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'none'
+        scholarshipElement.style.opacity = '1'
+      }
     }
   }
 

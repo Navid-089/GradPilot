@@ -1,6 +1,7 @@
 // Professor service that fetches and filters professors based on research interests
 
-const API_BASE_URL = "http://localhost:8083"; // Updated to match recommendation service port
+// const API_BASE_URL = "http://localhost:8083"; // Updated to match recommendation service port
+const API_BASE_URL = "http://gradpilot.me:8083";
 
 /**
  * Get professors filtered by user's research interests
