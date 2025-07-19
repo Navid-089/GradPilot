@@ -112,7 +112,7 @@ export function MainNav() {
 
   const getAvatarSrc = (user) => {
     if (!user) return "/placeholder.svg";
-    console.log("Gender:", user.gender);
+    // console.log("Gender:", user.gender);
     const gender = user.gender || "common";
     let folder = "common";
     let count = 2;

@@ -62,8 +62,8 @@ export default function ForumPage() {
   }, []);
 
   const getAvatarSrc = (userId, gender) => {
-    console.log("User ID: ", userId);
-    console.log("Page Gender: ", gender);
+    // console.log("User ID: ", userId);
+    // console.log("Page Gender: ", gender);
     if (!userId || !gender) return "/placeholder.svg";
     let folder = "common";
     let count = 2;

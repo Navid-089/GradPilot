@@ -144,7 +144,7 @@ public class ForumService {
 
             // Create notification for post author
             if (!post.getUserId().equals(userId)) {
-                String message = request.getIsLike() ? "Someone liked your post" : "Someone disliked your post";
+                // String message = request.getIsLike() ? "Someone liked your post" : "Someone disliked your post";
                 // createNotification(post.getUserId(), "like", message, postId);
                 String commenterName = userRepository.findById(userId)
                         .map(User::getName)
@@ -178,13 +178,13 @@ public class ForumService {
 
             // Create notification for comment author
             if (!comment.getUserId().equals(userId)) {
-                String message = request.getIsLike() ? "Someone liked your comment" : "Someone disliked your comment";
+                // String message = request.getIsLike() ? "Someone liked your comment" : "Someone disliked your comment";
                 // createNotification(comment.getUserId(), "like", message,
                 // comment.getPost().getId());
                 String commenterName = userRepository.findById(userId)
                         .map(User::getName)
                         .orElse("Someone");
-                createNotification(comment.getUserId(), "comment", commenterName + " commented on your post",
+                createNotification(comment.getUserId(), "comment", commenterName + " liked your comment",
                         comment.getPost().getId());
             }
         }
