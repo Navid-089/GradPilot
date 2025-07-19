@@ -111,9 +111,12 @@ public class ForumService {
         if (!post.getUserId().equals(userId)) {
             // createNotification(post.getUserId(), "comment",
             // "Someone commented on your post", postId);
-            String commenterName = userRepository.findById(userId)
-                    .map(User::getName)
-                    .orElse("Someone");
+            String commenterName = "Someone";
+            if (!comment.getIsAnonymous()) {
+                commenterName = userRepository.findById(userId)
+                        .map(User::getName)
+                        .orElse("Someone");
+            }
             createNotification(post.getUserId(), "comment", commenterName + " commented on your post", postId);
         }
 
@@ -144,11 +147,15 @@ public class ForumService {
 
             // Create notification for post author
             if (!post.getUserId().equals(userId)) {
-                // String message = request.getIsLike() ? "Someone liked your post" : "Someone disliked your post";
+                // String message = request.getIsLike() ? "Someone liked your post" : "Someone
+                // disliked your post";
                 // createNotification(post.getUserId(), "like", message, postId);
-                String commenterName = userRepository.findById(userId)
-                        .map(User::getName)
-                        .orElse("Someone");
+                String commenterName = "Someone";
+                if (!post.getIsAnonymous()) {
+                    commenterName = userRepository.findById(userId)
+                            .map(User::getName)
+                            .orElse("Someone");
+                }
                 createNotification(post.getUserId(), "like", commenterName + " liked your post", postId);
             }
         }
@@ -178,12 +185,16 @@ public class ForumService {
 
             // Create notification for comment author
             if (!comment.getUserId().equals(userId)) {
-                // String message = request.getIsLike() ? "Someone liked your comment" : "Someone disliked your comment";
+                // String message = request.getIsLike() ? "Someone liked your comment" :
+                // "Someone disliked your comment";
                 // createNotification(comment.getUserId(), "like", message,
                 // comment.getPost().getId());
-                String commenterName = userRepository.findById(userId)
-                        .map(User::getName)
-                        .orElse("Someone");
+                String commenterName = "Someone";
+                if (!comment.getIsAnonymous()) {
+                    commenterName = userRepository.findById(userId)
+                            .map(User::getName)
+                            .orElse("Someone");
+                }
                 createNotification(comment.getUserId(), "comment", commenterName + " liked your comment",
                         comment.getPost().getId());
             }
