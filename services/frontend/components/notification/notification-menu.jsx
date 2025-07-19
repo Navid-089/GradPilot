@@ -109,11 +109,14 @@ export function NotificationMenu({ userId }) {
             >
               <Link
                 href={`/dashboard/forum/posts/${n.sourceId}`}
-                className={`flex flex-row items-center gap-2 w-full px-3 py-3 rounded-lg shadow-sm transition-all duration-150 border border-gray-100 mb-2 hover:shadow-md hover:bg-blue-50/60 group ${
-                  !n.isRead
-                    ? "bg-gradient-to-r from-blue-50 to-white border-blue-200"
-                    : "bg-white border-gray-100"
-                }`}
+                className={`flex flex-row items-center gap-2 w-full px-3 py-3 rounded-lg shadow-sm transition-all duration-150 border mb-2 hover:shadow-md group
+                  ${
+                    !n.isRead
+                      ? "bg-gradient-to-r from-blue-50 to-white border-blue-200 dark:from-blue-900 dark:to-gray-900 dark:border-blue-900"
+                      : "bg-white border-gray-100 dark:bg-gray-900 dark:border-gray-800"
+                  }
+                  hover:bg-blue-50/60 dark:hover:bg-blue-900/60
+                `}
                 style={{ textDecoration: "none" }}
                 onClick={(e) => handleNotificationClick(e, n)}
               >
@@ -124,12 +127,14 @@ export function NotificationMenu({ userId }) {
                 <span className="flex-1 flex flex-col min-w-0">
                   <span
                     className={`truncate font-medium text-sm leading-snug ${
-                      !n.isRead ? "text-blue-900" : "text-gray-700"
+                      !n.isRead
+                        ? "text-blue-900 dark:text-blue-200"
+                        : "text-gray-700 dark:text-gray-200"
                     }`}
                   >
                     {n.message}
                   </span>
-                  <span className="text-[11px] text-gray-400 mt-0.5">
+                  <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">
                     {new Date(n.createdAt).toLocaleString()}
                   </span>
                 </span>

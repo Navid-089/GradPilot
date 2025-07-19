@@ -674,7 +674,9 @@ function UniversityCard({ university, onSave, onUnsave, isSaved }) {
                   <span>{university.address}</span>
                 </div>
               </div>
-              <Badge variant="outline" className="bg-green-50 w-fit">
+              <Badge variant="outline" 
+              className="bg-green-50 w-fit dark:bg-green-900"
+              >
                 {university.matchScore}% Match
               </Badge>
             </div>

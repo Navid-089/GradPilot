@@ -41,22 +41,23 @@
     --secondary-900: 180 90% 20%;
     --secondary-950: 180 95% 15%;
 
-    /* Accent color: Purple */
-    --accent: 270 70% 60%;
-    --accent-foreground: 210 40% 98%;
-    --accent-50: 270 100% 97%;
-    --accent-100: 270 95% 94%;
-    --accent-200: 270 90% 88%;
-    --accent-300: 270 85% 80%;
-    --accent-400: 270 80% 70%;
-    --accent-500: 270 70% 60%;
-    --accent-600: 270 65% 50%;
-    --accent-700: 270 70% 40%;
-    --accent-800: 270 75% 30%;
-    --accent-900: 270 80% 25%;
-    --accent-950: 270 85% 20%;
+    /* Accent color: Soft Blue */
+    --accent: 213 94% 68%; /* #60a5fa (tailwind blue-400) */
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent-50: 210 100% 97%; /* #f0f9ff */
+    --accent-100: 210 94% 94%; /* #e0f2fe */
+    --accent-200: 210 94% 86%; /* #bae6fd */
+    --accent-300: 210 90% 76%; /* #7dd3fc */
+    --accent-400: 213 94% 68%; /* #60a5fa */
+    --accent-500: 217 91% 60%; /* #3b82f6 */
+    --accent-600: 221 83% 53%; /* #2563eb */
+    --accent-700: 224 76% 48%; /* #1d4ed8 */
+    --accent-800: 226 71% 40%; /* #1e40af */
+    --accent-900: 228 56% 36%; /* #1e3a8a */
+    --accent-950: 230 100% 20%; /* #172554 */
 
-    --muted: 210 40% 96.1%;
+    /* Muted: very light blue/gray */
+    --muted: 210 40% 98%; /* #f8fafc */
     --muted-foreground: 215.4 16.3% 46.9%;
 
     --destructive: 0 84.2% 60.2%;
@@ -130,21 +131,22 @@
     --secondary-900: 180 60% 80%;
     --secondary-950: 180 60% 90%;
 
-    /* Accent color: Purple (dark mode) */
-    --accent: 270 60% 50%;
+    /* Accent color: Soft Blue (dark mode) */
+    --accent: 213 94% 68%; /* #60a5fa */
     --accent-foreground: 210 40% 98%;
-    --accent-50: 270 60% 15%;
-    --accent-100: 270 60% 20%;
-    --accent-200: 270 60% 25%;
-    --accent-300: 270 60% 30%;
-    --accent-400: 270 60% 40%;
-    --accent-500: 270 60% 50%;
-    --accent-600: 270 60% 60%;
-    --accent-700: 270 60% 70%;
-    --accent-800: 270 60% 80%;
-    --accent-900: 270 60% 90%;
-    --accent-950: 270 60% 95%;
+    --accent-50: 210 100% 12%; /* #0c4a6e */
+    --accent-100: 210 94% 16%; /* #082f49 */
+    --accent-200: 210 94% 20%; /* #0e7490 */
+    --accent-300: 210 90% 25%; /* #0369a1 */
+    --accent-400: 213 94% 30%; /* #0284c7 */
+    --accent-500: 217 91% 40%; /* #0ea5e9 */
+    --accent-600: 221 83% 50%; /* #38bdf8 */
+    --accent-700: 224 76% 60%; /* #7dd3fc */
+    --accent-800: 226 71% 70%; /* #bae6fd */
+    --accent-900: 228 56% 80%; /* #e0f2fe */
+    --accent-950: 230 100% 90%; /* #f0f9ff */
 
+    /* Muted: very dark blue/gray */
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 

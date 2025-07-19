@@ -42,6 +42,7 @@ import { Badge } from "@/components/ui/badge";
 import { NotificationMenu } from "@/components/notification/notification-menu";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function MainNav() {
   const pathname = usePathname();
@@ -352,7 +353,7 @@ export function MainNav() {
                 </Link>
               ))}
 
-              <DropdownMenu>
+              {/* <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
@@ -372,7 +373,7 @@ export function MainNav() {
                     ))}
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
-              </DropdownMenu>
+              </DropdownMenu> */}
             </nav>
           ) : (
             <nav className="flex items-center space-x-6 flex-1">
@@ -427,6 +428,7 @@ export function MainNav() {
 
               {/* Notification Dropdown */}
               <NotificationMenu userId={user?.userId} />
+              <ThemeToggle />
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
