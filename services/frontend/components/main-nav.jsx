@@ -109,6 +109,24 @@ export function MainNav() {
     router.push("/");
   };
 
+  const getAvatarSrc = (user) => {
+    if (!user) return "/placeholder.svg";
+    console.log("Gender:", user.gender);
+    const gender = user.gender || "common";
+    let folder = "common";
+    let count = 2;
+    if (gender === "male") {
+      folder = "male";
+      count = 43;
+    } else if (gender === "female") {
+      folder = "female";
+      count = 24;
+    }
+    const id = user.userId ?? 0;
+    const idx = (id % count) + 1;
+    return `/avatars/${folder}/${folder}_${idx}.png`;
+  };
+
   return (
     <div className="border-b bg-background sticky top-0 z-30 w-full">
       <div className="container flex h-16 items-center px-4 mx-auto">
@@ -425,10 +443,7 @@ export function MainNav() {
                     className="rounded-full flex items-center gap-2"
                   >
                     <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={user?.avatar || "/placeholder.svg"}
-                        alt={user?.name}
-                      />
+                      <AvatarImage src={getAvatarSrc(user)} alt={user?.name} />
                       <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
                     </Avatar>
                     <span className="font-medium text-sm hidden sm:inline-block">

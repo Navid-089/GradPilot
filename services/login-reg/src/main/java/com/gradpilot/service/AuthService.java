@@ -169,7 +169,8 @@ public class AuthService {
             LoginResponse.UserInfo userInfo = new LoginResponse.UserInfo(
                     user.getUserId().toString(),
                     user.getName(),
-                    user.getEmail());
+                    user.getEmail(),
+                    user.getGender());
 
             return new LoginResponse(token, userInfo);
 
