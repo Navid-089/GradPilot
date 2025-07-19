@@ -1,5 +1,5 @@
 /**
- * Service to get user's research interests from the backend
+ *    Service to get user's research interests from the backend
  */
 
 export async function getUserResearchInterests() {
