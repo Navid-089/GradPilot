@@ -1,10 +1,17 @@
 package com.gradpilot.dto;
 
-import jakarta.validation.constraints.*;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public class RegisterRequest {
 
@@ -29,21 +36,22 @@ public class RegisterRequest {
     // Test scores like GRE, IELTS, etc.
     private Map<String, Object> testScores;
 
-    // Target countries for study
-    private List<String> targetCountries;
+    // Target countries for study (IDs)
+    private List<Integer> targetCountries;
 
-    // Target majors
-    private List<String> targetMajors;
+    // Target majors (IDs)
+    private List<Integer> targetMajors;
 
-    // Research interests
-    private List<String> researchInterests;
+    // Research interests (IDs)
+    private List<Integer> researchInterests;
 
     @Min(value = 2024, message = "Deadline year must be current year or future")
     @Max(value = 2030, message = "Deadline year cannot be too far in future")
     private Integer deadlineYear;
 
     // Constructors
-    public RegisterRequest() {}
+    public RegisterRequest() {
+    }
 
     // Getters and Setters
     public String getName() {
@@ -86,27 +94,27 @@ public class RegisterRequest {
         this.testScores = testScores;
     }
 
-    public List<String> getTargetCountries() {
+    public List<Integer> getTargetCountries() {
         return targetCountries;
     }
 
-    public void setTargetCountries(List<String> targetCountries) {
+    public void setTargetCountries(List<Integer> targetCountries) {
         this.targetCountries = targetCountries;
     }
 
-    public List<String> getTargetMajors() {
+    public List<Integer> getTargetMajors() {
         return targetMajors;
     }
 
-    public void setTargetMajors(List<String> targetMajors) {
+    public void setTargetMajors(List<Integer> targetMajors) {
         this.targetMajors = targetMajors;
     }
 
-    public List<String> getResearchInterests() {
+    public List<Integer> getResearchInterests() {
         return researchInterests;
     }
 
-    public void setResearchInterests(List<String> researchInterests) {
+    public void setResearchInterests(List<Integer> researchInterests) {
         this.researchInterests = researchInterests;
     }
 

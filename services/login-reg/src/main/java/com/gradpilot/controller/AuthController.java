@@ -1,21 +1,24 @@
 package com.gradpilot.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.gradpilot.dto.LoginRequest;
 import com.gradpilot.dto.LoginResponse;
 import com.gradpilot.dto.RegisterRequest;
 import com.gradpilot.dto.RegisterResponse;
 import com.gradpilot.dto.UpdateProfileResponse;
-import com.gradpilot.service.AuthService;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
 import com.gradpilot.dto.UserProfileUpdate;
-import com.gradpilot.model.User;
-import org.springframework.security.core.Authentication;
-import java.util.Map;
+import com.gradpilot.service.AuthService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -27,10 +30,8 @@ public class AuthController {
 
     // @Autowired
     // private JwtTokenProvider jwtTokenProvider;
-
     // @Autowired
     // private UserRepository userRepository;
-
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
         RegisterResponse response = authService.register(registerRequest);
@@ -53,18 +54,14 @@ public class AuthController {
         //     if (authentication == null || !authentication.isAuthenticated()) {
         //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         //     }
-
         //     @SuppressWarnings("unchecked")
         //     Map<String, Object> principal = (Map<String, Object>) authentication.getPrincipal();
         //     Integer userId = (Integer) principal.get("userId");
-
         //     if (userId == null) {
         //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         //     }
-
         //     UpdateProfileResponse response = authService.updateProfile(dto);
         //     return ResponseEntity.ok(response);
-
         // } catch (Exception e) {
         //     e.printStackTrace();
         //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
