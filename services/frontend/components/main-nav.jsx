@@ -67,6 +67,11 @@ export function MainNav() {
       icon: <FileText className="h-4 w-4 mr-2" />,
     },
     {
+      name: "Forum",
+      href: "/dashboard/forum",
+      icon: <MessageSquare className="h-4 w-4 mr-2" />,
+    },
+    {
       name: "SOP Review",
       href: "/dashboard/sop-review",
       icon: <FileText className="h-4 w-4 mr-2" />,

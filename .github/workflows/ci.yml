@@ -40,6 +40,10 @@ jobs:
         working-directory: services/sop-review-service
         run: ./mvnw clean package
 
+      - name: Build Forum
+        working-directory: services/forum
+        run: ./mvnw clean package
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -55,7 +59,7 @@ jobs:
 
       - name: Run Playwright E2E tests
         working-directory: services/frontend
-        run: npx playwright test 
+        run: npx playwright test
 
       - name: Run frontend unit tests
         working-directory: services/frontend
@@ -109,7 +113,15 @@ jobs:
           docker build --pull -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-sop-review:latest \
                        -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-sop-review:${{ github.sha }} .
           docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-sop-review:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-sop-review:${{ github.sha }} 
+          docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-sop-review:${{ github.sha }}
+
+      - name: Dockerize and push forum service
+        working-directory: services/forum
+        run: |
+          docker build --pull -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-forum:latest \
+                       -t ${{ secrets.DOCKER_USERNAME }}/gradpilot-forum:${{ github.sha }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-forum:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/gradpilot-forum:${{ github.sha }}
 
   deploy-to-vm:
     needs: build-test-and-dockerize
