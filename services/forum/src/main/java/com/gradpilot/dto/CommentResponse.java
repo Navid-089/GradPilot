@@ -13,6 +13,7 @@ public class CommentResponse {
     private Boolean userDisliked;
     private Integer userId; // Added userId to identify the comment's author
     private Boolean isAnonymous; // Indicates if the comment is anonymous
+    private String userGender;
 
     // Constructors
     public CommentResponse() {
@@ -97,5 +98,13 @@ public class CommentResponse {
 
     public void setIsAnonymous(Boolean isAnonymous) {
         this.isAnonymous = isAnonymous;
+    }
+
+    public void setUserGender(String gender) {
+        this.userGender = gender;
+    }
+
+    public String getUserGender() {
+        return this.userGender;
     }
 }

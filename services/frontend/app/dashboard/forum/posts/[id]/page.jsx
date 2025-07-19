@@ -61,6 +61,21 @@ export default function PostPage() {
     }
   }, [params.id]);
 
+  const getAvatarSrc = (userId, gender) => {
+    if (!userId || !gender) return "/placeholder.svg";
+    let folder = "common";
+    let count = 2;
+    if (gender === "male") {
+      folder = "male";
+      count = 43;
+    } else if (gender === "female") {
+      folder = "female";
+      count = 24;
+    }
+    const idx = (userId % count) + 1;
+    return `/avatars/${folder}/${folder}_${idx}.png`;
+  };
+
   const loadPost = async () => {
     try {
       setLoading(true);
@@ -244,9 +259,25 @@ export default function PostPage() {
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
-                <Avatar className="w-6 h-6">
+                {/* <Avatar className="w-6 h-6">
                   <AvatarFallback>
-                    {/* {post.authorName.charAt(0).toUpperCase()} */}
+                    {post.authorName.charAt(0).toUpperCase()}
+                    {post.isAnonymous
+                      ? "A"
+                      : post.authorName.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar> */}
+                <Avatar className="w-6 h-6">
+                  {!post.isAnonymous &&
+                  post.userId &&
+                  post.userGender ? (
+                    <img
+                      src={getAvatarSrc(post.userId, post.userGender)}
+                      alt={post.authorName}
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : null}
+                  <AvatarFallback>
                     {post.isAnonymous
                       ? "A"
                       : post.authorName.charAt(0).toUpperCase()}
@@ -413,9 +444,28 @@ export default function PostPage() {
                   {/* Comment Header */}
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
-                      <Avatar className="w-5 h-5">
+                      {/* <Avatar className="w-5 h-5">
                         <AvatarFallback>
-                          {/* {comment.authorName.charAt(0).toUpperCase()} */}
+                          {comment.authorName.charAt(0).toUpperCase()}
+                          {comment.isAnonymous
+                            ? "A"
+                            : comment.authorName.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar> */}
+                      <Avatar className="w-5 h-5">
+                        {!comment.isAnonymous &&
+                        comment.userId &&
+                        comment.userGender ? (
+                          <img
+                            src={getAvatarSrc(
+                              comment.userId,
+                              comment.userGender
+                            )}
+                            alt={comment.authorName}
+                            className="w-full h-full rounded-full object-cover"
+                          />
+                        ) : null}
+                        <AvatarFallback>
                           {comment.isAnonymous
                             ? "A"
                             : comment.authorName.charAt(0).toUpperCase()}

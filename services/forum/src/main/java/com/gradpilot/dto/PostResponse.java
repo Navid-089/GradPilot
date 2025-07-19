@@ -19,6 +19,7 @@ public class PostResponse {
     private Boolean userDisliked;
     private Integer userId; // Added userId to identify the post's author
     private Boolean isAnonymous; // Indicates if the post is anonymous
+    private String userGender; // Added userGender to identify
 
     // Constructors
     public PostResponse() {
@@ -143,5 +144,13 @@ public class PostResponse {
 
     public void setIsAnonymous(Boolean isAnonymous) {
         this.isAnonymous = isAnonymous;
+    }
+
+    public String getUserGender() {
+        return userGender;
+    }
+
+    public void setUserGender(String userGender) {
+        this.userGender = userGender;
     }
 }
