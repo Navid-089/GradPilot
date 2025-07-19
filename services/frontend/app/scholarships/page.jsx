@@ -604,48 +604,186 @@ export default function ScholarshipsPage() {
                   )}
                 </TabsContent>
                 <TabsContent value="saved" className="space-y-4 mt-4">
-                  {savedScholarships.length > 0 ? (
-                    savedScholarships.map((scholarship) => (
-                      <ScholarshipCard 
-                        key={scholarship.id} 
-                        scholarship={scholarship} 
-                        onSave={handleSaveScholarship}
-                        onUnsave={handleUnsaveScholarship}
-                        onApply={handleApplyToScholarship}
-                        onRemoveApplication={handleRemoveApplication}
-                        isSaved={true}
-                        isApplied={isScholarshipApplied(scholarship.id)}
-                      />
-                    ))
-                  ) : (
-                    <div className="text-center py-10">
-                      <Star className="h-12 w-12 mx-auto text-muted-foreground" />
-                      <h3 className="mt-4 text-lg font-medium">No saved scholarships</h3>
-                      <p className="text-muted-foreground">Save scholarships to track them here</p>
-                    </div>
-                  )}
+                  {(() => {
+                    // Apply filtering and search to saved scholarships
+                    let filteredSaved = [...savedScholarships]
+                    
+                    // Apply search query
+                    if (searchQuery) {
+                      const query = searchQuery.toLowerCase()
+                      filteredSaved = filteredSaved.filter(
+                        (scholarship) =>
+                          scholarship.title.toLowerCase().includes(query) ||
+                          scholarship.provider.toLowerCase().includes(query)
+                      )
+                    }
+
+                    // Apply provider filter
+                    if (filters.providers.length > 0) {
+                      filteredSaved = filteredSaved.filter((scholarship) => {
+                        return filters.providers.includes(scholarship.provider)
+                      })
+                    }
+
+                    // Apply coverage type filter
+                    if (filters.coverageTypes.length > 0) {
+                      filteredSaved = filteredSaved.filter((scholarship) => filters.coverageTypes.some((type) => scholarship.amount.includes(type)))
+                    }
+
+                    // Apply sorting
+                    switch (sortBy) {
+                      case "deadline":
+                        filteredSaved.sort((a, b) => {
+                          const dateA = new Date(a.deadline)
+                          const dateB = new Date(b.deadline)
+                          return dateA.getTime() - dateB.getTime() // Soonest first
+                        })
+                        break
+                      case "amount":
+                        filteredSaved.sort((a, b) => {
+                          // Extract numeric values from amount strings for comparison
+                          const getAmountValue = (amount) => {
+                            const cleanAmount = amount.toLowerCase()
+                            if (cleanAmount.includes('full')) return 100000
+                            if (cleanAmount.includes('$')) {
+                              const match = cleanAmount.match(/\$?(\d+(?:,\d+)*(?:\.\d+)?)/);
+                              return match ? parseFloat(match[1].replace(/,/g, '')) : 0;
+                            }
+                            return 0
+                          }
+                          return getAmountValue(b.amount) - getAmountValue(a.amount) // Highest first
+                        })
+                        break
+                      case "title":
+                        filteredSaved.sort((a, b) => a.title.localeCompare(b.title)) // A-Z
+                        break
+                      default:
+                        break
+                    }
+
+                    return filteredSaved.length > 0 ? (
+                      <>
+                        {filteredSaved.map((scholarship) => (
+                          <ScholarshipCard 
+                            key={scholarship.id} 
+                            scholarship={scholarship} 
+                            onSave={handleSaveScholarship}
+                            onUnsave={handleUnsaveScholarship}
+                            onApply={handleApplyToScholarship}
+                            onRemoveApplication={handleRemoveApplication}
+                            isSaved={true}
+                            isApplied={isScholarshipApplied(scholarship.id)}
+                          />
+                        ))}
+                        {filteredSaved.length !== savedScholarships.length && (
+                          <div className="text-center text-sm text-muted-foreground mt-4">
+                            Showing {filteredSaved.length} of {savedScholarships.length} saved scholarships
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-center py-10">
+                        <Star className="h-12 w-12 mx-auto text-muted-foreground" />
+                        <h3 className="mt-4 text-lg font-medium">
+                          {savedScholarships.length === 0 ? "No saved scholarships" : "No scholarships match your filters"}
+                        </h3>
+                        <p className="text-muted-foreground">
+                          {savedScholarships.length === 0 ? "Save scholarships to track them here" : "Try adjusting your filters or search query"}
+                        </p>
+                      </div>
+                    )
+                  })()}
                 </TabsContent>
                 <TabsContent value="applied" className="space-y-4 mt-4">
-                  {appliedScholarships.length > 0 ? (
-                    appliedScholarships.map((scholarship) => (
-                      <ScholarshipCard 
-                        key={scholarship.id} 
-                        scholarship={scholarship} 
-                        onSave={handleSaveScholarship}
-                        onUnsave={handleUnsaveScholarship}
-                        onApply={handleApplyToScholarship}
-                        onRemoveApplication={handleRemoveApplication}
-                        isSaved={isScholarshipSaved(scholarship.id)}
-                        isApplied={true}
-                      />
-                    ))
-                  ) : (
-                    <div className="text-center py-10">
-                      <Check className="h-12 w-12 mx-auto text-muted-foreground" />
-                      <h3 className="mt-4 text-lg font-medium">No applications yet</h3>
-                      <p className="text-muted-foreground">Scholarships you've applied to will appear here</p>
-                    </div>
-                  )}
+                  {(() => {
+                    // Apply filtering and search to applied scholarships
+                    let filteredApplied = [...appliedScholarships]
+                    
+                    // Apply search query
+                    if (searchQuery) {
+                      const query = searchQuery.toLowerCase()
+                      filteredApplied = filteredApplied.filter(
+                        (scholarship) =>
+                          scholarship.title.toLowerCase().includes(query) ||
+                          scholarship.provider.toLowerCase().includes(query)
+                      )
+                    }
+
+                    // Apply provider filter
+                    if (filters.providers.length > 0) {
+                      filteredApplied = filteredApplied.filter((scholarship) => {
+                        return filters.providers.includes(scholarship.provider)
+                      })
+                    }
+
+                    // Apply coverage type filter
+                    if (filters.coverageTypes.length > 0) {
+                      filteredApplied = filteredApplied.filter((scholarship) => filters.coverageTypes.some((type) => scholarship.amount.includes(type)))
+                    }
+
+                    // Apply sorting
+                    switch (sortBy) {
+                      case "deadline":
+                        filteredApplied.sort((a, b) => {
+                          const dateA = new Date(a.deadline)
+                          const dateB = new Date(b.deadline)
+                          return dateA.getTime() - dateB.getTime() // Soonest first
+                        })
+                        break
+                      case "amount":
+                        filteredApplied.sort((a, b) => {
+                          // Extract numeric values from amount strings for comparison
+                          const getAmountValue = (amount) => {
+                            const cleanAmount = amount.toLowerCase()
+                            if (cleanAmount.includes('full')) return 100000
+                            if (cleanAmount.includes('$')) {
+                              const match = cleanAmount.match(/\$?(\d+(?:,\d+)*(?:\.\d+)?)/);
+                              return match ? parseFloat(match[1].replace(/,/g, '')) : 0;
+                            }
+                            return 0
+                          }
+                          return getAmountValue(b.amount) - getAmountValue(a.amount) // Highest first
+                        })
+                        break
+                      case "title":
+                        filteredApplied.sort((a, b) => a.title.localeCompare(b.title)) // A-Z
+                        break
+                      default:
+                        break
+                    }
+
+                    return filteredApplied.length > 0 ? (
+                      <>
+                        {filteredApplied.map((scholarship) => (
+                          <ScholarshipCard 
+                            key={scholarship.id} 
+                            scholarship={scholarship} 
+                            onSave={handleSaveScholarship}
+                            onUnsave={handleUnsaveScholarship}
+                            onApply={handleApplyToScholarship}
+                            onRemoveApplication={handleRemoveApplication}
+                            isSaved={isScholarshipSaved(scholarship.id)}
+                            isApplied={true}
+                          />
+                        ))}
+                        {filteredApplied.length !== appliedScholarships.length && (
+                          <div className="text-center text-sm text-muted-foreground mt-4">
+                            Showing {filteredApplied.length} of {appliedScholarships.length} applied scholarships
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-center py-10">
+                        <Check className="h-12 w-12 mx-auto text-muted-foreground" />
+                        <h3 className="mt-4 text-lg font-medium">
+                          {appliedScholarships.length === 0 ? "No applications yet" : "No scholarships match your filters"}
+                        </h3>
+                        <p className="text-muted-foreground">
+                          {appliedScholarships.length === 0 ? "Scholarships you've applied to will appear here" : "Try adjusting your filters or search query"}
+                        </p>
+                      </div>
+                    )
+                  })()}
                 </TabsContent>
               </Tabs>
             </div>

@@ -502,23 +502,81 @@ export default function ResearchPage() {
                   )}
                 </TabsContent>
                 <TabsContent value="saved" className="space-y-4 mt-4">
-                  {savedProfessors.length > 0 ? (
-                    savedProfessors.map((professor) => (
-                      <ProfessorCard 
-                        key={professor.id} 
-                        professor={professor} 
-                        onSave={handleSaveProfessor}
-                        onUnsave={handleUnsaveProfessor}
-                        isSaved={true}
-                      />
-                    ))
-                  ) : (
-                    <div className="text-center py-10">
-                      <Star className="h-12 w-12 mx-auto text-muted-foreground" />
-                      <h3 className="mt-4 text-lg font-medium">No saved professors</h3>
-                      <p className="text-muted-foreground">Save professors to track them here</p>
-                    </div>
-                  )}
+                  {(() => {
+                    // Apply filtering and search to saved professors
+                    let filteredSaved = [...savedProfessors]
+                    
+                    // Apply search query
+                    if (searchQuery) {
+                      const query = searchQuery.toLowerCase()
+                      filteredSaved = filteredSaved.filter(
+                        (prof) =>
+                          prof.name?.toLowerCase().includes(query) ||
+                          prof.university?.toLowerCase().includes(query) ||
+                          (prof.researchAreas && prof.researchAreas.some((area) => area.toLowerCase().includes(query)))
+                      )
+                    }
+
+                    // Apply research areas filter - show only matching professors if filters are set
+                    if (filters.researchAreas.length > 0) {
+                      filteredSaved = filteredSaved.filter((prof) => prof.researchAreas && prof.researchAreas.some((area) => filters.researchAreas.includes(area)))
+                    }
+
+                    // Apply sorting
+                    switch (sortBy) {
+                      case "relevance":
+                        // Sort by number of matching research areas (if user has research interests)
+                        if (userResearchInterests.length > 0) {
+                          filteredSaved.sort((a, b) => {
+                            const aMatches = a.researchAreas ? a.researchAreas.filter(area => 
+                              userResearchInterests.some(interest => interest.toLowerCase() === area.toLowerCase())
+                            ).length : 0
+                            const bMatches = b.researchAreas ? b.researchAreas.filter(area => 
+                              userResearchInterests.some(interest => interest.toLowerCase() === area.toLowerCase())
+                            ).length : 0
+                            return bMatches - aMatches
+                          })
+                        }
+                        break
+                      case "name":
+                        filteredSaved.sort((a, b) => a.name.localeCompare(b.name))
+                        break
+                      case "university":
+                        filteredSaved.sort((a, b) => (a.university || '').localeCompare(b.university || ''))
+                        break
+                      default:
+                        break
+                    }
+
+                    return filteredSaved.length > 0 ? (
+                      <>
+                        {filteredSaved.map((professor) => (
+                          <ProfessorCard 
+                            key={professor.id} 
+                            professor={professor} 
+                            onSave={handleSaveProfessor}
+                            onUnsave={handleUnsaveProfessor}
+                            isSaved={true}
+                          />
+                        ))}
+                        {filteredSaved.length !== savedProfessors.length && (
+                          <div className="text-center text-sm text-muted-foreground mt-4">
+                            Showing {filteredSaved.length} of {savedProfessors.length} saved professors
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-center py-10">
+                        <Star className="h-12 w-12 mx-auto text-muted-foreground" />
+                        <h3 className="mt-4 text-lg font-medium">
+                          {savedProfessors.length === 0 ? "No saved professors" : "No professors match your filters"}
+                        </h3>
+                        <p className="text-muted-foreground">
+                          {savedProfessors.length === 0 ? "Save professors to track them here" : "Try adjusting your filters or search query"}
+                        </p>
+                      </div>
+                    )
+                  })()}
                 </TabsContent>
                 <TabsContent value="contacted" className="space-y-4 mt-4">
                   <div className="text-center py-10">

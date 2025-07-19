@@ -532,23 +532,88 @@ export default function UniversitiesPage() {
                 </TabsContent>
                 
                 <TabsContent value="saved" className="space-y-4 mt-4">
-                  {savedUniversities.length > 0 ? (
-                    savedUniversities.map((university) => (
-                      <UniversityCard 
-                        key={university.id} 
-                        university={university} 
-                        onSave={handleSaveUniversity}
-                        onUnsave={handleUnsaveUniversity}
-                        isSaved={true}
-                      />
-                    ))
-                  ) : (
-                    <div className="text-center py-10">
-                      <Star className="h-12 w-12 mx-auto text-muted-foreground" />
-                      <h3 className="mt-4 text-lg font-medium">No saved universities</h3>
-                      <p className="text-muted-foreground">Save universities to track them here</p>
-                    </div>
-                  )}
+                  {(() => {
+                    // Apply filtering and search to saved universities
+                    let filteredSaved = [...savedUniversities]
+                    
+                    // Apply search filter
+                    if (debouncedSearchQuery && debouncedSearchQuery.trim()) {
+                      const query = debouncedSearchQuery.toLowerCase().trim()
+                      filteredSaved = filteredSaved.filter(uni => 
+                        uni.name.toLowerCase().includes(query) ||
+                        uni.address.toLowerCase().includes(query) ||
+                        uni.country.toLowerCase().includes(query)
+                      )
+                    }
+
+                    // Apply country filter - only apply when some but not all countries are selected
+                    if (filters.countries && filters.countries.length > 0 && filters.countries.length < countries.length) {
+                      filteredSaved = filteredSaved.filter(uni => {
+                        const uniCountry = uni.country || 'Unknown'
+                        return filters.countries.includes(uniCountry)
+                      })
+                    } else if (filters.countries && filters.countries.length === 0) {
+                      filteredSaved = []
+                    }
+
+                    // Apply match score filter
+                    if (filters.minMatchScore > 0) {
+                      filteredSaved = filteredSaved.filter(uni => 
+                        uni.matchScore >= filters.minMatchScore
+                      )
+                    }
+
+                    // Apply tuition filter
+                    if (filters.maxTuition < 50000) {
+                      filteredSaved = filteredSaved.filter(uni => 
+                        uni.tuitionFees <= filters.maxTuition
+                      )
+                    }
+
+                    // Apply sorting
+                    filteredSaved.sort((a, b) => {
+                      switch (sortBy) {
+                        case 'ranking':
+                          return a.ranking - b.ranking
+                        case 'tuition':
+                          return a.tuitionFees - b.tuitionFees
+                        case 'deadline':
+                          return new Date(a.applicationDeadline) - new Date(b.applicationDeadline)
+                        case 'match':
+                        default:
+                          return b.matchScore - a.matchScore
+                      }
+                    })
+
+                    return filteredSaved.length > 0 ? (
+                      <>
+                        {filteredSaved.map((university) => (
+                          <UniversityCard 
+                            key={university.id} 
+                            university={university} 
+                            onSave={handleSaveUniversity}
+                            onUnsave={handleUnsaveUniversity}
+                            isSaved={true}
+                          />
+                        ))}
+                        {filteredSaved.length !== savedUniversities.length && (
+                          <div className="text-center text-sm text-muted-foreground mt-4">
+                            Showing {filteredSaved.length} of {savedUniversities.length} saved universities
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-center py-10">
+                        <Star className="h-12 w-12 mx-auto text-muted-foreground" />
+                        <h3 className="mt-4 text-lg font-medium">
+                          {savedUniversities.length === 0 ? "No saved universities" : "No universities match your filters"}
+                        </h3>
+                        <p className="text-muted-foreground">
+                          {savedUniversities.length === 0 ? "Save universities to track them here" : "Try adjusting your filters or search query"}
+                        </p>
+                      </div>
+                    )
+                  })()}
                 </TabsContent>
               </Tabs>
             </div>
