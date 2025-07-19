@@ -4,7 +4,7 @@
 #   #   image: postgres
 #   #   container_name: gradpilot-db
 #   #   environment:
-#   #     POSTGRES_DB: gradPilot
+#   #     POSTGRES_DB: gradPilot   
 #   #     POSTGRES_USER: postgres
 #   #     POSTGRES_PASSWORD: ${DB_PASSWORD}
 #   #   ports:
