@@ -184,51 +184,6 @@ public class ForumService {
                 .collect(Collectors.toList());
     }
 
-    // Helper methods
-    // private PostResponse convertToPostResponse(Post post, Integer currentUserId)
-    // {
-    // PostResponse response = new PostResponse();
-    // response.setId(post.getId());
-    // response.setTitle(post.getTitle());
-    // response.setContent(post.getContent());
-    // response.setFileUrl(post.getFileUrl());
-    // response.setCreatedAt(post.getCreatedAt());
-    // response.setUpdatedAt(post.getUpdatedAt());
-
-    // String authorName = userRepository.findById(post.getUserId())
-    // .map(user -> user.getName())
-    // .orElse("Unknown User");
-
-    // // Handle anonymous posts
-    // response.setAuthorName(post.getIsAnonymous() ? "Anonymous" : authorName);
-
-    // // Set tags
-    // if (post.getTags() != null) {
-    // response.setTags(post.getTags().stream()
-    // .map(Tag::getName)
-    // .collect(Collectors.toSet()));
-    // }
-
-    // // Set like/dislike counts
-    // response.setLikeCount(likeRepository.countLikesByPostId(post.getId()));
-    // response.setDislikeCount(likeRepository.countDislikesByPostId(post.getId()));
-
-    // // Set comment count
-    // response.setCommentCount(post.getComments() != null ?
-    // post.getComments().size() : 0);
-
-    // // Set user interaction status
-    // if (currentUserId != null) {
-    // likeRepository.findByUserIdAndPostId(currentUserId, post.getId())
-    // .ifPresent(like -> {
-    // response.setUserLiked(like.getIsLike());
-    // response.setUserDisliked(!like.getIsLike());
-    // });
-    // }
-
-    // return response;
-    // }
-
     private PostResponse convertToPostResponse(Post post, Integer currentUserId) {
         PostResponse response = new PostResponse();
         response.setId(post.getId());
@@ -239,6 +194,13 @@ public class ForumService {
         response.setUpdatedAt(post.getUpdatedAt());
         response.setUserId(post.getUserId());
         response.setIsAnonymous(post.getIsAnonymous());
+        String gender = null;
+        if (post.getUserId() != null) {
+            gender = userRepository.findById(post.getUserId())
+                    .map(User::getGender)
+                    .orElse(null);
+        }
+        response.setUserGender(gender);
 
         String authorName = "Unknown User";
         try {
@@ -282,34 +244,6 @@ public class ForumService {
         return response;
     }
 
-    // private CommentResponse convertToCommentResponse(Comment comment, Integer
-    // currentUserId) {
-    // CommentResponse response = new CommentResponse();
-    // response.setId(comment.getId());
-    // response.setContent(comment.getContent());
-    // response.setCreatedAt(comment.getCreatedAt());
-
-    // // Handle anonymous comments
-    // response.setAuthorName(comment.getIsAnonymous() ? "Anonymous" : "User"); //
-    // You might want to fetch actual user
-    // // names
-
-    // // Set like/dislike counts
-    // response.setLikeCount(likeRepository.countLikesByCommentId(comment.getId()));
-    // response.setDislikeCount(likeRepository.countDislikesByCommentId(comment.getId()));
-
-    // // Set user interaction status
-    // if (currentUserId != null) {
-    // likeRepository.findByUserIdAndCommentId(currentUserId, comment.getId())
-    // .ifPresent(like -> {
-    // response.setUserLiked(like.getIsLike());
-    // response.setUserDisliked(!like.getIsLike());
-    // });
-    // }
-
-    // return response;
-    // }
-
     private CommentResponse convertToCommentResponse(Comment comment, Integer currentUserId) {
         CommentResponse response = new CommentResponse();
         response.setId(comment.getId());
@@ -317,6 +251,13 @@ public class ForumService {
         response.setCreatedAt(comment.getCreatedAt());
         response.setUserId(comment.getUserId());
         response.setIsAnonymous(comment.getIsAnonymous());
+        String gender = null;
+        if (comment.getUserId() != null) {
+            gender = userRepository.findById(comment.getUserId())
+                    .map(User::getGender)
+                    .orElse(null);
+        }
+        response.setUserGender(gender);
 
         String authorName = "Unknown User";
         try {

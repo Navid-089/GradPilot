@@ -41,6 +41,7 @@ import {
 } from "lucide-react";
 import forumService from "@/lib/forum-service";
 import { useAuth } from "@/lib/auth-context";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 export default function PostPage() {
   const params = useParams();
@@ -62,6 +63,8 @@ export default function PostPage() {
   }, [params.id]);
 
   const getAvatarSrc = (userId, gender) => {
+    console.log("User ID: ", userId);
+    console.log("Page Gender: ", gender);
     if (!userId || !gender) return "/placeholder.svg";
     let folder = "common";
     let count = 2;
@@ -259,24 +262,11 @@ export default function PostPage() {
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
-                {/* <Avatar className="w-6 h-6">
-                  <AvatarFallback>
-                    {post.authorName.charAt(0).toUpperCase()}
-                    {post.isAnonymous
-                      ? "A"
-                      : post.authorName.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar> */}
-                <Avatar className="w-6 h-6">
-                  {!post.isAnonymous &&
-                  post.userId &&
-                  post.userGender ? (
-                    <img
-                      src={getAvatarSrc(post.userId, post.userGender)}
-                      alt={post.authorName}
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                  ) : null}
+                <Avatar className="h-6 w-6">
+                  <AvatarImage
+                    src={getAvatarSrc(post.userId, post.userGender)}
+                    alt={user?.name}
+                  />
                   <AvatarFallback>
                     {post.isAnonymous
                       ? "A"
