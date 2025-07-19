@@ -72,7 +72,7 @@ export function MainNav() {
       icon: <MessageSquare className="h-4 w-4 mr-2" />,
     },
     {
-      name: "SOP Review",
+      name: "Essay Review",
       href: "/dashboard/sop-review",
       icon: <FileText className="h-4 w-4 mr-2" />,
     },
@@ -216,7 +216,7 @@ export function MainNav() {
                     <User className="h-4 w-4 mr-2" />
                     Profile
                   </Link>
-                  <Link
+                  {/* <Link
                     href="/dashboard/messages"
                     className="flex items-center py-2 px-3 rounded-md text-sm text-muted-foreground hover:bg-muted"
                     onClick={() => setMobileMenuOpen(false)}
@@ -228,7 +228,7 @@ export function MainNav() {
                         {messages}
                       </Badge>
                     )}
-                  </Link>
+                  </Link> */}
                   <Link
                     href="/dashboard/notifications"
                     className="flex items-center py-2 px-3 rounded-md text-sm text-muted-foreground hover:bg-muted"
@@ -266,7 +266,7 @@ export function MainNav() {
               </div>
             ) : (
               <div className="space-y-6">
-                <div className="space-y-1">
+                {/* <div className="space-y-1">
                   <Link
                     href="/features"
                     className="flex items-center py-2 px-3 rounded-md text-sm text-muted-foreground hover:bg-muted"
@@ -288,7 +288,7 @@ export function MainNav() {
                   >
                     About
                   </Link>
-                </div>
+                </div> */}
 
                 <div className="space-y-2">
                   <Button
@@ -357,30 +357,30 @@ export function MainNav() {
             </nav>
           ) : (
             <nav className="flex items-center space-x-6 flex-1">
-              <Link
+              {/* <Link
                 href="/features"
                 className="text-sm font-medium text-muted-foreground hover:text-foreground"
               >
                 Features
-              </Link>
-              <Link
+              </Link> */}
+              {/* <Link
                 href="/pricing"
                 className="text-sm font-medium text-muted-foreground hover:text-foreground"
               >
                 Pricing
-              </Link>
-              <Link
+              </Link> */}
+              {/* <Link
                 href="/about"
                 className="text-sm font-medium text-muted-foreground hover:text-foreground"
               >
                 About
-              </Link>
+              </Link> */}
             </nav>
           )}
         </div>
 
         {/* Search bar - desktop only */}
-        <div className="hidden md:flex mx-4 w-full max-w-xs items-center space-x-2">
+        {/* <div className="hidden md:flex mx-4 w-full max-w-xs items-center space-x-2">
           <div className="relative w-full">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -389,13 +389,13 @@ export function MainNav() {
               className="w-full bg-background pl-8 md:w-[300px] lg:w-[300px]"
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Right side items */}
         <div className="ml-auto flex items-center space-x-4">
           {isAuthenticated ? (
             <>
-              <Button variant="ghost" size="icon" className="relative" asChild>
+              {/* <Button variant="ghost" size="icon" className="relative" asChild>
                 <Link href="/dashboard/messages">
                   <MessageSquare className="h-5 w-5" />
                   {messages > 0 && (
@@ -404,7 +404,7 @@ export function MainNav() {
                     </Badge>
                   )}
                 </Link>
-              </Button>
+              </Button> */}
 
               <Button variant="ghost" size="icon" className="relative" asChild>
                 <Link href="/dashboard/notifications">
@@ -447,15 +447,6 @@ export function MainNav() {
                     >
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/dashboard/professors"
-                      className="cursor-pointer flex items-center"
-                    >
-                      <Users className="mr-2 h-4 w-4" />
-                      <span>Professors</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSub>

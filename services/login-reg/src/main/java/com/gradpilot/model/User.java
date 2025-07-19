@@ -39,26 +39,40 @@ public class User implements UserDetails {
     @Column(name = "apply_year")
     private Integer applyYear;
 
+    @Column(name = "gender", columnDefinition = "text default ''")
+    private String gender;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     // Constructors
-    public User() {}
+    public User() {
+    }
 
-    public User(String name, String email, String password) {
+    public User(String name, String email, String password, String gender) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.gender = gender;
         this.createdAt = LocalDateTime.now();
     }
 
-    public User(String name, String email, String password, BigDecimal cgpa, Integer applyYear) {
+    public User(String name, String email, String password, BigDecimal cgpa, Integer applyYear, String gender) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.cgpa = cgpa;
         this.applyYear = applyYear;
+        this.gender = gender;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     // UserDetails interface methods

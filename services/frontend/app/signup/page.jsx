@@ -1,21 +1,28 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import Select from "react-select"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { GraduationCap, Loader2 } from "lucide-react"
-import { useAuth } from "@/lib/auth-context"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Select from "react-select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { GraduationCap, Loader2 } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 export default function SignupPage() {
   // Option states
-  const [majorOptions, setMajorOptions] = useState([])
-  const [interestOptions, setInterestOptions] = useState([])
-  const [countryOptions, setCountryOptions] = useState([])
+  const [majorOptions, setMajorOptions] = useState([]);
+  const [interestOptions, setInterestOptions] = useState([]);
+  const [countryOptions, setCountryOptions] = useState([]);
 
   // Selected values (ID arrays)
   const [formData, setFormData] = useState({
@@ -27,18 +34,19 @@ export default function SignupPage() {
     testScores: {
       GRE: "",
       IELTS: "",
-      TOEFL: ""
+      TOEFL: "",
     },
     targetMajors: [],
     researchInterests: [],
     targetCountries: [],
-    deadlineYear: ""
-  })
+    deadlineYear: "",
+    gender: "",
+  });
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-  const router = useRouter()
-  const { register } = useAuth()
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+  const { register } = useAuth();
 
   // Fetch options on mount
   useEffect(() => {
@@ -48,93 +56,91 @@ export default function SignupPage() {
         const [majorsRes, interestsRes, countriesRes] = await Promise.all([
           fetch("/api/majors"),
           fetch("/api/research-interests"),
-          fetch("/api/countries")
-        ])
-        const majors = await majorsRes.json()
-        const interests = await interestsRes.json()
-        const countries = await countriesRes.json()
+          fetch("/api/countries"),
+        ]);
+        const majors = await majorsRes.json();
+        const interests = await interestsRes.json();
+        const countries = await countriesRes.json();
 
-        setMajorOptions(
-          majors.map(m => ({ value: m.id, label: m.name }))
-        )
+        setMajorOptions(majors.map((m) => ({ value: m.id, label: m.name })));
         setInterestOptions(
-          interests.map(i => ({ value: i.id, label: i.name }))
-        )
+          interests.map((i) => ({ value: i.id, label: i.name }))
+        );
         setCountryOptions(
-          countries.map(c => ({ value: c.id, label: c.name }))
-        )
+          countries.map((c) => ({ value: c.id, label: c.name }))
+        );
       } catch (err) {
-        setError("Failed to fetch options from server. Please refresh.")
+        setError("Failed to fetch options from server. Please refresh.");
       }
-    }
-    fetchOptions()
-  }, [])
+    };
+    fetchOptions();
+  }, []);
 
   // Text fields and test scores
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     if (["GRE", "IELTS", "TOEFL"].includes(name)) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        testScores: { ...prev.testScores, [name]: value }
-      }))
+        testScores: { ...prev.testScores, [name]: value },
+      }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: value
-      }))
+        [name]: value,
+      }));
     }
-  }
+  };
 
   // Multi-select handlers
   const handleMajorChange = (selected) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      targetMajors: selected ? selected.map(opt => opt.value) : []
-    }))
-  }
+      targetMajors: selected ? selected.map((opt) => opt.value) : [],
+    }));
+  };
   const handleInterestChange = (selected) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      researchInterests: selected ? selected.map(opt => opt.value) : []
-    }))
-  }
+      researchInterests: selected ? selected.map((opt) => opt.value) : [],
+    }));
+  };
   const handleCountryChange = (selected) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      targetCountries: selected ? selected.map(opt => opt.value) : []
-    }))
-  }
+      targetCountries: selected ? selected.map((opt) => opt.value) : [],
+    }));
+  };
 
   // Form submit/validation (as before)
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
     // Required
     if (!formData.name.trim()) {
-      setError("Full Name is required.")
-      return
+      setError("Full Name is required.");
+      return;
     }
     if (!formData.email.trim()) {
-      setError("Email is required.")
-      return
+      setError("Email is required.");
+      return;
     }
     if (!formData.password) {
-      setError("Password is required.")
-      return
+      setError("Password is required.");
+      return;
     }
     if (!formData.confirmPassword) {
-      setError("Please confirm your password.")
-      return
+      setError("Please confirm your password.");
+      return;
     }
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords don't match")
-      return
+      setError("Passwords don't match");
+      return;
     }
     if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long")
-      return
+      setError("Password must be at least 6 characters long");
+      return;
     }
 
     // Optional but validate if entered
@@ -142,46 +148,56 @@ export default function SignupPage() {
       formData.gpa &&
       (isNaN(formData.gpa) || formData.gpa < 0 || formData.gpa > 4)
     ) {
-      setError("Please enter a valid GPA between 0 and 4.0.")
-      return
+      setError("Please enter a valid GPA between 0 and 4.0.");
+      return;
     }
 
     if (
       formData.testScores.GRE &&
-      (isNaN(formData.testScores.GRE) || formData.testScores.GRE < 260 || formData.testScores.GRE > 340)
+      (isNaN(formData.testScores.GRE) ||
+        formData.testScores.GRE < 260 ||
+        formData.testScores.GRE > 340)
     ) {
-      setError("Please enter a valid GRE score between 260 and 340.")
-      return
+      setError("Please enter a valid GRE score between 260 and 340.");
+      return;
     }
 
     if (
       formData.testScores.IELTS &&
-      (isNaN(formData.testScores.IELTS) || formData.testScores.IELTS < 0 || formData.testScores.IELTS > 9)
+      (isNaN(formData.testScores.IELTS) ||
+        formData.testScores.IELTS < 0 ||
+        formData.testScores.IELTS > 9)
     ) {
-      setError("Please enter a valid IELTS score between 0 and 9.")
-      return
+      setError("Please enter a valid IELTS score between 0 and 9.");
+      return;
     }
 
     if (
       formData.testScores.TOEFL &&
-      (isNaN(formData.testScores.TOEFL) || formData.testScores.TOEFL < 0 || formData.testScores.TOEFL > 120)
+      (isNaN(formData.testScores.TOEFL) ||
+        formData.testScores.TOEFL < 0 ||
+        formData.testScores.TOEFL > 120)
     ) {
-      setError("Please enter a valid TOEFL score between 0 and 120.")
-      return
+      setError("Please enter a valid TOEFL score between 0 and 120.");
+      return;
     }
 
-    const currentYear = new Date().getFullYear()
+    const currentYear = new Date().getFullYear();
     if (
       formData.deadlineYear &&
       (isNaN(formData.deadlineYear) ||
         formData.deadlineYear < currentYear ||
         formData.deadlineYear > currentYear + 10)
     ) {
-      setError(`Please enter a valid deadline year between ${currentYear} and ${currentYear + 10}.`)
-      return
+      setError(
+        `Please enter a valid deadline year between ${currentYear} and ${
+          currentYear + 10
+        }.`
+      );
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       // Send selected IDs in arrays
@@ -194,21 +210,22 @@ export default function SignupPage() {
         targetMajors: formData.targetMajors, // Array of IDs
         researchInterests: formData.researchInterests, // Array of IDs
         targetCountries: formData.targetCountries, // Array of IDs
-        deadlineYear: formData.deadlineYear
-      })
+        deadlineYear: formData.deadlineYear,
+        gender: formData.gender,
+      });
 
       if (result.success) {
-        router.push("/dashboard")
+        router.push("/dashboard");
       } else {
-        setError(result.error || "Failed to create account. Please try again.")
+        setError(result.error || "Failed to create account. Please try again.");
       }
     } catch (err) {
-      setError("An unexpected error occurred. Please try again.")
-      console.error(err)
+      setError("An unexpected error occurred. Please try again.");
+      console.error(err);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
@@ -222,15 +239,25 @@ export default function SignupPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Create an Account</CardTitle>
-            <CardDescription className="text-center">Sign up to start your graduate school journey</CardDescription>
+            <CardTitle className="text-2xl text-center">
+              Create an Account
+            </CardTitle>
+            <CardDescription className="text-center">
+              Sign up to start your graduate school journey
+            </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
-              {error && <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded">{error}</div>}
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded">
+                  {error}
+                </div>
+              )}
 
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name <span className="text-destructive">*</span></Label>
+                <Label htmlFor="name">
+                  Full Name <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="name"
                   name="name"
@@ -241,7 +268,9 @@ export default function SignupPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email <span className="text-destructive">*</span></Label>
+                <Label htmlFor="email">
+                  Email <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="email"
                   name="email"
@@ -262,6 +291,24 @@ export default function SignupPage() {
                   value={formData.gpa}
                   onChange={handleChange}
                 />
+              </div>
+
+              {/* Gender Select */}
+              <div className="space-y-2">
+                <Label htmlFor="gender">Gender</Label>
+                <select
+                  id="gender"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="w-full border rounded px-3 py-2"
+                >
+                  <option value="">Select gender (optional)</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                  <option value="prefer_not_to_say">Prefer not to say</option>
+                </select>
               </div>
               <div className="space-y-2">
                 <Label>Test Scores</Label>
@@ -301,7 +348,9 @@ export default function SignupPage() {
                   isMulti
                   options={majorOptions}
                   onChange={handleMajorChange}
-                  value={majorOptions.filter(opt => formData.targetMajors.includes(opt.value))}
+                  value={majorOptions.filter((opt) =>
+                    formData.targetMajors.includes(opt.value)
+                  )}
                   placeholder="Select one or more majors"
                   className="basic-multi-select"
                   classNamePrefix="select"
@@ -318,7 +367,9 @@ export default function SignupPage() {
                   isMulti
                   options={interestOptions}
                   onChange={handleInterestChange}
-                  value={interestOptions.filter(opt => formData.researchInterests.includes(opt.value))}
+                  value={interestOptions.filter((opt) =>
+                    formData.researchInterests.includes(opt.value)
+                  )}
                   placeholder="Select one or more interests"
                   className="basic-multi-select"
                   classNamePrefix="select"
@@ -347,7 +398,9 @@ export default function SignupPage() {
                   isMulti
                   options={countryOptions}
                   onChange={handleCountryChange}
-                  value={countryOptions.filter(opt => formData.targetCountries.includes(opt.value))}
+                  value={countryOptions.filter((opt) =>
+                    formData.targetCountries.includes(opt.value)
+                  )}
                   placeholder="Select one or more countries"
                   className="basic-multi-select"
                   classNamePrefix="select"
@@ -357,7 +410,9 @@ export default function SignupPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password <span className="text-destructive">*</span></Label>
+                <Label htmlFor="password">
+                  Password <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="password"
                   name="password"
@@ -370,7 +425,9 @@ export default function SignupPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password <span className="text-destructive">*</span></Label>
+                <Label htmlFor="confirmPassword">
+                  Confirm Password <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -405,5 +462,5 @@ export default function SignupPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

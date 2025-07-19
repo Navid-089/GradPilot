@@ -64,7 +64,7 @@ export default function Dashboard() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/dashboard/universities">
+          <Link href="/universities">
             Find Universities
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
@@ -72,7 +72,7 @@ export default function Dashboard() {
       </div>
 
       {/* Application Progress */}
-      <Card>
+      {/* <Card>
         <CardHeader className="pb-2">
           <CardTitle>Application Progress</CardTitle>
           <CardDescription>
@@ -87,13 +87,13 @@ export default function Dashboard() {
               title="Universities"
               value={dashboardData.progress.universities}
               icon={<School className="h-5 w-5" />}
-              href="/dashboard/universities"
+              href="/universities"
             />
             <ProgressCard
               title="Professors"
               value={dashboardData.progress.professors}
               icon={<Users className="h-5 w-5" />}
-              href="/dashboard/professors"
+              href="/research"
             />
             <ProgressCard
               title="SOP Review"
@@ -115,7 +115,7 @@ export default function Dashboard() {
             />
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Upcoming Deadlines */}
@@ -262,7 +262,7 @@ export default function Dashboard() {
 
           <div className="mt-4">
             <Button asChild className="w-full">
-              <Link href="/dashboard/universities">
+              <Link href="/universities">
                 View All Matches
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>

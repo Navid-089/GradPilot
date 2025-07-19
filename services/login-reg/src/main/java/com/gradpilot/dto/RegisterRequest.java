@@ -14,14 +14,23 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class RegisterRequest {
+    // Gender (optional)
+    private String gender;
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String name;
 
     @Email(message = "Please provide a valid email address")
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$",
-            message = "Email format is invalid. Domain must be lowercase and properly formatted.")
+    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$", message = "Email format is invalid. Domain must be lowercase and properly formatted.")
     @NotBlank(message = "Email is required")
     private String email;
 

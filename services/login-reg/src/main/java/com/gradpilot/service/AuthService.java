@@ -85,6 +85,7 @@ public class AuthService {
             user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
             user.setCgpa(registerRequest.getGpa());
             user.setApplyYear(registerRequest.getDeadlineYear());
+            user.setGender(registerRequest.getGender());
             user.setCreatedAt(LocalDateTime.now());
 
             // Save user to database
@@ -104,7 +105,8 @@ public class AuthService {
             // Save research interests (IDs)
             if (registerRequest.getResearchInterests() != null) {
                 for (Integer interestId : registerRequest.getResearchInterests()) {
-                    UserResearchInterest userResearchInterest = new UserResearchInterest(savedUser.getUserId(), interestId);
+                    UserResearchInterest userResearchInterest = new UserResearchInterest(savedUser.getUserId(),
+                            interestId);
                     userResearchInterestRepository.save(userResearchInterest);
                 }
             }
