@@ -4,16 +4,30 @@ import com.gradpilot.recommendation.dto.RecommendationDto;
 import com.gradpilot.recommendation.dto.UniversityRecommendationDto;
 import com.gradpilot.recommendation.model.*;
 import com.gradpilot.recommendation.repository.*;
+
+import jakarta.persistence.EntityManager;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+
 @Service
 public class RecommendationService {
     private final UserRepository userRepository;
+
+    @Autowired
     private final ProfessorRepository professorRepository;
+
+    @Autowired
+    private EntityManager entityManager;
+
     private final MLRecommendationService mlRecommendationService;
+
+    
 
     public RecommendationService(UserRepository userRepository, ProfessorRepository professorRepository, 
                                MLRecommendationService mlRecommendationService) {
@@ -59,17 +73,37 @@ public class RecommendationService {
     }
 
     public List<UniversityRecommendationDto> getUniversityRecommendationsByCategory(String email, String category, int limit) {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
-        return mlRecommendationService.getRecommendationsByCategory(user.getUserId(), category, limit);
+        // For now, just return the regular university recommendations
+        return getUniversityRecommendations(email);
     }
 
-    public Map<String, Object> getAllRecommendations(String email) {
-        Map<String, Object> allRecommendations = new HashMap<>();
-        
-        allRecommendations.put("professors", getProfessorRecommendations(email));
-        allRecommendations.put("universities", getUniversityRecommendations(email));
-        
-        return allRecommendations;
+    public List<Professor> getProfessorRecommendationsByInterests(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        Integer userId = user.getUserId();
+
+        // Get all professors
+        List<Professor> allProfessors = professorRepository.findAll();
+
+        // Get matching professors (those with same research interests as user)
+        List<Professor> matching = professorRepository.findProfessorsMatchingUserInterests(userId);
+        Set<Integer> matchedIds = matching.stream()
+                .map(Professor::getId)
+                .collect(Collectors.toSet());
+
+        // Sort: professors with matching interests first, then others
+        allProfessors.sort((p1, p2) -> {
+            boolean p1Match = matchedIds.contains(p1.getId());
+            boolean p2Match = matchedIds.contains(p2.getId());
+            return Boolean.compare(!p1Match, !p2Match); // true comes after false, so matches first
+        });
+
+        return allProfessors;
+    }
+
+    public List<ResearchInterest> getUserResearchInterests(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        return user.getResearchInterests();
     }
 }

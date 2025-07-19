@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -9,14 +9,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { Users, Search, School, Mail, ExternalLink, BookOpen, Star } from "lucide-react"
+import { Users, Search, School, Mail, ExternalLink, BookOpen, Star, StarIcon } from "lucide-react"
 import { getProfessorSuggestions } from "@/lib/professor-service"
+import { trackerService } from "@/lib/tracker-service"
+import { useAuth } from "@/lib/auth-context"
 
 export default function ProfessorsPage() {
+  const { user } = useAuth()
   const [professors, setProfessors] = useState([])
   const [filteredProfessors, setFilteredProfessors] = useState([])
+  const [savedProfessors, setSavedProfessors] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [activeTab, setActiveTab] = useState("all")
 
   const [filters, setFilters] = useState({
     universities: [],
@@ -58,9 +63,84 @@ export default function ProfessorsPage() {
     fetchData()
   }, [])
 
+  // Load saved professors from backend
+  const loadSavedProfessors = useCallback(async () => {
+    try {
+      console.log("Loading saved professors...")
+      const savedTasks = await trackerService.getUserTasksByType('professor')
+      console.log("Saved tasks:", savedTasks)
+      const savedProfessorIds = savedTasks.map(task => task.professorId)
+      console.log("Saved professor IDs:", savedProfessorIds)
+      
+      // Filter professors to get saved ones
+      const saved = professors.filter(prof => savedProfessorIds.includes(prof.id))
+      console.log("Saved professors:", saved)
+      setSavedProfessors(saved)
+    } catch (error) {
+      console.error("Error loading saved professors:", error)
+    }
+  }, [professors])
+
+  // Load saved professors when professors data is available
+  useEffect(() => {
+    if (professors.length > 0 && user) {
+      loadSavedProfessors()
+    }
+  }, [professors, user, loadSavedProfessors])
+
+  // Save a professor
+  const handleSaveProfessor = async (professorId) => {
+    try {
+      console.log("Saving professor with ID:", professorId)
+      await trackerService.saveTask('professor', professorId)
+      console.log("Professor saved successfully")
+      await loadSavedProfessors()
+      
+      // Remove from filtered professors if in "all" tab
+      if (activeTab === "all") {
+        setFilteredProfessors(prev => prev.filter(prof => prof.id !== professorId))
+      }
+    } catch (error) {
+      console.error("Error saving professor:", error)
+      alert("Failed to save professor")
+    }
+  }
+
+  // Unsave a professor
+  const handleUnsaveProfessor = async (professorId) => {
+    try {
+      await trackerService.removeTask('professor', professorId)
+      
+      // Remove from saved professors list
+      setSavedProfessors(prev => prev.filter(prof => prof.id !== professorId))
+      
+      // Add back to all professors if in "all" tab
+      if (activeTab === "all") {
+        const professorToAdd = professors.find(prof => prof.id === professorId)
+        if (professorToAdd) {
+          setFilteredProfessors(prev => [...prev, professorToAdd])
+        }
+      }
+    } catch (error) {
+      console.error("Error unsaving professor:", error)
+      alert("Failed to unsave professor")
+    }
+  }
+
+  // Check if professor is saved
+  const isProfessorSaved = (professorId) => {
+    return savedProfessors.some(prof => prof.id === professorId)
+  }
+
   useEffect(() => {
     // Apply filters and search
     let result = [...professors]
+
+    // Exclude saved professors from "all" tab
+    if (activeTab === "all") {
+      const savedProfessorIds = savedProfessors.map(prof => prof.id)
+      result = result.filter(prof => !savedProfessorIds.includes(prof.id))
+    }
 
     // Apply search query
     if (searchQuery) {
@@ -84,7 +164,7 @@ export default function ProfessorsPage() {
     }
 
     setFilteredProfessors(result)
-  }, [searchQuery, filters, professors])
+  }, [searchQuery, filters, professors, savedProfessors, activeTab])
 
   const handleUniversityChange = (university) => {
     setFilters((prev) => {
@@ -212,15 +292,23 @@ export default function ProfessorsPage() {
             </Select>
           </div>
 
-          <Tabs defaultValue="all">
+          <Tabs defaultValue="all" onValueChange={setActiveTab}>
             <TabsList>
               <TabsTrigger value="all">All Professors</TabsTrigger>
-              <TabsTrigger value="saved">Saved</TabsTrigger>
+              <TabsTrigger value="saved">Saved ({savedProfessors.length})</TabsTrigger>
               <TabsTrigger value="contacted">Contacted</TabsTrigger>
             </TabsList>
             <TabsContent value="all" className="space-y-4 mt-4">
               {filteredProfessors.length > 0 ? (
-                filteredProfessors.map((professor) => <ProfessorCard key={professor.id} professor={professor} />)
+                filteredProfessors.map((professor) => (
+                  <ProfessorCard 
+                    key={professor.id} 
+                    professor={professor} 
+                    onSave={handleSaveProfessor}
+                    onUnsave={handleUnsaveProfessor}
+                    isSaved={isProfessorSaved(professor.id)}
+                  />
+                ))
               ) : (
                 <div className="text-center py-10">
                   <Users className="h-12 w-12 mx-auto text-muted-foreground" />
@@ -230,11 +318,23 @@ export default function ProfessorsPage() {
               )}
             </TabsContent>
             <TabsContent value="saved" className="space-y-4 mt-4">
-              <div className="text-center py-10">
-                <Star className="h-12 w-12 mx-auto text-muted-foreground" />
-                <h3 className="mt-4 text-lg font-medium">No saved professors</h3>
-                <p className="text-muted-foreground">Save professors to track them here</p>
-              </div>
+              {savedProfessors.length > 0 ? (
+                savedProfessors.map((professor) => (
+                  <ProfessorCard 
+                    key={professor.id} 
+                    professor={professor} 
+                    onSave={handleSaveProfessor}
+                    onUnsave={handleUnsaveProfessor}
+                    isSaved={true}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-10">
+                  <Star className="h-12 w-12 mx-auto text-muted-foreground" />
+                  <h3 className="mt-4 text-lg font-medium">No saved professors</h3>
+                  <p className="text-muted-foreground">Save professors to track them here</p>
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="contacted" className="space-y-4 mt-4">
               <div className="text-center py-10">
@@ -250,7 +350,16 @@ export default function ProfessorsPage() {
   )
 }
 
-function ProfessorCard({ professor }) {
+function ProfessorCard({ professor, onSave, onUnsave, isSaved }) {
+  const handleSaveToggle = () => {
+    console.log("Save toggle clicked for professor:", professor.id, "isSaved:", isSaved)
+    if (isSaved) {
+      onUnsave(professor.id)
+    } else {
+      onSave(professor.id)
+    }
+  }
+
   return (
     <Card>
       <CardContent className="p-6">
@@ -280,13 +389,28 @@ function ProfessorCard({ professor }) {
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">Recent Papers</p>
+              <p className="text-sm font-medium">Recent Paperssss</p>
               <ul className="space-y-1">
-                {professor.recentPapers.map((paper, index) => (
-                  <li key={index} className="text-sm text-muted-foreground">
-                    • {paper}
-                  </li>
-                ))}
+                {professor.recentPapers && professor.recentPapers.length > 0 ? (
+                  professor.recentPapers.map((paper, index) => (
+                    <li key={index} className="text-sm text-muted-foreground">
+                      • {paper.url ? (
+                        <a 
+                          href={paper.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 hover:underline"
+                        >
+                          {paper.title}
+                        </a>
+                      ) : (
+                        paper.title
+                      )}
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-sm text-muted-foreground">No recent papers available</li>
+                )}
               </ul>
             </div>
 
@@ -313,9 +437,14 @@ function ProfessorCard({ professor }) {
                   </a>
                 </Button>
               )}
-              <Button variant="outline" size="sm">
-                <Star className="mr-2 h-4 w-4" />
-                Save
+              <Button 
+                variant={isSaved ? "default" : "outline"} 
+                size="sm" 
+                onClick={handleSaveToggle}
+                className={isSaved ? "bg-yellow-500 hover:bg-yellow-600 text-white" : ""}
+              >
+                {isSaved ? <StarIcon className="mr-2 h-4 w-4 fill-current" /> : <Star className="mr-2 h-4 w-4" />}
+                {isSaved ? "Unsave" : "Save"}
               </Button>
             </div>
           </div>

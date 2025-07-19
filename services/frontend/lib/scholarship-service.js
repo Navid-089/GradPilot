@@ -1,10 +1,142 @@
-// Mock scholarship service
+// Real scholarship service that calls the backend API
+
+const API_BASE_URL = 'http://localhost:8083'
 
 export async function getScholarships() {
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+  try {
+    const token = localStorage.getItem('token')
+    
+    if (!token) {
+      throw new Error('No authentication token found')
+    }
 
-  // Mock successful response
+    const response = await fetch(`${API_BASE_URL}/api/recommendations/scholarships`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const scholarships = await response.json()
+    console.log("=== SCHOLARSHIP SERVICE DEBUG ===")
+    console.log("Raw scholarships from backend:", scholarships)
+    
+    // Log deadline information specifically
+    scholarships.forEach(scholarship => {
+      console.log(`Scholarship ID ${scholarship.id}: deadline = "${scholarship.deadline}"`)
+    })
+    
+    // Transform backend data to match frontend expectations
+    const transformedScholarships = scholarships.map(scholarship => {
+      // Map provider based on university or default to the scholarship name prefix
+      let provider = 'External Provider'
+      
+      if (scholarship.university && scholarship.university.name) {
+        // If it's a university-specific scholarship, use "University Specific" as provider
+        // This allows filtering by "University Specific" to work
+        provider = 'University Specific'
+      } else {
+        // For external scholarships, extract provider from name or use known mappings
+        const name = scholarship.name.toLowerCase()
+        if (name.includes('fulbright')) {
+          provider = 'USA Government'
+        } else if (name.includes('daad')) {
+          provider = 'DAAD'
+        } else if (name.includes('gates cambridge')) {
+          provider = 'Gates Foundation'
+        } else if (name.includes('chevening')) {
+          provider = 'UK Government'
+        } else if (name.includes('commonwealth')) {
+          provider = 'Government'
+        } else if (name.includes('erasmus')) {
+          provider = 'European Union'
+        } else if (name.includes('tsinghua')) {
+          provider = 'Tsinghua University'
+        } else if (name.includes('peking') || name.includes('pku')) {
+          provider = 'Peking University'
+        } else if (name.includes('imperial')) {
+          provider = 'Imperial College London'
+        } else if (name.includes('edinburgh')) {
+          provider = 'University of Edinburgh'
+        } else {
+          // Try to extract from the scholarship name or use 'Private Foundation'
+          provider = 'Private Foundation'
+        }
+      }
+      
+      const transformedScholarship = {
+        id: scholarship.id,
+        title: scholarship.name,
+        provider: provider,
+        universityName: scholarship.university ? scholarship.university.name : null, // Keep university name for display
+        amount: scholarship.coverage || 'Contact for details',
+        deadline: scholarship.deadline || '2025-12-31', // Use real deadline from backend
+        applyLink: scholarship.applyLink || '#',
+        description: scholarship.description || 'No description available',
+        eligibility: scholarship.eligibility || 'Contact for eligibility details'
+      }
+      
+      console.log(`Transformed scholarship ${scholarship.id}: deadline = "${transformedScholarship.deadline}"`)
+      return transformedScholarship
+    })
+    
+    console.log("Transformed scholarships:", transformedScholarships)
+    console.log("Unique providers:", [...new Set(transformedScholarships.map(s => s.provider))])
+    
+    return transformedScholarships
+  } catch (error) {
+    console.error('Error fetching scholarships:', error)
+    // Return mock data as fallback
+    return getMockScholarships()
+  }
+}
+
+export async function getScholarshipById(id) {
+  try {
+    const token = localStorage.getItem('token')
+    
+    if (!token) {
+      throw new Error('No authentication token found')
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/recommendations/scholarships/${id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const scholarship = await response.json()
+    
+    // Transform backend data to match frontend expectations
+    return {
+      id: scholarship.id,
+      title: scholarship.name,
+      provider: scholarship.university ? scholarship.university.name : 'External Provider',
+      amount: scholarship.coverage || 'Contact for details',
+      deadline: '2025-12-31', // Default deadline
+      applyLink: scholarship.applyLink || '#',
+      description: scholarship.description || 'No description available',
+      eligibility: scholarship.eligibility || 'Contact for eligibility details'
+    }
+  } catch (error) {
+    console.error('Error fetching scholarship:', error)
+    throw error
+  }
+}
+
+// Mock data as fallback
+function getMockScholarships() {
   return [
     {
       id: 1,

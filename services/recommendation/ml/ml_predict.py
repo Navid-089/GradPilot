@@ -12,7 +12,7 @@ import joblib
 import numpy as np
 from pathlib import Path
 
-def load_model(model_path="models/improved_university_recommender.pkl"):
+def load_model(model_path="ml/models/improved_university_recommender.pkl"):
     """Load the trained model"""
     try:
         model_data = joblib.load(model_path)
@@ -53,9 +53,59 @@ def predict_probabilities(user_profile, model_data):
         
         # Load datasets to get university list
         try:
-            df1 = pd.read_csv("gradPilot_train.csv")
-            df2 = pd.read_csv("Synthetic_Admission_Dataset.csv")
-            df = pd.concat([df1, df2], ignore_index=True)
+            # Add debug info about current working directory
+            import os
+            print(f"[DEBUG] Current working directory: {os.getcwd()}", file=sys.stderr)
+            print(f"[DEBUG] Script location: {os.path.dirname(os.path.abspath(__file__))}", file=sys.stderr)
+            
+            # Get the script's directory to build absolute paths
+            script_dir = Path(__file__).resolve().parent
+            print(f"[DEBUG] Script directory: {script_dir}", file=sys.stderr)
+            
+            # Try multiple possible paths for the CSV files
+            possible_paths = [
+                # 1. Relative to script directory (should work in Docker and dev)
+                (script_dir / "models" / "gradPilot_train.csv", script_dir / "models" / "Synthetic_Admission_Dataset.csv"),
+                # 2. Relative to working directory - common Docker scenario
+                ("ml/models/gradPilot_train.csv", "ml/models/Synthetic_Admission_Dataset.csv"),
+                # 3. Absolute path in Docker container (if files are copied there)
+                ("/app/ml/models/gradPilot_train.csv", "/app/ml/models/Synthetic_Admission_Dataset.csv"),
+                # 4. Alternative Docker paths
+                ("./ml/models/gradPilot_train.csv", "./ml/models/Synthetic_Admission_Dataset.csv"),
+                # 5. Direct relative paths (fallback)
+                ("models/gradPilot_train.csv", "models/Synthetic_Admission_Dataset.csv")
+            ]
+            
+            df = None
+            for train_path, synthetic_path in possible_paths:
+                try:
+                    print(f"[DEBUG] Trying paths: {train_path}, {synthetic_path}", file=sys.stderr)
+                    
+                    # Check if files exist before trying to read
+                    if isinstance(train_path, Path):
+                        train_exists = train_path.exists()
+                        synthetic_exists = synthetic_path.exists()
+                    else:
+                        train_exists = os.path.exists(train_path)
+                        synthetic_exists = os.path.exists(synthetic_path)
+                    
+                    print(f"[DEBUG] Files exist - Train: {train_exists}, Synthetic: {synthetic_exists}", file=sys.stderr)
+                    
+                    if train_exists and synthetic_exists:
+                        df1 = pd.read_csv(train_path)
+                        df2 = pd.read_csv(synthetic_path)
+                        df = pd.concat([df1, df2], ignore_index=True)
+                        print(f"[DEBUG] Successfully loaded {len(df1)} + {len(df2)} = {len(df)} records", file=sys.stderr)
+                        break
+                    else:
+                        print(f"[DEBUG] Files not found at {train_path}, {synthetic_path}", file=sys.stderr)
+                except Exception as e:
+                    print(f"[DEBUG] Failed to load from {train_path}: {e}", file=sys.stderr)
+                    continue
+            
+            if df is None:
+                print("[DEBUG] Could not find CSV files in any expected location, using fallback", file=sys.stderr)
+                raise FileNotFoundError("Could not find CSV files in any expected location")
         except FileNotFoundError:
             # If datasets not found, use a default university list
             universities = [
@@ -70,6 +120,8 @@ def predict_probabilities(user_profile, model_data):
             df = pd.DataFrame({'University': universities})
         
         universities = df['University'].dropna().unique()
+        print(f"[DEBUG] Total unique universities loaded: {len(universities)}", file=sys.stderr)
+        print(f"[DEBUG] First 5 universities: {universities[:5].tolist()}", file=sys.stderr)
         
         # Filter universities based on user preferences if provided
         user_target_countries = user_profile.get('Target_Countries', '').split(',')
@@ -165,6 +217,22 @@ def main():
     except Exception as e:
         print(f"Error loading user profile: {e}", file=sys.stderr)
         sys.exit(1)
+
+    # Step 1: Ensure fields exist
+    required_keys = [
+        'CGPA', 'GRE', 'TOEFL', 'IELTS', 'Paper', 'Gap_year', 'Work_Experience',
+        'Ugrad', 'Ugrad_Major', 'Funding', 'Degree'
+    ]
+    for key in required_keys:
+        if key not in user_profile:
+            user_profile[key] = "Unknown" if key in ['Ugrad', 'Ugrad_Major', 'Funding', 'Degree'] else 0
+
+    # ✅ Step 2: Force categorical string fields to str
+    for key in ['Ugrad', 'Ugrad_Major', 'Funding', 'Degree', 'Work_Experience']:
+        user_profile[key] = str(user_profile[key])
+
+    for key in required_keys:
+        user_profile.setdefault(key, 0)
     
     # Load model
     model_data = load_model(args.model)
@@ -175,6 +243,7 @@ def main():
     results = predict_probabilities(user_profile, model_data)
     
     # Output results as JSON
+    print(f"[DEBUG] Final ML Results Count: {len(results)}", file=sys.stderr)
     print(json.dumps(results, indent=2))
 
 if __name__ == "__main__":

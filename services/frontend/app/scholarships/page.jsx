@@ -11,21 +11,44 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { Award, Search, Calendar, DollarSign, ExternalLink, Star, Check, GraduationCap } from "lucide-react"
+import { Award, Search, Calendar, DollarSign, ExternalLink, Star, Check, GraduationCap, ChevronLeft, ChevronRight } from "lucide-react"
 import { getScholarships } from "@/lib/scholarship-service"
+import { trackerService } from "@/lib/tracker-service"
+import { applicationService } from "@/lib/application-service"
+import { useAuth } from "@/lib/auth-context"
 
 export default function ScholarshipsPage() {
+  const { user } = useAuth()
   const [scholarships, setScholarships] = useState([])
   const [filteredScholarships, setFilteredScholarships] = useState([])
+  const [savedScholarships, setSavedScholarships] = useState([])
+  const [appliedScholarships, setAppliedScholarships] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [activeTab, setActiveTab] = useState("all")
+  const [sortBy, setSortBy] = useState("deadline")
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
+  const pageSize = 6
 
   const [filters, setFilters] = useState({
     providers: [],
     coverageTypes: [],
   })
 
-  const providers = ["USA Government", "DAAD", "Fulbright", "University Specific", "Private Foundation", "Government"]
+  const providers = [
+    "USA Government", 
+    "DAAD", 
+    "Gates Foundation",
+    "UK Government",
+    "European Union",
+    "Government", 
+    "Private Foundation",
+    "University Specific"
+  ]
   const coverageTypes = ["Full tuition", "Partial tuition", "Monthly stipend", "Travel allowance", "Health insurance"]
 
   useEffect(() => {
@@ -34,6 +57,12 @@ export default function ScholarshipsPage() {
         const data = await getScholarships()
         setScholarships(data)
         setFilteredScholarships(data)
+        
+        // Load saved scholarships and applications
+        if (user) {
+          await loadSavedScholarships(data)
+          await loadAppliedScholarships(data)
+        }
       } catch (error) {
         console.error("Error fetching scholarship data:", error)
       } finally {
@@ -42,33 +71,295 @@ export default function ScholarshipsPage() {
     }
 
     fetchData()
-  }, [])
+  }, [user])
+
+  // Load saved scholarships from backend
+  const loadSavedScholarships = async (allScholarships = scholarships) => {
+    try {
+      const savedTasks = await trackerService.getUserTasksByType('scholarship')
+      const savedScholarshipIds = savedTasks.map(task => task.scholarshipId)
+      const saved = allScholarships.filter(scholarship => savedScholarshipIds.includes(scholarship.id))
+      setSavedScholarships(saved)
+    } catch (error) {
+      console.error("Error loading saved scholarships:", error)
+    }
+  }
+
+  // Save a scholarship with blur effect
+  const handleSaveScholarship = async (scholarshipId) => {
+    try {
+      // Add visual feedback with blur effect
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'blur(2px)'
+        scholarshipElement.style.opacity = '0.7'
+        scholarshipElement.style.transition = 'all 0.3s ease-in-out'
+      }
+
+      await trackerService.saveTask('scholarship', scholarshipId)
+      await loadSavedScholarships()
+      
+      // Remove from filtered scholarships if in "all" tab
+      if (activeTab === "all") {
+        setFilteredScholarships(prev => prev.filter(scholarship => scholarship.id !== scholarshipId))
+      }
+    } catch (error) {
+      console.error("Error saving scholarship:", error)
+      alert("Failed to save scholarship")
+      
+      // Reset visual feedback on error
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'none'
+        scholarshipElement.style.opacity = '1'
+      }
+    }
+  }
+
+  // Unsave a scholarship with blur effect
+  const handleUnsaveScholarship = async (scholarshipId) => {
+    try {
+      // Add visual feedback with blur effect
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'blur(2px)'
+        scholarshipElement.style.opacity = '0.7'
+        scholarshipElement.style.transition = 'all 0.3s ease-in-out'
+      }
+
+      await trackerService.removeTask('scholarship', scholarshipId)
+      setSavedScholarships(prev => prev.filter(scholarship => scholarship.id !== scholarshipId))
+      
+      // Add back to all scholarships if in "all" tab
+      if (activeTab === "all") {
+        const scholarshipToAdd = scholarships.find(scholarship => scholarship.id === scholarshipId)
+        if (scholarshipToAdd) {
+          setFilteredScholarships(prev => [...prev, scholarshipToAdd])
+        }
+      }
+    } catch (error) {
+      console.error("Error unsaving scholarship:", error)
+      alert("Failed to unsave scholarship")
+      
+      // Reset visual feedback on error
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'none'
+        scholarshipElement.style.opacity = '1'
+      }
+    }
+  }
+
+  // Load applied scholarships from backend
+  const loadAppliedScholarships = async (allScholarships = scholarships) => {
+    try {
+      const applications = await applicationService.getUserApplications()
+      const appliedScholarshipIds = applications.map(app => app.scholarshipId)
+      const applied = allScholarships.filter(scholarship => appliedScholarshipIds.includes(scholarship.id))
+      setAppliedScholarships(applied)
+    } catch (error) {
+      console.error("Error loading applied scholarships:", error)
+    }
+  }
+
+  // Apply to a scholarship with blur effect
+  const handleApplyToScholarship = async (scholarshipId) => {
+    try {
+      // Add visual feedback with blur effect
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'blur(2px)'
+        scholarshipElement.style.opacity = '0.7'
+        scholarshipElement.style.transition = 'all 0.3s ease-in-out'
+      }
+
+      await applicationService.applyToScholarship(scholarshipId)
+      await loadAppliedScholarships()
+      
+      // Remove from filtered scholarships if in "all" tab
+      if (activeTab === "all") {
+        setFilteredScholarships(prev => prev.filter(scholarship => scholarship.id !== scholarshipId))
+      }
+    } catch (error) {
+      console.error("Error applying to scholarship:", error)
+      alert("Failed to apply to scholarship")
+      
+      // Reset visual feedback on error
+      const scholarshipElement = document.querySelector(`[data-scholarship-id="${scholarshipId}"]`)
+      if (scholarshipElement) {
+        scholarshipElement.style.filter = 'none'
+        scholarshipElement.style.opacity = '1'
+      }
+    }
+  }
+
+  // Remove application from a scholarship
+  const handleRemoveApplication = async (scholarshipId) => {
+    try {
+      await applicationService.removeApplication(scholarshipId)
+      setAppliedScholarships(prev => prev.filter(scholarship => scholarship.id !== scholarshipId))
+      
+      // Add back to all scholarships if in "all" tab
+      if (activeTab === "all") {
+        const scholarshipToAdd = scholarships.find(scholarship => scholarship.id === scholarshipId)
+        if (scholarshipToAdd) {
+          setFilteredScholarships(prev => [...prev, scholarshipToAdd])
+        }
+      }
+    } catch (error) {
+      console.error("Error removing application:", error)
+      alert("Failed to remove application")
+    }
+  }
+
+  // Check if scholarship is applied to
+  const isScholarshipApplied = (scholarshipId) => {
+    return appliedScholarships.some(scholarship => scholarship.id === scholarshipId)
+  }
+
+  // Check if scholarship is saved
+  const isScholarshipSaved = (scholarshipId) => {
+    return savedScholarships.some(scholarship => scholarship.id === scholarshipId)
+  }
 
   useEffect(() => {
     // Apply filters and search
     let result = [...scholarships]
+    
+    console.log("=== SCHOLARSHIP FILTERING DEBUG ===")
+    console.log("Total scholarships:", scholarships.length)
+    console.log("Active tab:", activeTab)
+    console.log("Search query:", searchQuery)
+    console.log("Provider filters:", filters.providers)
+    console.log("Coverage filters:", filters.coverageTypes)
+
+    // Exclude saved scholarships and applied scholarships from "all" tab
+    if (activeTab === "all") {
+      const savedScholarshipIds = savedScholarships.map(scholarship => scholarship.id)
+      const appliedScholarshipIds = appliedScholarships.map(scholarship => scholarship.id)
+      result = result.filter(scholarship => 
+        !savedScholarshipIds.includes(scholarship.id) && 
+        !appliedScholarshipIds.includes(scholarship.id)
+      )
+      console.log("After excluding saved and applied scholarships:", result.length)
+    }
 
     // Apply search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       result = result.filter(
         (scholarship) =>
-          scholarship.title.toLowerCase().includes(query) || scholarship.provider.toLowerCase().includes(query),
+          scholarship.title.toLowerCase().includes(query) ||
+          scholarship.provider.toLowerCase().includes(query)
       )
+      console.log("After search filter:", result.length)
     }
 
     // Apply provider filter
     if (filters.providers.length > 0) {
-      result = result.filter((scholarship) => filters.providers.includes(scholarship.provider))
+      const beforeCount = result.length
+      result = result.filter((scholarship) => {
+        const matches = filters.providers.includes(scholarship.provider)
+        if (!matches) {
+          console.log(`Scholarship "${scholarship.title}" with provider "${scholarship.provider}" doesn't match filters:`, filters.providers)
+        }
+        return matches
+      })
+      console.log(`After provider filter: ${result.length} (was ${beforeCount})`)
     }
 
     // Apply coverage type filter
     if (filters.coverageTypes.length > 0) {
+      const beforeCount = result.length
       result = result.filter((scholarship) => filters.coverageTypes.some((type) => scholarship.amount.includes(type)))
+      console.log(`After coverage filter: ${result.length} (was ${beforeCount})`)
     }
 
-    setFilteredScholarships(result)
-  }, [searchQuery, filters, scholarships])
+    // Apply sorting
+    switch (sortBy) {
+      case "deadline":
+        result.sort((a, b) => {
+          const dateA = new Date(a.deadline)
+          const dateB = new Date(b.deadline)
+          return dateA.getTime() - dateB.getTime() // Soonest first
+        })
+        break
+      case "amount":
+        result.sort((a, b) => {
+          // Extract numeric values from amount strings for comparison
+          const getAmountValue = (amount) => {
+            if (!amount || amount === 'Contact for details') return 0
+            
+            const amountLower = amount.toLowerCase()
+            let value = 0
+            
+            // Base tuition values
+            if (amountLower.includes('full tuition')) {
+              value += 50000 // Base value for full tuition
+            } else if (amountLower.includes('partial tuition')) {
+              value += 25000 // Base value for partial tuition
+            } else if (amountLower.includes('tuition')) {
+              value += 30000 // Generic tuition
+            }
+            
+            // Extract specific dollar amounts
+            const dollarMatches = amountLower.match(/\$[\d,]+/g)
+            if (dollarMatches) {
+              dollarMatches.forEach(match => {
+                const numValue = parseInt(match.replace(/[$,]/g, ''))
+                value += numValue
+              })
+            }
+            
+            // Add values for additional benefits
+            if (amountLower.includes('monthly stipend') || amountLower.includes('living allowance')) {
+              value += 15000 // Annual equivalent of monthly stipend
+            }
+            if (amountLower.includes('stipend') && !amountLower.includes('monthly')) {
+              value += 12000 // General stipend
+            }
+            if (amountLower.includes('airfare') || amountLower.includes('travel')) {
+              value += 2000 // Travel allowance
+            }
+            if (amountLower.includes('health insurance') || amountLower.includes('insurance')) {
+              value += 3000 // Health insurance value
+            }
+            if (amountLower.includes('monthly allowance')) {
+              value += 18000 // Annual equivalent
+            }
+            
+            return value
+          }
+          return getAmountValue(b.amount) - getAmountValue(a.amount) // Highest first
+        })
+        break
+      case "title":
+        result.sort((a, b) => a.title.localeCompare(b.title)) // A-Z
+        break
+      default:
+        break
+    }
+
+    console.log("Final filtered scholarships:", result.length)
+    
+    // Calculate pagination
+    setTotalElements(result.length)
+    setTotalPages(Math.ceil(result.length / pageSize))
+
+    // Apply pagination
+    const startIndex = currentPage * pageSize
+    const endIndex = startIndex + pageSize
+    const paginatedResult = result.slice(startIndex, endIndex)
+
+    setFilteredScholarships(paginatedResult)
+  }, [searchQuery, filters, scholarships, savedScholarships, appliedScholarships, activeTab, sortBy, currentPage, pageSize])
+
+  // Reset pagination when search or filters change
+  useEffect(() => {
+    if (currentPage !== 0) {
+      setCurrentPage(0)
+    }
+  }, [searchQuery, filters, sortBy])
 
   const handleProviderChange = (provider) => {
     setFilters((prev) => {
@@ -175,15 +466,15 @@ export default function ScholarshipsPage() {
             <div className="md:col-span-3 space-y-6">
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search scholarships..."
-                    className="pl-10"
+                    className="pr-8"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
+                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-muted-foreground" />
                 </div>
-                <Select defaultValue="deadline">
+                <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
@@ -195,11 +486,19 @@ export default function ScholarshipsPage() {
                 </Select>
               </div>
 
-              <Tabs defaultValue="all">
+              {/* Page Info */}
+              {!isLoading && totalElements > 0 && (
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
+                  <span>Showing {currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, totalElements)} of {totalElements} scholarships</span>
+                  <span>Page {currentPage + 1} of {totalPages}</span>
+                </div>
+              )}
+
+              <Tabs defaultValue="all" onValueChange={setActiveTab}>
                 <TabsList>
                   <TabsTrigger value="all">All Scholarships</TabsTrigger>
-                  <TabsTrigger value="saved">Saved</TabsTrigger>
-                  <TabsTrigger value="applied">Applied</TabsTrigger>
+                  <TabsTrigger value="saved">Saved ({savedScholarships.length})</TabsTrigger>
+                  <TabsTrigger value="applied">Applied ({appliedScholarships.length})</TabsTrigger>
                 </TabsList>
                 <TabsContent value="all" className="space-y-4 mt-4">
                   {isLoading ? (
@@ -208,7 +507,16 @@ export default function ScholarshipsPage() {
                     </div>
                   ) : filteredScholarships.length > 0 ? (
                     filteredScholarships.map((scholarship) => (
-                      <ScholarshipCard key={scholarship.id} scholarship={scholarship} />
+                      <ScholarshipCard 
+                        key={scholarship.id} 
+                        scholarship={scholarship} 
+                        onSave={handleSaveScholarship}
+                        onUnsave={handleUnsaveScholarship}
+                        onApply={handleApplyToScholarship}
+                        onRemoveApplication={handleRemoveApplication}
+                        isSaved={isScholarshipSaved(scholarship.id)}
+                        isApplied={isScholarshipApplied(scholarship.id)}
+                      />
                     ))
                   ) : (
                     <div className="text-center py-10">
@@ -217,20 +525,112 @@ export default function ScholarshipsPage() {
                       <p className="text-muted-foreground">Try adjusting your filters or search query</p>
                     </div>
                   )}
+                  
+                  {/* Pagination Controls */}
+                  {!isLoading && totalPages > 1 && activeTab === "all" && (
+                    <div className="flex items-center justify-center space-x-2 mt-8">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCurrentPage(prev => Math.max(0, prev - 1))
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                        disabled={currentPage === 0 || isLoading}
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        Previous
+                      </Button>
+                      
+                      <div className="flex space-x-1">
+                        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                          let page;
+                          if (totalPages <= 5) {
+                            page = i;
+                          } else if (currentPage <= 2) {
+                            page = i;
+                          } else if (currentPage >= totalPages - 3) {
+                            page = totalPages - 5 + i;
+                          } else {
+                            page = currentPage - 2 + i;
+                          }
+                          
+                          return (
+                            <Button
+                              key={page}
+                              variant={currentPage === page ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => {
+                                setCurrentPage(page)
+                                window.scrollTo({ top: 0, behavior: 'smooth' })
+                              }}
+                              className="w-8 h-8 p-0"
+                              disabled={isLoading}
+                            >
+                              {page + 1}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                        disabled={currentPage >= totalPages - 1 || isLoading}
+                      >
+                        Next
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </div>
+                  )}
                 </TabsContent>
                 <TabsContent value="saved" className="space-y-4 mt-4">
-                  <div className="text-center py-10">
-                    <Star className="h-12 w-12 mx-auto text-muted-foreground" />
-                    <h3 className="mt-4 text-lg font-medium">No saved scholarships</h3>
-                    <p className="text-muted-foreground">Save scholarships to track them here</p>
-                  </div>
+                  {savedScholarships.length > 0 ? (
+                    savedScholarships.map((scholarship) => (
+                      <ScholarshipCard 
+                        key={scholarship.id} 
+                        scholarship={scholarship} 
+                        onSave={handleSaveScholarship}
+                        onUnsave={handleUnsaveScholarship}
+                        onApply={handleApplyToScholarship}
+                        onRemoveApplication={handleRemoveApplication}
+                        isSaved={true}
+                        isApplied={isScholarshipApplied(scholarship.id)}
+                      />
+                    ))
+                  ) : (
+                    <div className="text-center py-10">
+                      <Star className="h-12 w-12 mx-auto text-muted-foreground" />
+                      <h3 className="mt-4 text-lg font-medium">No saved scholarships</h3>
+                      <p className="text-muted-foreground">Save scholarships to track them here</p>
+                    </div>
+                  )}
                 </TabsContent>
                 <TabsContent value="applied" className="space-y-4 mt-4">
-                  <div className="text-center py-10">
-                    <Check className="h-12 w-12 mx-auto text-muted-foreground" />
-                    <h3 className="mt-4 text-lg font-medium">No applications yet</h3>
-                    <p className="text-muted-foreground">Scholarships you've applied to will appear here</p>
-                  </div>
+                  {appliedScholarships.length > 0 ? (
+                    appliedScholarships.map((scholarship) => (
+                      <ScholarshipCard 
+                        key={scholarship.id} 
+                        scholarship={scholarship} 
+                        onSave={handleSaveScholarship}
+                        onUnsave={handleUnsaveScholarship}
+                        onApply={handleApplyToScholarship}
+                        onRemoveApplication={handleRemoveApplication}
+                        isSaved={isScholarshipSaved(scholarship.id)}
+                        isApplied={true}
+                      />
+                    ))
+                  ) : (
+                    <div className="text-center py-10">
+                      <Check className="h-12 w-12 mx-auto text-muted-foreground" />
+                      <h3 className="mt-4 text-lg font-medium">No applications yet</h3>
+                      <p className="text-muted-foreground">Scholarships you've applied to will appear here</p>
+                    </div>
+                  )}
                 </TabsContent>
               </Tabs>
             </div>
@@ -267,9 +667,25 @@ export default function ScholarshipsPage() {
   )
 }
 
-function ScholarshipCard({ scholarship }) {
+function ScholarshipCard({ scholarship, onSave, onUnsave, onApply, onRemoveApplication, isSaved, isApplied }) {
+  const handleSaveToggle = () => {
+    if (isSaved) {
+      onUnsave(scholarship.id)
+    } else {
+      onSave(scholarship.id)
+    }
+  }
+
+  const handleApplyToggle = () => {
+    if (isApplied) {
+      onRemoveApplication(scholarship.id)
+    } else {
+      onApply(scholarship.id)
+    }
+  }
+
   return (
-    <Card>
+    <Card data-scholarship-id={scholarship.id}>
       <CardContent className="p-6">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-shrink-0 w-16 h-16 rounded-full bg-muted flex items-center justify-center">
@@ -282,7 +698,7 @@ function ScholarshipCard({ scholarship }) {
                 <h3 className="text-xl font-bold">{scholarship.title}</h3>
                 <p className="text-muted-foreground">Provider: {scholarship.provider}</p>
               </div>
-              <Badge variant="outline" className="w-fit">
+              <Badge variant="outline" className={`w-fit ${getDeadlineColor(scholarship.deadline)}`}>
                 {getDaysUntilDeadline(scholarship.deadline)} days left
               </Badge>
             </div>
@@ -305,19 +721,33 @@ function ScholarshipCard({ scholarship }) {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Button variant="default" asChild>
-                <a href={scholarship.applyLink} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Apply Now
-                </a>
-              </Button>
-              <Button variant="outline">
-                <Star className="mr-2 h-4 w-4" />
-                Save
-              </Button>
-              <Button variant="outline">
+              {!isApplied && (
+                <>
+                  <Button variant="default" asChild>
+                    <a href={scholarship.applyLink} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Apply Now
+                    </a>
+                  </Button>
+                  <Button 
+                    variant={isSaved ? "default" : "outline"} 
+                    size="sm" 
+                    onClick={handleSaveToggle}
+                    className={isSaved ? "bg-yellow-500 hover:bg-yellow-600 text-white" : ""}
+                  >
+                    <Star className="mr-2 h-4 w-4" />
+                    {isSaved ? "Unsave" : "Save"}
+                  </Button>
+                </>
+              )}
+              <Button 
+                variant={isApplied ? "default" : "outline"}
+                size="sm"
+                onClick={handleApplyToggle}
+                className={isApplied ? "bg-red-600 hover:bg-red-700 text-white" : ""}
+              >
                 <Check className="mr-2 h-4 w-4" />
-                Mark as Applied
+                {isApplied ? "Unmark as Applied" : "Mark as Applied"}
               </Button>
             </div>
           </div>
@@ -338,4 +768,19 @@ function getDaysUntilDeadline(deadlineStr) {
   const diffTime = deadline.getTime() - today.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   return diffDays > 0 ? diffDays : 0
+}
+
+function getDeadlineColor(deadlineStr) {
+  const days = getDaysUntilDeadline(deadlineStr)
+  
+  if (days <= 30) {
+    // Within 1 month - red/urgent
+    return "bg-red-100 text-red-800 border-red-200 hover:bg-red-100"
+  } else if (days <= 90) {
+    // 1-3 months - yellow/warning  
+    return "bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-100"
+  } else {
+    // More than 3 months - default/white
+    return "bg-white text-gray-800 border-gray-200 hover:bg-gray-50"
+  }
 }

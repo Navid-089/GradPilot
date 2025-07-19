@@ -7,6 +7,8 @@ import com.gradpilot.recommendation.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.Map;
 @Transactional
 public class TrackerService {
     
+    private static final Logger logger = LoggerFactory.getLogger(TrackerService.class);
+    
     @Autowired
     private TaskRepository taskRepository;
     
@@ -23,15 +27,22 @@ public class TrackerService {
     private UserRepository userRepository;
     
     public String saveTask(String type, String taskId, String userEmail) {
+        logger.info("=== TRACKER SERVICE SAVE ===");
+        logger.info("Type: {}, TaskId: {}, UserEmail: {}", type, taskId, userEmail);
+        
         // Find user by email
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        logger.info("User found: {}", user.getUserId());
         
         // Convert string type to enum
         Task.TaskType taskType;
         try {
             taskType = Task.TaskType.valueOf(type.toUpperCase());
+            logger.info("Task type converted: {}", taskType);
         } catch (IllegalArgumentException e) {
+            logger.error("Invalid task type: {}", type);
             throw new RuntimeException("Invalid task type: " + type);
         }
         
@@ -44,8 +55,12 @@ public class TrackerService {
             taskType == Task.TaskType.SCHOLARSHIP ? Integer.valueOf(taskId) : null
         );
         
+        logger.info("Already exists: {}", alreadyExists);
+        
         if (alreadyExists) {
-            return getAlreadySavedMessage(type);
+            String message = getAlreadySavedMessage(type);
+            logger.info("Already saved message: {}", message);
+            return message;
         }
         
         // Create new task
@@ -66,9 +81,13 @@ public class TrackerService {
                 break;
         }
         
+        logger.info("About to save task: {}", task);
         taskRepository.save(task);
+        logger.info("Task saved successfully");
         
-        return getSuccessMessage(type);
+        String message = getSuccessMessage(type);
+        logger.info("Success message: {}", message);
+        return message;
     }
     
     public List<Map<String, Object>> getUserTasks(String userEmail) {

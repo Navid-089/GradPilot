@@ -1,9 +1,11 @@
 package com.gradpilot.recommendation.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "research_interests")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ResearchInterest {
 
     @Id

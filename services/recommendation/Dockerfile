@@ -33,8 +33,8 @@ RUN pip3 install -r requirements.txt
 # Create models directory and copy ML files
 RUN mkdir -p /app/ml/models
 COPY ml/models/improved_university_recommender.pkl /app/ml/models/
-COPY ml/models/gradPilot_train.csv /app/ml/
-COPY ml/models/Synthetic_Admission_Dataset.csv /app/ml/
+COPY ml/models/gradPilot_train.csv /app/ml/models/
+COPY ml/models/Synthetic_Admission_Dataset.csv /app/ml/models/
 
 WORKDIR /app
 

@@ -1,10 +1,71 @@
-// Mock professor service
+// Professor service that fetches and filters professors based on research interests
 
+const API_BASE_URL = "http://localhost:8083"; // Updated to match recommendation service port
+
+/**
+ * Get professors filtered by user's research interests
+ * @param {string} userEmail - Optional user email parameter
+ * @returns {Promise<Array>} - Array of professors sorted by matching interests
+ */
+export async function getProfessorsByResearchInterests(userEmail = null) {
+  try {
+    // Get authentication token
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    // Use the authenticated user's email if available
+    const email = userEmail || user.email;
+    
+    console.log('Making API call to:', `${API_BASE_URL}/api/recommendations/professors/research`);
+    console.log('With email:', email);
+    console.log('With token:', token ? 'Present' : 'Not present');
+    
+    // Call the professor research recommendations API endpoint
+    const response = await fetch(`${API_BASE_URL}/api/recommendations/professors/research`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      }
+    });
+
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`API call failed: ${response.status} - ${response.statusText}`);
+      console.error('Error response:', errorText);
+      throw new Error(`API call failed: ${response.status} - ${errorText}`);
+    }
+
+    const professors = await response.json();
+    console.log('Received professors data:', professors);
+    
+    return professors;
+  } catch (error) {
+    console.error('Error fetching professors:', error);
+    console.error('Error details:', error.message);
+    console.error('Error stack:', error.stack);
+    
+    // Fallback to mock data if API fails
+    console.log('Falling back to mock data');
+    return getMockProfessorData();
+  }
+}
+
+/**
+ * Legacy function for backward compatibility
+ */
 export async function getProfessorSuggestions() {
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1200))
+  return getProfessorsByResearchInterests();
+}
 
-  // Mock successful response
+/**
+ * Get mock professor data for testing
+ * @returns {Array} - Array of mock professor data
+ */
+function getMockProfessorData() {
   return [
     {
       id: 1,
@@ -76,5 +137,5 @@ export async function getProfessorSuggestions() {
       researchAreas: ["Machine Learning", "Pattern Recognition", "Information Theory"],
       recentPapers: ["Information-theoretic Model Selection", "Clustering and Data Analysis"],
     },
-  ]
+  ];
 }

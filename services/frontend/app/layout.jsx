@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${inter.className} min-h-screen flex flex-col`}>
         <AuthProvider>
-          <NotificationBar message="Welcome to GradPilot! Your graduate school application assistant." />
+          {/* <NotificationBar message="Welcome to GradPilot! Your graduate school application assistant." /> */}
           <ChatbotProvider>{children}</ChatbotProvider>
         </AuthProvider>
       </body>

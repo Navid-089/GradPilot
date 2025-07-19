@@ -30,16 +30,20 @@ public class Scholarship {
     @Column(name = "coverage")
     private String coverage;
 
+    @Column(name = "deadline")
+    private String deadline;
+
     // Constructors
     public Scholarship() {
     }
 
-    public Scholarship(String name, String description, String applyLink, String eligibility, String coverage) {
+    public Scholarship(String name, String description, String applyLink, String eligibility, String coverage, String deadline) {
         this.name = name;
         this.description = description;
         this.applyLink = applyLink;
         this.eligibility = eligibility;
         this.coverage = coverage;
+        this.deadline = deadline;
     }
 
     // Getters and setters
@@ -93,5 +97,13 @@ public class Scholarship {
 
     public void setCoverage(String coverage) {
         this.coverage = coverage;
+    }
+
+    public String getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
     }
 }
