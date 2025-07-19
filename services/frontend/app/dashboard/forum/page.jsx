@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import forumService from "@/lib/forum-service";
 import { useAuth } from "@/lib/auth-context";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function ForumPage() {
   const [posts, setPosts] = useState([]);
@@ -59,6 +60,23 @@ export default function ForumPage() {
   useEffect(() => {
     loadTags(); // Run only once
   }, []);
+
+  const getAvatarSrc = (userId, gender) => {
+    console.log("User ID: ", userId);
+    console.log("Page Gender: ", gender);
+    if (!userId || !gender) return "/placeholder.svg";
+    let folder = "common";
+    let count = 2;
+    if (gender === "male") {
+      folder = "male";
+      count = 43;
+    } else if (gender === "female") {
+      folder = "female";
+      count = 24;
+    }
+    const idx = (userId % count) + 1;
+    return `/avatars/${folder}/${folder}_${idx}.png`;
+  };
 
   const loadPosts = async () => {
     // if (!token) return;
@@ -220,6 +238,18 @@ export default function ForumPage() {
                       </CardTitle>
                     </Link>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
+                      {post.isAnonymous ? (
+                        <Avatar className="h-6 w-6">
+                          <AvatarFallback>A</AvatarFallback>
+                        </Avatar>
+                      ) : (
+                        <Avatar className="h-6 w-6">
+                          <AvatarImage
+                            src={getAvatarSrc(post.userId, post.userGender)}
+                            alt={user?.name}
+                          />
+                        </Avatar>
+                      )}
                       {post.isAnonymous ? (
                         <span>Anonymous User</span>
                       ) : (

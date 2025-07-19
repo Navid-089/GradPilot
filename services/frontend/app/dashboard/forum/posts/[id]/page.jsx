@@ -262,17 +262,18 @@ export default function PostPage() {
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage
-                    src={getAvatarSrc(post.userId, post.userGender)}
-                    alt={user?.name}
-                  />
-                  <AvatarFallback>
-                    {post.isAnonymous
-                      ? "A"
-                      : post.authorName.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                {post.isAnonymous ? (
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback>A</AvatarFallback>
+                  </Avatar>
+                ) : (
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage
+                      src={getAvatarSrc(post.userId, post.userGender)}
+                      alt={user?.name}
+                    />
+                  </Avatar>
+                )}
                 {/* <span>By {post.authorName}</span> */}
                 {post.isAnonymous ? (
                   <span>Anonymous User</span>
@@ -434,33 +435,21 @@ export default function PostPage() {
                   {/* Comment Header */}
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
-                      {/* <Avatar className="w-5 h-5">
-                        <AvatarFallback>
-                          {comment.authorName.charAt(0).toUpperCase()}
-                          {comment.isAnonymous
-                            ? "A"
-                            : comment.authorName.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar> */}
-                      <Avatar className="w-5 h-5">
-                        {!comment.isAnonymous &&
-                        comment.userId &&
-                        comment.userGender ? (
-                          <img
+                      {comment.isAnonymous ? (
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback>A</AvatarFallback>
+                        </Avatar>
+                      ) : (
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
                             src={getAvatarSrc(
                               comment.userId,
                               comment.userGender
                             )}
                             alt={comment.authorName}
-                            className="w-full h-full rounded-full object-cover"
                           />
-                        ) : null}
-                        <AvatarFallback>
-                          {comment.isAnonymous
-                            ? "A"
-                            : comment.authorName.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                        </Avatar>
+                      )}
                       {comment.isAnonymous ? (
                         <span>Anonymous User</span>
                       ) : (
