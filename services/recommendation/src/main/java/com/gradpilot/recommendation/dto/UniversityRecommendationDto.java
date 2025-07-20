@@ -13,6 +13,7 @@ public class UniversityRecommendationDto {
     private String country;
     private String address;
     private String websiteUrl;
+    private String locationUrl;
     private LocalDate applicationDeadline;
     private Double matchScore;
 
@@ -29,6 +30,21 @@ public class UniversityRecommendationDto {
         this.country = country;
         this.address = address;
         this.websiteUrl = websiteUrl;
+        this.matchScore = matchScore;
+        this.applicationDeadline = generateRandomDeadline();
+    }
+
+    public UniversityRecommendationDto(Integer id, String name, String description, String email, Integer ranking, Double tuitionFees, String country, String address, String websiteUrl, String locationUrl, Double matchScore) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.email = email;
+        this.ranking = ranking;
+        this.tuitionFees = tuitionFees;
+        this.country = country;
+        this.address = address;
+        this.websiteUrl = websiteUrl;
+        this.locationUrl = locationUrl;
         this.matchScore = matchScore;
         this.applicationDeadline = generateRandomDeadline();
     }
@@ -83,6 +99,10 @@ public class UniversityRecommendationDto {
         return websiteUrl;
     }
 
+    public String getLocationUrl() {
+        return locationUrl;
+    }
+
     public LocalDate getApplicationDeadline() {
         return applicationDeadline;
     }
@@ -126,6 +146,10 @@ public class UniversityRecommendationDto {
 
     public void setWebsiteUrl(String websiteUrl) {
         this.websiteUrl = websiteUrl;
+    }
+
+    public void setLocationUrl(String locationUrl) {
+        this.locationUrl = locationUrl;
     }
 
     public void setApplicationDeadline(LocalDate applicationDeadline) {

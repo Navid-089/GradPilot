@@ -321,6 +321,7 @@ public class MLRecommendationService {
                     university.getCountry(),
                     university.getAddress(),
                     university.getWebsiteUrl(),
+                    university.getLocationUrl(),
                     admissionProb // Use ML prediction as match score
                 );
                 recommendations.add(dto);
@@ -350,6 +351,7 @@ public class MLRecommendationService {
                 university.getCountry(),
                 university.getAddress(),
                 university.getWebsiteUrl(),
+                university.getLocationUrl(),
                 matchScore
             );
             

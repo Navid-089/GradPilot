@@ -37,6 +37,9 @@ public class University {
     @Column(name = "website_url")
     private String websiteUrl;
 
+    @Column(name = "location_url")
+    private String locationUrl;
+
     // Constructors
     public University() {
     }
@@ -50,6 +53,18 @@ public class University {
         this.country = country;
         this.address = address;
         this.websiteUrl = websiteUrl;
+    }
+
+    public University(String name, String description, String email, Integer ranking, Double tuitionFees, String country, String address, String websiteUrl, String locationUrl) {
+        this.name = name;
+        this.description = description;
+        this.email = email;
+        this.ranking = ranking;
+        this.tuitionFees = tuitionFees;
+        this.country = country;
+        this.address = address;
+        this.websiteUrl = websiteUrl;
+        this.locationUrl = locationUrl;
     }
 
     // Getters
@@ -89,6 +104,10 @@ public class University {
         return websiteUrl;
     }
 
+    public String getLocationUrl() {
+        return locationUrl;
+    }
+
     // Setters
     public void setId(Integer id) {
         this.id = id;
@@ -124,5 +143,9 @@ public class University {
 
     public void setWebsiteUrl(String websiteUrl) {
         this.websiteUrl = websiteUrl;
+    }
+
+    public void setLocationUrl(String locationUrl) {
+        this.locationUrl = locationUrl;
     }
 }

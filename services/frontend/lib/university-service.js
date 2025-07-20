@@ -1,6 +1,6 @@
 // Real university service that calls the ML-powered recommendation API
 
-const API_BASE_URL = "http://gradpilot.me:8083";
+ const API_BASE_URL = "http://gradpilot.me:8083";
 // const API_BASE_URL = "http://localhost:8083"; // Use localhost for local development
 
 export async function getUniversityMatches(userEmail = null) {
@@ -57,6 +57,7 @@ export async function getUniversityMatches(userEmail = null) {
       ranking: rec.ranking,
       description: rec.description,
       websiteUrl: rec.websiteUrl,
+      locationUrl: rec.locationUrl,
     }))
   } catch (error) {
     console.error('Error fetching university recommendations:', error)
@@ -495,6 +496,7 @@ function getMockUniversityData() {
       ranking: 1,
       description: "A world-renowned institution known for cutting-edge research in technology and engineering.",
       websiteUrl: "https://web.mit.edu",
+      locationUrl: "https://maps.google.com/maps?q=42.360001,-71.094003&hl=en&z=18&output=embed",
     },
     {
       id: 2,
@@ -507,6 +509,7 @@ function getMockUniversityData() {
       ranking: 2,
       description: "Leading research university with strong programs in computer science and artificial intelligence.",
       websiteUrl: "https://www.stanford.edu",
+      locationUrl: "https://maps.google.com/maps?q=37.427475,-122.169719&hl=en&z=18&output=embed",
     },
     {
       id: 3,
@@ -519,6 +522,7 @@ function getMockUniversityData() {
       ranking: 7,
       description: "Premier Swiss institution for science and technology.",
       websiteUrl: "https://ethz.ch",
+      locationUrl: "https://maps.google.com/maps?q=47.376888,8.547994&hl=en&z=18&output=embed",
     },
     {
       id: 4,
@@ -531,6 +535,7 @@ function getMockUniversityData() {
       ranking: 4,
       description: "Premier public research university with strong engineering and computer science programs.",
       websiteUrl: "https://www.berkeley.edu",
+      locationUrl: "https://maps.google.com/maps?q=37.871853,-122.258423&hl=en&z=18&output=embed",
     },
     {
       id: 5,
@@ -543,6 +548,7 @@ function getMockUniversityData() {
       ranking: 5,
       description: "World-renowned British institution with centuries of academic excellence.",
       websiteUrl: "https://www.ox.ac.uk",
+      locationUrl: "https://maps.google.com/maps?q=51.754816,-1.254434&hl=en&z=18&output=embed",
     },
     {
       id: 6,
@@ -555,6 +561,7 @@ function getMockUniversityData() {
       ranking: 3,
       description: "Ivy League institution with excellence across all academic disciplines.",
       websiteUrl: "https://www.harvard.edu",
+      locationUrl: "https://maps.google.com/maps?q=42.374444,-71.116944&hl=en&z=18&output=embed",
     },
     {
       id: 7,
@@ -567,6 +574,7 @@ function getMockUniversityData() {
       ranking: 11,
       description: "Leading Asian university with strong research programs.",
       websiteUrl: "https://www.nus.edu.sg",
+      locationUrl: "https://maps.google.com/maps?q=1.296568,103.776199&hl=en&z=18&output=embed",
     },
     {
       id: 8,
@@ -579,6 +587,7 @@ function getMockUniversityData() {
       ranking: 17,
       description: "Premier German institution for engineering and technology.",
       websiteUrl: "https://www.tum.de",
+      locationUrl: "https://maps.google.com/maps?q=48.149777,11.568478&hl=en&z=18&output=embed",
     },
   ]
 }

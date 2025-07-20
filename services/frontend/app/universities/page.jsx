@@ -12,10 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
-import { School, Search, MapPin, Calendar, DollarSign, GraduationCap, Star, BookOpen, ChevronLeft, ChevronRight } from "lucide-react"
+import { School, Search, MapPin, Calendar, DollarSign, GraduationCap, Star, BookOpen, ChevronLeft, ChevronRight, Map } from "lucide-react"
 import { getUniversityMatches, getUniversityMatchesPaginated } from "@/lib/university-service"
 import { trackerService } from "@/lib/tracker-service"
 import { useAuth } from "@/lib/auth-context"
+import { CampusMapModal } from "@/components/ui/campus-map-modal"
 
 export default function UniversitiesPage() {
   const { user } = useAuth()
@@ -28,6 +29,10 @@ export default function UniversitiesPage() {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("all")
   const [sortBy, setSortBy] = useState("match")
+  
+  // Modal state for campus map
+  const [mapModalOpen, setMapModalOpen] = useState(false)
+  const [selectedUniversity, setSelectedUniversity] = useState(null)
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0)
@@ -326,6 +331,16 @@ export default function UniversitiesPage() {
     setSortBy("match")
   }
 
+  const handleOpenCampusMap = (university) => {
+    setSelectedUniversity(university)
+    setMapModalOpen(true)
+  }
+
+  const handleCloseCampusMap = () => {
+    setMapModalOpen(false)
+    setSelectedUniversity(null)
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
@@ -450,6 +465,7 @@ export default function UniversitiesPage() {
                         university={university} 
                         onSave={handleSaveUniversity}
                         onUnsave={handleUnsaveUniversity}
+                        onOpenCampusMap={handleOpenCampusMap}
                         isSaved={isUniversitySaved(university.id)}
                       />
                     ))
@@ -593,6 +609,7 @@ export default function UniversitiesPage() {
                             university={university} 
                             onSave={handleSaveUniversity}
                             onUnsave={handleUnsaveUniversity}
+                            onOpenCampusMap={handleOpenCampusMap}
                             isSaved={true}
                           />
                         ))}
@@ -645,16 +662,29 @@ export default function UniversitiesPage() {
           </div>
         </div>
       </footer>
+      
+      {/* Campus Map Modal */}
+      <CampusMapModal 
+        isOpen={mapModalOpen}
+        onClose={handleCloseCampusMap}
+        university={selectedUniversity}
+      />
     </div>
   )
 }
 
-function UniversityCard({ university, onSave, onUnsave, isSaved }) {
+function UniversityCard({ university, onSave, onUnsave, onOpenCampusMap, isSaved }) {
   const handleSaveToggle = () => {
     if (isSaved) {
       onUnsave(university.id)
     } else {
       onSave(university.id)
+    }
+  }
+
+  const handleCampusMapClick = () => {
+    if (onOpenCampusMap && university.locationUrl) {
+      onOpenCampusMap(university)
     }
   }
 
@@ -716,6 +746,8 @@ function UniversityCard({ university, onSave, onUnsave, isSaved }) {
                   Visit Website
                 </a>
               </Button>
+
+              
               <Button 
                 variant={isSaved ? "default" : "outline"} 
                 size="sm" 
@@ -725,6 +757,19 @@ function UniversityCard({ university, onSave, onUnsave, isSaved }) {
                 <Star className="mr-2 h-4 w-4" />
                 {isSaved ? "Unsave" : "Save"}
               </Button>
+
+                            
+              {university.locationUrl && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleCampusMapClick}
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                >
+                  <Map className="mr-2 h-4 w-4" />
+                  Walk in the Campus
+                </Button>
+              )}
             </div>
           </div>
         </div>
