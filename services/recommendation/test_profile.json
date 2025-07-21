@@ -1,0 +1,16 @@
+{
+  "CGPA": 3.5,
+  "GRE": 320,
+  "TOEFL": 100,
+  "IELTS": 0,
+  "Paper": 1,
+  "Work_Experience": "No",
+  "Gap_year": 0,
+  "Target_Countries": "USA",
+  "Target_Majors": "Computer Science",
+  "Research_Interests": "Machine Learning",
+  "Ugrad": "Engineering",
+  "Ugrad_Major": "Computer Science", 
+  "Funding": "Self",
+  "Degree": "Masters"
+}

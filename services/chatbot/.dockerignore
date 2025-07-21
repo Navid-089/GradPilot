@@ -1,0 +1,12 @@
+-.dockerignore
+-target/
+ .git/
+ .gitignore
+ .idea/
+ *.iml
+ *.log
+ *.tmp
+ *.swp
+ node_modules/
+ .DS_Store
+ Thumbs.db
