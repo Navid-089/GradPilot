@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gradpilot.dto.LoginRequest;
@@ -44,28 +46,21 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<Object> getProfile(@RequestParam String email) {
+        try {
+            Object profile = authService.getProfile(email);
+            return ResponseEntity.ok(profile);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Profile not found: " + e.getMessage());
+        }
+    }
+
     @PutMapping("/profile")
     public ResponseEntity<UpdateProfileResponse> updateProfile(@Valid @RequestBody UserProfileUpdate dto) {
         UpdateProfileResponse response = authService.updateProfile(dto);
         return ResponseEntity.ok(response);
-        // try {
-        //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        //     if (authentication == null || !authentication.isAuthenticated()) {
-        //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        //     }
-        //     @SuppressWarnings("unchecked")
-        //     Map<String, Object> principal = (Map<String, Object>) authentication.getPrincipal();
-        //     Integer userId = (Integer) principal.get("userId");
-        //     if (userId == null) {
-        //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        //     }
-        //     UpdateProfileResponse response = authService.updateProfile(dto);
-        //     return ResponseEntity.ok(response);
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        // }
     }
 
 }

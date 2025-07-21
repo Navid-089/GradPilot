@@ -1,15 +1,21 @@
 package com.gradpilot.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "users")
@@ -39,7 +45,7 @@ public class User implements UserDetails {
     @Column(name = "apply_year")
     private Integer applyYear;
 
-    @Column(name = "gender", columnDefinition = "text default ''")
+    @Column(name = "gender", length = 10)
     private String gender;
 
     @Column(name = "created_at")
@@ -49,30 +55,20 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String name, String email, String password, String gender) {
+    public User(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.gender = gender;
         this.createdAt = LocalDateTime.now();
     }
 
-    public User(String name, String email, String password, BigDecimal cgpa, Integer applyYear, String gender) {
+    public User(String name, String email, String password, BigDecimal cgpa, Integer applyYear) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.cgpa = cgpa;
         this.applyYear = applyYear;
-        this.gender = gender;
         this.createdAt = LocalDateTime.now();
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
     }
 
     // UserDetails interface methods
@@ -154,6 +150,14 @@ public class User implements UserDetails {
 
     public void setApplyYear(Integer applyYear) {
         this.applyYear = applyYear;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public LocalDateTime getCreatedAt() {

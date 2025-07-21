@@ -1,6 +1,7 @@
 package com.gradpilot.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,8 +105,7 @@ public class AuthService {
             // Save research interests (IDs)
             if (registerRequest.getResearchInterests() != null) {
                 for (Integer interestId : registerRequest.getResearchInterests()) {
-                    UserResearchInterest userResearchInterest = new UserResearchInterest(savedUser.getUserId(),
-                            interestId);
+                    UserResearchInterest userResearchInterest = new UserResearchInterest(savedUser.getUserId(), interestId);
                     userResearchInterestRepository.save(userResearchInterest);
                 }
             }
@@ -169,8 +168,7 @@ public class AuthService {
             LoginResponse.UserInfo userInfo = new LoginResponse.UserInfo(
                     user.getUserId().toString(),
                     user.getName(),
-                    user.getEmail(),
-                    user.getGender());
+                    user.getEmail());
 
             return new LoginResponse(token, userInfo);
 
@@ -182,135 +180,244 @@ public class AuthService {
     @Transactional
     public UpdateProfileResponse updateProfile(UserProfileUpdate dto) {
         try {
-            // Get user ID from authentication context
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) {
-                // Return a response for unauthenticated users
-                // String fullPrompt = "You are an admissions advisor for US MS/PhD applicants.
-                // The user is not logged in, so provide general advice.\n\nUser: "
-                // + req.message();
-                throw new RuntimeException("User is not authenticated");
+            // For now, let's use the email from the DTO to find the user
+            // In a real application, you'd get this from JWT token or authentication context
+            String email = dto.getEmail();
+            if (email == null || email.trim().isEmpty()) {
+                throw new RuntimeException("Email is required for profile update");
             }
 
-            @SuppressWarnings("unchecked")
-            Map<String, Object> principal = (Map<String, Object>) authentication.getPrincipal();
-            Integer userId = (Integer) principal.get("userId");
+            // Fetch user using email
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
-            if (userId == null) {
-                // If no user ID in principal, treat as unauthenticated
-                // String fullPrompt = "You are an admissions advisor for US MS/PhD applicants.
-                // The user is not properly authenticated, so provide general advice.\n\nUser: "
-                // + req.message();
-                throw new RuntimeException("User ID not found in authentication context");
+            System.out.println("Database query result - User: " + user.getName());
+
+            // Update user basic information
+            user.setName(dto.getName());
+            user.setEmail(dto.getEmail());
+            user.setCgpa(dto.getGpa());
+            user.setApplyYear(dto.getDeadlineYear());
+            user.setGender(dto.getGender());
+
+            User updatedUser = userRepository.save(user);
+
+            // Save test scores
+            if (dto.getTestScores() != null && !dto.getTestScores().isEmpty()) {
+                try {
+                    // First, get existing scores to avoid constraint violations
+                    List<UserScore> existingScores = userScoreRepository.findByUserId(updatedUser.getUserId());
+
+                    // Clear existing test scores
+                    if (!existingScores.isEmpty()) {
+                        userScoreRepository.deleteAll(existingScores);
+                        userScoreRepository.flush(); // Ensure deletion is committed
+                    }
+
+                    for (Map.Entry<String, Object> entry : dto.getTestScores().entrySet()) {
+                        String testName = entry.getKey();
+                        Object scoreValue = entry.getValue();
+
+                        // Handle different types of score values
+                        String scoreString = "";
+                        if (scoreValue != null) {
+                            scoreString = scoreValue.toString();
+                        }
+
+                        // Only save non-empty scores
+                        if (!scoreString.trim().isEmpty()) {
+                            UserScore userScore = new UserScore(
+                                    updatedUser.getUserId(),
+                                    testName,
+                                    scoreString);
+                            userScoreRepository.save(userScore);
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error processing test scores: " + e.getMessage());
+                    e.printStackTrace();
+                    // Continue with the rest of the update process
+                }
             }
 
-            // Fetch user using UserRepository
-            User user = userRepository.findById(userId).orElse(null);
-            System.out.println(
-                    "Database query result - User: " + (user != null ? user.getName() : "Unknown"));
+            // Save target countries
+            if (dto.getTargetCountries() != null) {
+                try {
+                    // First, get existing target countries to avoid constraint violations
+                    List<UserTargetCountry> existingCountries = userTargetCountryRepository.findByUserId(updatedUser.getUserId());
 
-            // String customPrompt = (user != null) ? String.format(
-            // "You are helping %s. They have a CGPA of %s and are interested in applying in
-            // %d. Give tailored advice.",
-            // user.getName(),
-            // user.getCgpa() != null ? user.getCgpa() : "not specified",
-            // user.getApplyYear() != null ? user.getApplyYear() : 2025)
-            // : "You are an admissions advisor for US MS/PhD applicants.";
-            // System.out.println("Custom Prompt: " + customPrompt);
-            // String fullPrompt = customPrompt + "\n\nUser: " + req.message();
-            // return generateGeminiResponse(fullPrompt);
-            if (user == null) {
-                throw new RuntimeException("User not found");
-            } else {
-                // Create new user
-                // User user = new User();
-                user.setName(dto.getName());
-                user.setEmail(dto.getEmail());
-                // user.setPassword(passwordEncoder.encode(dto.getPassword()));
-                user.setCgpa(dto.getCgpa());
-                user.setApplyYear(dto.getApplyYear());
+                    // Clear existing target countries
+                    if (!existingCountries.isEmpty()) {
+                        userTargetCountryRepository.deleteAll(existingCountries);
+                        userTargetCountryRepository.flush(); // Ensure deletion is committed
+                    }
 
-                User updatedUser = userRepository.save(user);
-
-                // Save test scores
-                // if (dto.getTestScores() != null) {
-                // for (Map.Entry<String, Object> entry : dto.getTestScores().entrySet()) {
-                // UserScore userScore = new UserScore(
-                // savedUser.getUserId(),
-                // entry.getKey(),
-                // entry.getValue().toString());
-                // userScoreRepository.save(userScore);
-                // }
-                // }
-                // Save research interests (create if not exist)
-                // if (dto.getResearchInterests() != null) {
-                // for (String interestName : dto.getResearchInterests()) {
-                // ResearchInterest interest =
-                // researchInterestRepository.findByName(interestName)
-                // .orElseGet(() -> researchInterestRepository.save(new
-                // ResearchInterest(interestName)));
-                // // Insert into user_research_interests table (you'll need to create this
-                // entity
-                // // too)
-                // // For now, we'll skip this step to keep it simple
-                // }
-                // }
-                // Save target countries (create if not exist)
-                // if (dto.getTargetCountries() != null) {
-                // for (String countryName : dto.getTargetCountries()) {
-                // Country country = countryRepository.findByName(countryName)
-                // .orElseGet(() -> countryRepository.save(new Country(countryName)));
-                // // Insert into user_target_countries table (you'll need to create this entity
-                // // too)
-                // // For now, we'll skip this step to keep it simple
-                // }
-                // }
-                // Save target majors (create if not exist)
-                // if (dto.getTargetMajors() != null) {
-                // for (String majorName : dto.getTargetMajors()) {
-                // Major major = majorRepository.findByName(majorName)
-                // .orElseGet(() -> majorRepository.save(new Major(majorName)));
-                // // Insert into user_target_majors table (you'll need to create this entity
-                // too)
-                // // For now, we'll skip this step to keep it simple
-                // }
-                // }
-                // Generate JWT token
-                // UserDetails userDetails = savedUser;
-                // User userDetails = savedUser; // Assuming User implements UserDetails
-                // String token = jwtTokenProvider.generateToken(userDetails);
-                // String token = jwtTokenProvider.generateToken(user);
-                // Create user info for response
-                UpdateProfileResponse.UserInfo userInfo = new UpdateProfileResponse.UserInfo(
-                        updatedUser.getUserId().toString(),
-                        updatedUser.getName(),
-                        updatedUser.getEmail());
-
-                return new UpdateProfileResponse("Profile updated successfully", userInfo);
-
+                    for (Integer countryId : dto.getTargetCountries()) {
+                        UserTargetCountry userTargetCountry = new UserTargetCountry(
+                                updatedUser.getUserId(), countryId);
+                        userTargetCountryRepository.save(userTargetCountry);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error processing target countries: " + e.getMessage());
+                    e.printStackTrace();
+                    // Continue with the rest of the update process
+                }
             }
+
+            // Save target majors
+            if (dto.getTargetMajors() != null) {
+                try {
+                    // First, get existing target majors to avoid constraint violations
+                    List<UserTargetMajor> existingMajors = userTargetMajorRepository.findByUserId(updatedUser.getUserId());
+
+                    // Clear existing target majors
+                    if (!existingMajors.isEmpty()) {
+                        userTargetMajorRepository.deleteAll(existingMajors);
+                        userTargetMajorRepository.flush(); // Ensure deletion is committed
+                    }
+
+                    for (Integer majorId : dto.getTargetMajors()) {
+                        UserTargetMajor userTargetMajor = new UserTargetMajor(
+                                updatedUser.getUserId(), majorId);
+                        userTargetMajorRepository.save(userTargetMajor);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error processing target majors: " + e.getMessage());
+                    e.printStackTrace();
+                    // Continue with the rest of the update process
+                }
+            }
+
+            // Save research interests
+            if (dto.getResearchInterests() != null) {
+                try {
+                    // Clear existing research interests using deleteByUserId which works better with composite keys
+                    userResearchInterestRepository.deleteByUserId(updatedUser.getUserId());
+                    userResearchInterestRepository.flush(); // Ensure deletion is committed
+
+                    for (Integer interestId : dto.getResearchInterests()) {
+                        UserResearchInterest userResearchInterest = new UserResearchInterest(
+                                updatedUser.getUserId(), interestId);
+                        userResearchInterestRepository.save(userResearchInterest);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error processing research interests: " + e.getMessage());
+                    e.printStackTrace();
+                    // Continue with the rest of the update process
+                }
+            }
+
+            // Save test scores
+            // if (dto.getTestScores() != null) {
+            // for (Map.Entry<String, Object> entry : dto.getTestScores().entrySet()) {
+            // UserScore userScore = new UserScore(
+            // savedUser.getUserId(),
+            // entry.getKey(),
+            // entry.getValue().toString());
+            // userScoreRepository.save(userScore);
+            // }
+            // }
+            // Save research interests (create if not exist)
+            // if (dto.getResearchInterests() != null) {
+            // for (String interestName : dto.getResearchInterests()) {
+            // ResearchInterest interest =
+            // researchInterestRepository.findByName(interestName)
+            // .orElseGet(() -> researchInterestRepository.save(new
+            // ResearchInterest(interestName)));
+            // // Insert into user_research_interests table (you'll need to create this
+            // entity
+            // // too)
+            // // For now, we'll skip this step to keep it simple
+            // }
+            // }
+            // Save target countries (create if not exist)
+            // if (dto.getTargetCountries() != null) {
+            // for (String countryName : dto.getTargetCountries()) {
+            // Country country = countryRepository.findByName(countryName)
+            // .orElseGet(() -> countryRepository.save(new Country(countryName)));
+            // // Insert into user_target_countries table (you'll need to create this entity
+            // // too)
+            // // For now, we'll skip this step to keep it simple
+            // }
+            // }
+            // Save target majors (create if not exist)
+            // if (dto.getTargetMajors() != null) {
+            // for (String majorName : dto.getTargetMajors()) {
+            // Major major = majorRepository.findByName(majorName)
+            // .orElseGet(() -> majorRepository.save(new Major(majorName)));
+            // // Insert into user_target_majors table (you'll need to create this entity
+            // too)
+            // // For now, we'll skip this step to keep it simple
+            // }
+            // }
+            // Generate JWT token
+            // UserDetails userDetails = savedUser;
+            // User userDetails = savedUser; // Assuming User implements UserDetails
+            // String token = jwtTokenProvider.generateToken(userDetails);
+            // String token = jwtTokenProvider.generateToken(user);
+            // Create user info for response
+            UpdateProfileResponse.UserInfo userInfo = new UpdateProfileResponse.UserInfo(
+                    updatedUser.getUserId().toString(),
+                    updatedUser.getName(),
+                    updatedUser.getEmail());
+
+            return new UpdateProfileResponse("Profile updated successfully", userInfo);
 
         } catch (Exception e) {
             e.printStackTrace(); // Show error in logs
-            // return new UpdateProfileResponse("An error occurred: " + e.getMessage(),
-            // null);
             throw new RuntimeException("Profile update failed: " + e.getMessage());
         }
-        // User user = userRepository.findById(userId)
-        // .orElseThrow(() -> new Exception("User not found"));
+    }
 
-        // user.setName(dto.getName());
-        // user.setEmail(dto.getEmail());
-        // user.setCgpa(dto.getCgpa());
-        // user.setApplyYear(dto.getApplyYear());
-        // User updatedUser = userRepository.save(user);
-        // UpdateProfileResponse.UserInfo userInfo = new UpdateProfileResponse.UserInfo(
-        // updatedUser.getUserId(),
-        // updatedUser.getName(),
-        // updatedUser.getEmail(),
-        // updatedUser.getCgpa(),
-        // updatedUser.getApplyYear());
-        // return new UpdateProfileResponse("Profile updated successfully", userInfo);
+    public Object getProfile(String email) {
+        try {
+            // Find user by email
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+            // Get user's target countries
+            java.util.List<UserTargetCountry> userTargetCountries = userTargetCountryRepository.findByUserId(user.getUserId());
+            java.util.List<Integer> targetCountryIds = userTargetCountries.stream()
+                    .map(UserTargetCountry::getCountryId)
+                    .collect(java.util.stream.Collectors.toList());
+
+            // Get user's target majors
+            java.util.List<UserTargetMajor> userTargetMajors = userTargetMajorRepository.findByUserId(user.getUserId());
+            java.util.List<Integer> targetMajorIds = userTargetMajors.stream()
+                    .map(UserTargetMajor::getMajorId)
+                    .collect(java.util.stream.Collectors.toList());
+
+            // Get user's research interests
+            java.util.List<UserResearchInterest> userResearchInterests = userResearchInterestRepository.findByUserId(user.getUserId());
+            java.util.List<Integer> researchInterestIds = userResearchInterests.stream()
+                    .map(UserResearchInterest::getResearchInterestId)
+                    .collect(java.util.stream.Collectors.toList());
+
+            // Get user's test scores
+            java.util.List<UserScore> userScores = userScoreRepository.findByUserId(user.getUserId());
+            java.util.Map<String, Object> testScores = new java.util.HashMap<>();
+            for (UserScore score : userScores) {
+                testScores.put(score.getTestName(), score.getScore());
+            }
+
+            // Create response object
+            java.util.Map<String, Object> profile = new java.util.HashMap<>();
+            profile.put("name", user.getName());
+            profile.put("email", user.getEmail());
+            profile.put("gpa", user.getCgpa());
+            profile.put("gender", user.getGender());
+            profile.put("deadlineYear", user.getApplyYear());
+            profile.put("testScores", testScores);
+            profile.put("targetCountries", targetCountryIds);
+            profile.put("targetMajors", targetMajorIds);
+            profile.put("researchInterests", researchInterestIds);
+
+            return profile;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to fetch profile: " + e.getMessage());
+        }
     }
 
 }

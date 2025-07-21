@@ -5,7 +5,7 @@ export async function askChatbot(message) {
   const userJson = localStorage.getItem("user");
   const token = localStorage.getItem("token");
 
-  const url = "http://57.159.24.58:8081/api/chat";
+  const url = "http://localhost:8081/api/chat";
 
   try {
     const headers = {

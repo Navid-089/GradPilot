@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { MainNav } from "@/components/main-nav"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,27 +11,66 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Checkbox } from "@/components/ui/checkbox"
 import { GraduationCap, Save, Upload, FileText, User, Book, Award } from "lucide-react"
-import { getProfile, updateProfile } from "@/lib/profile-service"
+import { getCurrentUser } from "@/lib/auth-service"
 
 export default function ProfilePage() {
+  const router = useRouter()
   const [profile, setProfile] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const data = await getProfile()
-        setProfile(data)
-      } catch (error) {
-        console.error("Error fetching profile:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
+  // Dropdown options state
+  const [countryOptions, setCountryOptions] = useState([])
+  const [majorOptions, setMajorOptions] = useState([])
+  const [researchInterestOptions, setResearchInterestOptions] = useState([])
 
-    fetchProfile()
-  }, [])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Get current user first
+        const currentUser = await getCurrentUser();
+        if (!currentUser || !currentUser.email) {
+          console.error("No authenticated user found");
+          router.push('/login'); // Redirect to login
+          return;
+        }
+
+        // Fetch profile directly from backend and dropdown options in parallel
+        const token = localStorage.getItem('token');
+        const headers = {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        };
+
+        const [profileResponse, countries, majors, interests] = await Promise.all([
+          fetch(`/api/profile?email=${currentUser.email}`, { headers }),
+          fetch("/api/countries").then(res => res.json()),
+          fetch("/api/majors").then(res => res.json()),
+          fetch("/api/research-interests").then(res => res.json())
+        ]);
+
+        if (!profileResponse.ok) {
+          throw new Error(`Failed to fetch profile: ${profileResponse.status}`);
+        }
+
+        const profileData = await profileResponse.json();
+        setProfile(profileData);
+        setCountryOptions(countries);
+        setMajorOptions(majors);
+        setResearchInterestOptions(interests);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // If there's an authentication error, redirect to login
+        if (error.message.includes('401') || error.message.includes('authentication')) {
+          router.push('/login');
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -48,12 +88,14 @@ export default function ProfilePage() {
     }))
   }
 
-  const handleCheckboxChange = (category, item) => {
+  const handleCheckboxChange = (category, itemId) => {
     setProfile((prev) => {
-      const currentItems = prev[category]
+      const currentItems = prev[category] || []
       return {
         ...prev,
-        [category]: currentItems.includes(item) ? currentItems.filter((i) => i !== item) : [...currentItems, item],
+        [category]: currentItems.includes(itemId) 
+          ? currentItems.filter((id) => id !== itemId) 
+          : [...currentItems, itemId],
       }
     })
   }
@@ -61,7 +103,33 @@ export default function ProfilePage() {
   const handleSaveProfile = async () => {
     setIsSaving(true)
     try {
-      await updateProfile(profile)
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      // Parse JWT token to get user email
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const userEmail = payload.sub;
+
+      const response = await fetch(`/api/profile`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...profile,
+          email: userEmail, // Include email in the request body
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to update profile: ${response.status} - ${errorText}`);
+      }
+
+      await response.json();
       alert("Profile updated successfully")
     } catch (error) {
       console.error("Error updating profile:", error)
@@ -163,26 +231,6 @@ export default function ProfilePage() {
     )
   }
 
-  const countries = ["USA", "Canada", "UK", "Germany", "Australia", "Singapore", "Japan"]
-  const majors = [
-    "Computer Science",
-    "Data Science",
-    "Artificial Intelligence",
-    "Electrical Engineering",
-    "Mechanical Engineering",
-    "Biotechnology",
-    "Physics",
-  ]
-  const researchInterests = [
-    "Machine Learning",
-    "Natural Language Processing",
-    "Computer Vision",
-    "Robotics",
-    "Bioinformatics",
-    "Quantum Computing",
-    "Cybersecurity",
-  ]
-
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
@@ -251,6 +299,21 @@ export default function ProfilePage() {
                         onChange={handleInputChange}
                       />
                     </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="gender">Gender</Label>
+                      <select
+                        id="gender"
+                        name="gender"
+                        value={profile.gender || ""}
+                        onChange={handleInputChange}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <option value="">Select gender (optional)</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -304,15 +367,15 @@ export default function ProfilePage() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 gap-3">
-                      {countries.map((country) => (
-                        <div key={country} className="flex items-center space-x-2">
+                      {countryOptions.map((country) => (
+                        <div key={country.id} className="flex items-center space-x-2">
                           <Checkbox
-                            id={`country-${country}`}
-                            checked={profile.targetCountries.includes(country)}
-                            onCheckedChange={() => handleCheckboxChange("targetCountries", country)}
+                            id={`country-${country.id}`}
+                            checked={profile.targetCountries && profile.targetCountries.includes(country.id)}
+                            onCheckedChange={() => handleCheckboxChange("targetCountries", country.id)}
                           />
-                          <Label htmlFor={`country-${country}`} className="cursor-pointer">
-                            {country}
+                          <Label htmlFor={`country-${country.id}`} className="cursor-pointer">
+                            {country.name}
                           </Label>
                         </div>
                       ))}
@@ -327,15 +390,15 @@ export default function ProfilePage() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 gap-3">
-                      {majors.map((major) => (
-                        <div key={major} className="flex items-center space-x-2">
+                      {majorOptions.map((major) => (
+                        <div key={major.id} className="flex items-center space-x-2">
                           <Checkbox
-                            id={`major-${major}`}
-                            checked={profile.targetMajors.includes(major)}
-                            onCheckedChange={() => handleCheckboxChange("targetMajors", major)}
+                            id={`major-${major.id}`}
+                            checked={profile.targetMajors && profile.targetMajors.includes(major.id)}
+                            onCheckedChange={() => handleCheckboxChange("targetMajors", major.id)}
                           />
-                          <Label htmlFor={`major-${major}`} className="cursor-pointer">
-                            {major}
+                          <Label htmlFor={`major-${major.id}`} className="cursor-pointer">
+                            {major.name}
                           </Label>
                         </div>
                       ))}
@@ -350,15 +413,15 @@ export default function ProfilePage() {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {researchInterests.map((interest) => (
-                        <div key={interest} className="flex items-center space-x-2">
+                      {researchInterestOptions.map((interest) => (
+                        <div key={interest.id} className="flex items-center space-x-2">
                           <Checkbox
-                            id={`interest-${interest}`}
-                            checked={profile.researchInterests.includes(interest)}
-                            onCheckedChange={() => handleCheckboxChange("researchInterests", interest)}
+                            id={`interest-${interest.id}`}
+                            checked={profile.researchInterests && profile.researchInterests.includes(interest.id)}
+                            onCheckedChange={() => handleCheckboxChange("researchInterests", interest.id)}
                           />
-                          <Label htmlFor={`interest-${interest}`} className="cursor-pointer">
-                            {interest}
+                          <Label htmlFor={`interest-${interest.id}`} className="cursor-pointer">
+                            {interest.name}
                           </Label>
                         </div>
                       ))}

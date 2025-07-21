@@ -1,5 +1,11 @@
 package com.gradpilot.exception;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -7,12 +13,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -68,11 +68,16 @@ public class GlobalExceptionHandler {
     // Handle general exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneralException(Exception ex) {
+        // Log the actual exception for debugging
+        System.err.println("Unhandled exception: " + ex.getClass().getName() + ": " + ex.getMessage());
+        ex.printStackTrace();
+
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", 500);
         response.put("error", "Internal Server Error");
-        response.put("message", "Something went wrong");
+        response.put("message", ex.getMessage()); // Show actual error message
+        response.put("exception", ex.getClass().getSimpleName()); // Show exception type
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
