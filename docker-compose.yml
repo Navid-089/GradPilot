@@ -122,9 +122,7 @@ services:
       APP_JWT_SECRET: ${JWT_SECRET}
 
   login-reg:
-    build:
-      context: ./services/login-reg
-      dockerfile: Dockerfile
+    image: ananyapromi3/gradpilot-login-reg:latest
     container_name: gradpilot-login-reg
     ports:
       - "8082:8082"
@@ -183,8 +181,7 @@ services:
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
 
   frontend:
-    build: ./services/frontend
-    container_name: gradpilot-frontend
+    image: ananyapromi3/gradpilot-frontend:latest
     ports:
       - "80:3000"
     depends_on:

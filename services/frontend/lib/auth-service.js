@@ -9,7 +9,7 @@ export async function loginUser(email, password) {
   let response;
 
   try {
-    response = await fetch("http://localhost:8082/api/v1/auth/login", {
+    response = await fetch("http://57.159.24.58:8082/api/v1/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export async function registerUser(userData) {
 
   let response;
   try {
-    response = await fetch("http://localhost:8082/api/v1/auth/register", {
+    response = await fetch("http://57.159.24.58:8082/api/v1/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -67,19 +67,24 @@ export async function registerUser(userData) {
     if (!response.ok) {
       throw new Error(data.message || "Registration failed");
     }
-
-    // Store auth state in localStorage after successful registration
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-
-    return {
-      user: data.user,
-      token: data.token,
-    };
+    return data;
   } catch (err) {
     console.error(err);
     throw err;
   }
+
+  // Store auth state in localStorage
+  // localStorage.setItem("token", "mock-jwt-token")
+  // localStorage.setItem(
+  //   "user",
+  //   JSON.stringify({
+  //     userId: "user-" + Math.floor(Math.random() * 1000),
+  //     name: userData.name,
+  //     email: userData.email,
+  //   }),
+  // )
+
+  // Mock successful response
 }
 
 export async function logoutUser() {
