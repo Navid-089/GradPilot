@@ -1,5 +1,5 @@
 // const API_BASE_URL = process.env.NEXT_PUBLIC_SOP_API_URL || 'http://localhost:8084/api/v1/sop';
-const API_BASE_URL = "https://gradpilot.me/api/sop"; // Update this to your actual API base URL
+const API_BASE_URL = "https://gradpilot.me"; // Update this to your actual API base URL
 
 export const sopService = {
   async reviewSop(sopText) {
@@ -12,7 +12,7 @@ export const sopService = {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/review`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/sop/review`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
