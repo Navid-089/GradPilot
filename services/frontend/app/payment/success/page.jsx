@@ -35,7 +35,7 @@ export default function PaymentSuccessPage() {
         }
 
         // Validate the payment with backend using the validate endpoint
-        const response = await fetch(`http://localhost:8083/api/recommendations/payment/validate?tran_id=${transactionId}&val_id=${validationId}`, {
+        const response = await fetch(`https://gradpilot.me/api/recommendations/payment/validate?tran_id=${transactionId}&val_id=${validationId}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,

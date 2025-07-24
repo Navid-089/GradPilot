@@ -13,6 +13,9 @@ const nextConfig = {
     serverActions: {
       allowedOrigins: ['*']
     }
+  },
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://gradpilot.me/api',
   }
 }
 

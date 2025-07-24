@@ -151,7 +151,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
                 "http://57.159.24.58",
-                "http://gradpilot.me"));
+                "https://gradpilot.me"));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);

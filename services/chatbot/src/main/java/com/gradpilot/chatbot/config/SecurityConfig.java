@@ -46,7 +46,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",
-            "http://gradpilot.me"
+            "https://gradpilot.me"
         ));
 
         config.addAllowedHeader("*");

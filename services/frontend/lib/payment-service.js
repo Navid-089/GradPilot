@@ -1,6 +1,6 @@
 // Payment service for SSLCommerz integration
 
-const API_BASE_URL = "http://gradpilot.me:8083";
+const API_BASE_URL = "https://gradpilot.me/api";
 
 export const paymentService = {
   // Initialize payment
