@@ -71,7 +71,7 @@ public class PaymentController {
         }
     }
 
-    @PostMapping("/success")
+    @GetMapping("/success")
     public ResponseEntity<Void> paymentSuccess(
             @RequestParam("tran_id") String transactionId,
             @RequestParam("val_id") String validationId,
@@ -104,18 +104,6 @@ public class PaymentController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
-    // For testing - GET endpoint that SSLCommerz can also call
-    @GetMapping("/success")
-    public ResponseEntity<Void> paymentSuccessGet(
-            @RequestParam("tran_id") String transactionId,
-            @RequestParam("val_id") String validationId,
-            @RequestParam(value = "amount", required = false) String amount,
-            @RequestParam(value = "currency", required = false) String currency) {
-        
-        System.out.println("=== PAYMENT SUCCESS GET CALLBACK ===");
-        return paymentSuccess(transactionId, validationId, amount, currency);
-    }
-
     // API endpoint for frontend to validate payment
     @GetMapping("/validate")
     public ResponseEntity<Map<String, Object>> validatePayment(
@@ -142,7 +130,7 @@ public class PaymentController {
         }
     }
 
-    @PostMapping("/fail")
+    @GetMapping("/fail")
     public ResponseEntity<Void> paymentFail(
             @RequestParam("tran_id") String transactionId,
             @RequestParam(value = "amount", required = false) String amount,
@@ -158,7 +146,7 @@ public class PaymentController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
-    @PostMapping("/cancel")
+    @GetMapping("/cancel")
     public ResponseEntity<Void> paymentCancel(
             @RequestParam("tran_id") String transactionId,
             @RequestParam(value = "amount", required = false) String amount,
