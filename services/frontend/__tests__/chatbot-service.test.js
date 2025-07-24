@@ -31,7 +31,7 @@ describe("Chatbot Service", () => {
       const result = await askChatbot(message);
 
       // Assert
-      expect(fetch).toHaveBeenCalledWith("http://57.159.24.58:8081/api/chat", {
+      expect(fetch).toHaveBeenCalledWith("https://gradpilot.me/api/chatbot", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,7 +62,7 @@ describe("Chatbot Service", () => {
       const result = await askChatbot(message);
 
       // Assert
-      expect(fetch).toHaveBeenCalledWith("http://57.159.24.58:8081/api/chat", {
+      expect(fetch).toHaveBeenCalledWith("https://gradpilot.me/api/chatbot", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -134,7 +134,7 @@ describe("Chatbot Service", () => {
 
       // Assert
       expect(fetch).toHaveBeenCalledWith(
-        "http://57.159.24.58:8081/api/chat",
+        "https://gradpilot.me/api/chatbot",
         expect.objectContaining({
           body: JSON.stringify({ message: "" }),
         })

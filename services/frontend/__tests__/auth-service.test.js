@@ -42,7 +42,7 @@ describe("Auth Service", () => {
 
       // Assert
       expect(fetch).toHaveBeenCalledWith(
-        "http://57.159.24.58:8082/api/v1/auth/login",
+        "https://gradpilot.me/api/auth/login",
         {
           method: "POST",
           headers: {
@@ -134,7 +134,7 @@ describe("Auth Service", () => {
 
       // Assert
       expect(fetch).toHaveBeenCalledWith(
-        "http://57.159.24.58:8082/api/v1/auth/register",
+        "https://gradpilot.me/api/auth/register",
         {
           method: "POST",
           headers: {
