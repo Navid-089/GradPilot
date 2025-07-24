@@ -148,6 +148,9 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       APP_JWT_SECRET: ${JWT_SECRET}
+      # SSLCOMMERZ_STORE_ID: ${SSLCOMMERZ_STORE_ID}
+      # SSLCOMMERZ_STORE_PASSWORD: ${SSLCOMMERZ_STORE_PASSWORD}
+      FRONTEND_URL: https://gradpilot.me
 
   sop-review-service:
     image: ananyapromi3/gradpilot-sop-review:latest
@@ -183,6 +186,6 @@ services:
   frontend:
     image: ananyapromi3/gradpilot-frontend:latest
     ports:
-      - "80:3000"
+      - "3000:3000"  # ✅ Changed back to 3000 to match nginx config
     depends_on:
       - chatbot
