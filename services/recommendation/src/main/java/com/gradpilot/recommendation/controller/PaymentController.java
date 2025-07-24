@@ -84,7 +84,7 @@ public class PaymentController {
         }
     }
 
-    @GetMapping("/success")
+    @PostMapping("/success")
     public ResponseEntity<Void> paymentSuccess(
             @RequestParam("tran_id") String transactionId,
             @RequestParam("val_id") String validationId,
@@ -145,7 +145,7 @@ public class PaymentController {
         }
     }
 
-    @GetMapping("/fail")
+    @PostMapping("/fail")
     public ResponseEntity<Void> paymentFail(
             @RequestParam("tran_id") String transactionId,
             @RequestParam(value = "amount", required = false) String amount,
@@ -161,7 +161,7 @@ public class PaymentController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
-    @GetMapping("/cancel")
+    @PostMapping("/cancel")
     public ResponseEntity<Void> paymentCancel(
             @RequestParam("tran_id") String transactionId,
             @RequestParam(value = "amount", required = false) String amount,
