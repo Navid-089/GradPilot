@@ -9,7 +9,7 @@ export async function loginUser(email, password) {
   let response;
 
   try {
-    response = await fetch("https://gradpilot.me/api/auth/login", {
+    response = await fetch("https://gradpilot.me/api/v1/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export async function registerUser(userData) {
 
   let response;
   try {
-    response = await fetch("https://gradpilot.me/api/auth/register", {
+    response = await fetch("https://gradpilot.me/api/v1/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
