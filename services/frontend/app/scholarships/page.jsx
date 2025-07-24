@@ -15,7 +15,10 @@ import { Award, Search, Calendar, DollarSign, ExternalLink, Star, Check, Graduat
 import { getScholarships } from "@/lib/scholarship-service"
 import { trackerService } from "@/lib/tracker-service"
 import { applicationService } from "@/lib/application-service"
+import { paymentService } from "@/lib/payment-service"
 import { useAuth } from "@/lib/auth-context"
+import { SubscriptionModal } from "@/components/subscription/subscription-modal"
+import { SubscriptionRequired } from "@/components/subscription/subscription-required"
 
 export default function ScholarshipsPage() {
   const { user } = useAuth()
@@ -27,6 +30,12 @@ export default function ScholarshipsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState("all")
   const [sortBy, setSortBy] = useState("deadline")
+
+  // Subscription related state
+  const [needsSubscription, setNeedsSubscription] = useState(false)
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false)
+  const [subscriptionInfo, setSubscriptionInfo] = useState(null)
+  const [scholarshipsCount, setScholarshipsCount] = useState(0)
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(0)
@@ -54,17 +63,46 @@ export default function ScholarshipsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // First check if user is authenticated
+        if (!user) {
+          setNeedsSubscription(true)
+          setScholarshipsCount(0)
+          setSubscriptionInfo({
+            message: "Please log in to access scholarships",
+            requiresLogin: true
+          })
+          setScholarships([])
+          setFilteredScholarships([])
+          setIsLoading(false)
+          return
+        }
+
         const data = await getScholarships()
-        setScholarships(data)
-        setFilteredScholarships(data)
         
-        // Load saved scholarships and applications
-        if (user) {
-          await loadSavedScholarships(data)
-          await loadAppliedScholarships(data)
+        // Check if the response indicates subscription is needed
+        if (data.needsSubscription) {
+          setNeedsSubscription(true)
+          setScholarshipsCount(data.scholarshipsCount || 0)
+          setSubscriptionInfo(data.subscriptionInfo || data)
+          setScholarships([])
+          setFilteredScholarships([])
+        } else {
+          setScholarships(data)
+          setFilteredScholarships(data)
+          setNeedsSubscription(false)
+          
+          // Load saved scholarships and applications
+          if (user) {
+            await loadSavedScholarships(data)
+            await loadAppliedScholarships(data)
+          }
         }
       } catch (error) {
         console.error("Error fetching scholarship data:", error)
+        // If it's an authentication error, show subscription modal
+        if (error.message.includes('401') || error.message.includes('authentication')) {
+          setNeedsSubscription(true)
+        }
       } finally {
         setIsLoading(false)
       }
@@ -408,6 +446,78 @@ export default function ScholarshipsPage() {
       coverageTypes: [],
     })
     setSearchQuery("")
+  }
+
+  // Handle subscription modal
+  const handleShowSubscriptionModal = () => {
+    setShowSubscriptionModal(true)
+  }
+
+  const handleCloseSubscriptionModal = () => {
+    setShowSubscriptionModal(false)
+  }
+
+  // If user needs subscription, show the subscription required overlay
+  if (needsSubscription && !isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        {/* Header */}
+        <header className="border-b bg-background">
+          <div className="container mx-auto px-4 py-4">
+            <MainNav />
+          </div>
+        </header>
+
+        <main className="flex-1 py-8">
+          <div className="container mx-auto px-4">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold tracking-tight">Scholarship Finder</h1>
+              <p className="text-muted-foreground">Discover scholarships tailored to your profile</p>
+            </div>
+
+            <SubscriptionRequired 
+              onSubscribe={handleShowSubscriptionModal}
+              scholarshipsCount={scholarshipsCount}
+              requiresLogin={!user || subscriptionInfo?.requiresLogin}
+              className="min-h-[600px]"
+            />
+          </div>
+        </main>
+
+        {/* Subscription Modal */}
+        <SubscriptionModal 
+          isOpen={showSubscriptionModal}
+          onClose={handleCloseSubscriptionModal}
+          userInfo={user}
+        />
+
+        {/* Footer */}
+        <footer className="border-t py-8 mt-auto">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div className="flex items-center space-x-2 mb-4 md:mb-0">
+                <GraduationCap className="h-6 w-6" />
+                <span className="text-xl font-bold">GradPilot</span>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                © 2025 GradPilot. Developed by Souvik Mandol, Wahid Al Azad Navid, and Ananya Shahrin Promi.
+              </div>
+              <div className="flex space-x-4 mt-4 md:mt-0">
+                <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">
+                  Terms
+                </Link>
+                <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
+                  Privacy
+                </Link>
+                <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">
+                  Contact
+                </Link>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    )
   }
 
   return (
@@ -816,6 +926,13 @@ export default function ScholarshipsPage() {
           </div>
         </div>
       </footer>
+
+      {/* Subscription Modal */}
+      <SubscriptionModal 
+        isOpen={showSubscriptionModal}
+        onClose={handleCloseSubscriptionModal}
+        userInfo={user}
+      />
     </div>
   )
 }

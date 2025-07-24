@@ -12,6 +12,7 @@ import com.gradpilot.recommendation.repository.ScholarshipRepository;
 import com.gradpilot.recommendation.service.RecommendationService;
 import com.gradpilot.recommendation.service.TrackerService;
 import com.gradpilot.recommendation.service.ApplyService;
+import com.gradpilot.recommendation.service.PaymentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -30,16 +32,18 @@ public class RecommendationController {
     private final RecommendationService recommendationService;
     private final TrackerService trackerService;
     private final ApplyService applyService;
+    private final PaymentService paymentService;
     private final UserRepository userRepository;
     private final UniversityRepository universityRepository;
     private final ScholarshipRepository scholarshipRepository;
 
     public RecommendationController(RecommendationService recommendationService, TrackerService trackerService,
-                                  ApplyService applyService, UserRepository userRepository, UniversityRepository universityRepository,
+                                  ApplyService applyService, PaymentService paymentService, UserRepository userRepository, UniversityRepository universityRepository,
                                   ScholarshipRepository scholarshipRepository) {
         this.recommendationService = recommendationService;
         this.trackerService = trackerService;
         this.applyService = applyService;
+        this.paymentService = paymentService;
         this.userRepository = userRepository;
         this.universityRepository = universityRepository;
         this.scholarshipRepository = scholarshipRepository;
@@ -270,11 +274,38 @@ public class RecommendationController {
 
     // Scholarship endpoints
     @GetMapping("/scholarships")
-    public ResponseEntity<List<Scholarship>> getAllScholarships() {
+    public ResponseEntity<?> getAllScholarships(Authentication authentication) {
         try {
-            logger.info("Getting all scholarships with university data");
+            logger.info("Getting all scholarships with subscription check");
+            
+            // Check if user is authenticated
+            if (authentication == null || authentication.getName() == null) {
+                return ResponseEntity.status(401).body(createUnauthorizedResponse());
+            }
+            
+            // Get user and check subscription status
+            String email = authentication.getName();
+            Optional<User> userOpt = userRepository.findByEmail(email);
+            
+            if (!userOpt.isPresent()) {
+                return ResponseEntity.status(401).body(createUnauthorizedResponse());
+            }
+            
+            User user = userOpt.get();
+            boolean hasValidSubscription = paymentService.hasValidSubscription(user.getUserId());
+            
             List<Scholarship> scholarships = scholarshipRepository.findAllWithUniversity();
             logger.info("Found {} scholarships", scholarships.size());
+            
+            // If user doesn't have valid subscription, return subscription required response
+            if (!hasValidSubscription) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("needsSubscription", true);
+                response.put("message", "Premium subscription required to access scholarships");
+                response.put("scholarshipsCount", scholarships.size());
+                response.put("subscriptionInfo", paymentService.checkSubscriptionStatus(user.getUserId()));
+                return ResponseEntity.ok(response);
+            }
             
             // Log scholarship details for debugging
             for (Scholarship scholarship : scholarships) {
@@ -289,6 +320,14 @@ public class RecommendationController {
             logger.error("Error getting scholarships: {}", e.getMessage(), e);
             return ResponseEntity.status(500).build();
         }
+    }
+
+    private Map<String, Object> createUnauthorizedResponse() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("needsSubscription", true);
+        response.put("message", "Authentication required");
+        response.put("requiresLogin", true);
+        return response;
     }
 
     @GetMapping("/scholarships/{id}")

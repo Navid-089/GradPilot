@@ -43,6 +43,9 @@ public class User implements UserDetails {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "last_payment")
+    private LocalDateTime lastPayment;
+
     @ManyToMany
     @JoinTable(name = "user_research_interests", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "research_interest_id"))
     private java.util.List<ResearchInterest> researchInterests;
@@ -179,5 +182,13 @@ public class User implements UserDetails {
 
     public java.util.List<Major> getTargetMajors() {
         return targetMajors;
+    }
+
+    public LocalDateTime getLastPayment() {
+        return lastPayment;
+    }
+
+    public void setLastPayment(LocalDateTime lastPayment) {
+        this.lastPayment = lastPayment;
     }
 }

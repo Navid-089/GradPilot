@@ -1,6 +1,6 @@
 // Real scholarship service that calls the backend API
 
-// const API_BASE_URL = 'http://localhost:8083'
+// const API_BASE_URL = 'http://localhost:8083';
 const API_BASE_URL = "http://gradpilot.me:8083";
 
 export async function getScholarships() {
@@ -8,7 +8,12 @@ export async function getScholarships() {
     const token = localStorage.getItem('token')
     
     if (!token) {
-      throw new Error('No authentication token found')
+      return {
+        needsSubscription: true,
+        message: "Please log in to access scholarships",
+        requiresLogin: true,
+        scholarshipsCount: 0
+      }
     }
 
     const response = await fetch(`${API_BASE_URL}/api/recommendations/scholarships`, {
@@ -20,11 +25,29 @@ export async function getScholarships() {
     })
 
     if (!response.ok) {
+      if (response.status === 401) {
+        return {
+          needsSubscription: true,
+          message: "Please log in to access scholarships",
+          requiresLogin: true,
+          scholarshipsCount: 0
+        }
+      }
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const scholarships = await response.json()
+    const data = await response.json()
     console.log("=== SCHOLARSHIP SERVICE DEBUG ===")
+    console.log("Raw response from backend:", data)
+    
+    // Check if subscription is required
+    if (data.needsSubscription) {
+      console.log("Subscription required response received")
+      return data
+    }
+    
+    // If we get here, we have actual scholarship data
+    const scholarships = data
     console.log("Raw scholarships from backend:", scholarships)
     
     // Log deadline information specifically
@@ -92,8 +115,12 @@ export async function getScholarships() {
     return transformedScholarships
   } catch (error) {
     console.error('Error fetching scholarships:', error)
-    // Return mock data as fallback
-    return getMockScholarships()
+    // Don't fall back to mock data - instead return subscription required
+    return {
+      needsSubscription: true,
+      message: "Unable to load scholarships. Please try again or contact support.",
+      scholarshipsCount: 0
+    }
   }
 }
 
