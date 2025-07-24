@@ -90,11 +90,11 @@ public class PaymentController {
         String redirectUrl;
         if (isValid) {
             // Redirect to frontend success page with parameters
-            redirectUrl = String.format("http://localhost:3000/payment/success?tran_id=%s&val_id=%s&amount=%s&currency=%s", 
+            redirectUrl = String.format("http://gradpilot.me:3000/payment/success?tran_id=%s&val_id=%s&amount=%s&currency=%s", 
                 transactionId, validationId, amount != null ? amount : "500", currency != null ? currency : "BDT");
         } else {
             // Redirect to frontend fail page
-            redirectUrl = String.format("http://localhost:3000/payment/fail?tran_id=%s&error=validation_failed", transactionId);
+            redirectUrl = String.format("http://gradpilot.me:3000/payment/fail?tran_id=%s&error=validation_failed", transactionId);
         }
         
         System.out.println("Redirecting to: " + redirectUrl);
@@ -149,7 +149,7 @@ public class PaymentController {
             @RequestParam(value = "currency", required = false) String currency,
             @RequestParam(value = "error", required = false) String error) {
         
-        String redirectUrl = String.format("http://localhost:3000/payment/fail?tran_id=%s&amount=%s&currency=%s&error=%s", 
+        String redirectUrl = String.format("http://gradpilot.me:3000/payment/fail?tran_id=%s&amount=%s&currency=%s&error=%s", 
             transactionId, amount != null ? amount : "500", currency != null ? currency : "BDT", 
             error != null ? error : "payment_failed");
         
@@ -164,7 +164,7 @@ public class PaymentController {
             @RequestParam(value = "amount", required = false) String amount,
             @RequestParam(value = "currency", required = false) String currency) {
         
-        String redirectUrl = String.format("http://localhost:3000/payment/cancel?tran_id=%s&amount=%s&currency=%s", 
+        String redirectUrl = String.format("http://gradpilot.me:3000/payment/cancel?tran_id=%s&amount=%s&currency=%s", 
             transactionId, amount != null ? amount : "500", currency != null ? currency : "BDT");
         
         HttpHeaders headers = new HttpHeaders();
@@ -236,12 +236,12 @@ public class PaymentController {
                         <p><strong>Status:</strong> Confirmed</p>
                     </div>
                     <p>Your subscription is now active. You can now access all premium features including the scholarship finder.</p>
-                    <a href="http://localhost:3000/scholarships" class="btn">Go to Scholarships</a>
+                    <a href="http://gradpilot.me:3000/scholarships" class="btn">Go to Scholarships</a>
                 </div>
                 <script>
                     // Auto redirect after 10 seconds
                     setTimeout(function() {
-                        window.location.href = 'http://localhost:3000/scholarships';
+                        window.location.href = 'http://gradpilot.me:3000/scholarships';
                     }, 10000);
                 </script>
             </body>
@@ -280,8 +280,8 @@ public class PaymentController {
                         <p><strong>Transaction ID:</strong> %s</p>
                     </div>
                     <p>Please try again or contact support if the issue persists.</p>
-                    <a href="http://localhost:3000/scholarships" class="btn">Try Again</a>
-                    <a href="http://localhost:3000" class="btn btn-secondary">Go Home</a>
+                    <a href="http://gradpilot.me:3000/scholarships" class="btn">Try Again</a>
+                    <a href="http://gradpilot.me:3000" class="btn btn-secondary">Go Home</a>
                 </div>
             </body>
             </html>

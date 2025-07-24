@@ -9,7 +9,7 @@ export async function getUserResearchInterests() {
       throw new Error('No authentication token found')
     }
 
-    const API_BASE_URL = "http://localhost:8083";
+    const API_BASE_URL = "http://gradpilot.me:8083";
     const response = await fetch(`${API_BASE_URL}/api/user/research-interests`, {
       method: 'GET',
       headers: {
