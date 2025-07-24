@@ -1,5 +1,5 @@
 // const API_BASE_URL = "http://localhost:8083";
-const API_BASE_URL = "https://gradpilot.me/api";
+const API_BASE_URL = "https://gradpilot.me";
 
 export const applicationService = {
   // Apply to a scholarship

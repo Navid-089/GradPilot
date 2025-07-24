@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("test", async ({ page }) => {
-  await page.goto("http://gradpilot.me/login");
+  await page.goto("https://gradpilot.me/login");
   await page.getByRole("textbox", { name: "Email" }).click();
   await page.getByRole("textbox", { name: "Email" }).fill("rapunzel@gmail.com");
   await page.getByRole("textbox", { name: "Password" }).click();
