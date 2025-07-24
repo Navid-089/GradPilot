@@ -1,4 +1,4 @@
-cpackage com.gradpilot.repository;
+package com.gradpilot.repository;
 
 import java.util.List;
 
