@@ -125,28 +125,40 @@ public class PaymentService {
     }
 
     public boolean validateAndProcessPayment(String transactionId, String validationId) {
+        System.out.println("=== PAYMENT VALIDATION SERVICE ===");
+        System.out.println("Transaction ID: " + transactionId);
+        System.out.println("Validation ID: " + validationId);
+        
         try {
             // Get payment record
+            System.out.println("Looking for payment record...");
             Optional<Payment> paymentOpt = paymentRepository.findByTransactionId(transactionId);
             if (!paymentOpt.isPresent()) {
+                System.out.println("Payment record not found for transaction: " + transactionId);
                 return false;
             }
 
             Payment payment = paymentOpt.get();
+            System.out.println("Found payment record with status: " + payment.getPaymentStatus());
 
             // Validate with SSLCommerz
             String validationUrlWithParams = sslCommerzConfig.getValidation().getUrl() + "?val_id=" + validationId + 
                                            "&store_id=" + sslCommerzConfig.getStore().getId() + 
                                            "&store_passwd=" + sslCommerzConfig.getStore().getPassword();
 
+            System.out.println("Calling SSLCommerz validation URL: " + validationUrlWithParams);
+            
             ResponseEntity<Map> response = restTemplate.getForEntity(validationUrlWithParams, Map.class);
+            System.out.println("SSLCommerz response status: " + response.getStatusCode());
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> responseBody = response.getBody();
                 String status = (String) responseBody.get("status");
+                System.out.println("SSLCommerz validation status: " + status);
 
                 if ("VALID".equals(status)) {
+                    System.out.println("Payment is valid, updating payment record...");
                     // Update payment status
                     payment.setPaymentStatus("SUCCESS");
                     payment.setValidationId(validationId);
@@ -161,26 +173,37 @@ public class PaymentService {
                         payment.setSubscriptionEnd(now.plusYears(1));
                     }
 
+                    System.out.println("Saving payment record...");
                     paymentRepository.save(payment);
 
                     // Update user's last payment
+                    System.out.println("Updating user's last payment...");
                     Optional<User> userOpt = userRepository.findById(payment.getUserId());
                     if (userOpt.isPresent()) {
                         User user = userOpt.get();
                         user.setLastPayment(now);
                         userRepository.save(user);
+                        System.out.println("User last payment updated successfully");
                     }
 
+                    System.out.println("Payment validation completed successfully");
                     return true;
+                } else {
+                    System.out.println("SSLCommerz validation failed with status: " + status);
                 }
+            } else {
+                System.out.println("SSLCommerz API call failed");
             }
 
             // If validation failed, update payment status
+            System.out.println("Marking payment as failed...");
             payment.setPaymentStatus("FAILED");
             paymentRepository.save(payment);
             return false;
 
         } catch (Exception e) {
+            System.err.println("Exception in payment validation: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }

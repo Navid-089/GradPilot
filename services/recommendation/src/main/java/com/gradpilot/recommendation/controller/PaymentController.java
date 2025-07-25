@@ -143,8 +143,14 @@ public class PaymentController {
             @RequestParam("tran_id") String transactionId,
             @RequestParam("val_id") String validationId) {
         
+        System.out.println("=== PAYMENT VALIDATION REQUEST ===");
+        System.out.println("Transaction ID: " + transactionId);
+        System.out.println("Validation ID: " + validationId);
+        
         try {
             boolean isValid = paymentService.validateAndProcessPayment(transactionId, validationId);
+            
+            System.out.println("Payment validation result: " + isValid);
             
             Map<String, Object> response = new HashMap<>();
             response.put("transactionId", transactionId);
@@ -155,9 +161,13 @@ public class PaymentController {
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
+            System.err.println("Error in payment validation: " + e.getMessage());
+            e.printStackTrace();
+            
             Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Error processing payment: " + e.getMessage());
+            response.put("error", e.getClass().getSimpleName());
             return ResponseEntity.status(500).body(response);
         }
     }
