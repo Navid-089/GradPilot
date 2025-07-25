@@ -1,6 +1,6 @@
 "use client";
 
-const API_BASE_URL = "http://localhost:8082";
+const API_BASE_URL = "https:gradpilot.me"; // adjust port if needed
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
