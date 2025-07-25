@@ -89,7 +89,7 @@ export function SubscriptionRequired({ onSubscribe, scholarshipsCount, className
                   Premium Subscription Required
                 </h2>
                 <p className="text-gray-600 mb-4">
-                  Unlock access to {scholarshipsCount || 'all'} scholarship opportunities and premium features
+                  Unlock access to {'all'} scholarship opportunities and premium features
                 </p>
               </div>
 

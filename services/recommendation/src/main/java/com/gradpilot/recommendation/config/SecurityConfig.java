@@ -29,6 +29,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/recommendations/payment/success").permitAll()
+                        .requestMatchers("/api/recommendations/payment/fail").permitAll()
+                        .requestMatchers("/api/recommendations/payment/cancel").permitAll()
+                        .requestMatchers("/api/recommendations/payment/ipn").permitAll()
+                        .requestMatchers("/api/recommendations/payment/validate").permitAll()
                         .requestMatchers("/api/recommendations/**").authenticated()
                         .requestMatchers("/api/user/**").authenticated()
                         .anyRequest().permitAll())
