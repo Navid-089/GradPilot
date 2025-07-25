@@ -22,7 +22,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/recommendations/payment")
-@CrossOrigin(origins = {"http://localhost:3000", "https://gradpilot.me", "https://www.gradpilot.me"})
+@CrossOrigin(origins = {"http://localhost:3000", "https://gradpilot.me", "https://www.gradpilot.me"}, 
+             allowedHeaders = {"*"}, 
+             allowCredentials = "true",
+             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class PaymentController {
 
     @Autowired
@@ -123,8 +126,7 @@ public class PaymentController {
     @GetMapping("/validate")
     public ResponseEntity<Map<String, Object>> validatePayment(
             @RequestParam("tran_id") String transactionId,
-            @RequestParam("val_id") String validationId,
-            Authentication authentication) {
+            @RequestParam("val_id") String validationId) {
         
         try {
             boolean isValid = paymentService.validateAndProcessPayment(transactionId, validationId);
