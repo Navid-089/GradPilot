@@ -8,7 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("/api/chatbot")
+@CrossOrigin(origins = {"http://localhost:3000", "https://gradpilot.me", "https://www.gradpilot.me"}, 
+             allowedHeaders = {"*"}, 
+             allowCredentials = "true",
+             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS})
 public class ChatController {
     private final ChatService svc;
     public ChatController(ChatService svc) { this.svc = svc; }

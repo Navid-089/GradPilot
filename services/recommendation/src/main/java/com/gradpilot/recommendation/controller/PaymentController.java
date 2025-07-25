@@ -6,6 +6,7 @@ import com.gradpilot.recommendation.dto.SubscriptionStatusResponse;
 import com.gradpilot.recommendation.model.User;
 import com.gradpilot.recommendation.repository.UserRepository;
 import com.gradpilot.recommendation.service.PaymentService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -87,15 +88,17 @@ public class PaymentController {
         }
     }
 
-    @PostMapping("/success")
+    @RequestMapping(value = "/success", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<Void> paymentSuccess(
             @RequestParam(value = "tran_id", required = false) String transactionId,
             @RequestParam(value = "val_id", required = false) String validationId,
             @RequestParam(value = "amount", required = false) String amount,
             @RequestParam(value = "currency", required = false) String currency,
-            @RequestParam(value = "status", required = false) String status) {
+            @RequestParam(value = "status", required = false) String status,
+            HttpServletRequest request) {
         
         System.out.println("=== PAYMENT SUCCESS CALLBACK ===");
+        System.out.println("Request Method: " + request.getMethod());
         System.out.println("Transaction ID: " + transactionId);
         System.out.println("Validation ID: " + validationId);
         System.out.println("Amount: " + amount);
@@ -159,15 +162,22 @@ public class PaymentController {
         }
     }
 
-    @PostMapping("/fail")
+    @RequestMapping(value = "/fail", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<Void> paymentFail(
-            @RequestParam("tran_id") String transactionId,
+            @RequestParam(value = "tran_id", required = false) String transactionId,
             @RequestParam(value = "amount", required = false) String amount,
             @RequestParam(value = "currency", required = false) String currency,
-            @RequestParam(value = "error", required = false) String error) {
+            @RequestParam(value = "error", required = false) String error,
+            HttpServletRequest request) {
+        
+        System.out.println("=== PAYMENT FAIL CALLBACK ===");
+        System.out.println("Request Method: " + request.getMethod());
+        System.out.println("Transaction ID: " + transactionId);
+        System.out.println("Error: " + error);
         
         String redirectUrl = String.format("%s%s?tran_id=%s&amount=%s&currency=%s&error=%s", 
-            frontendUrl, failPath, transactionId, amount != null ? amount : "500", 
+            frontendUrl, failPath, transactionId != null ? transactionId : "unknown", 
+            amount != null ? amount : "500", 
             currency != null ? currency : "BDT", error != null ? error : "payment_failed");
         
         HttpHeaders headers = new HttpHeaders();
@@ -175,14 +185,20 @@ public class PaymentController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
-    @PostMapping("/cancel")
+    @RequestMapping(value = "/cancel", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<Void> paymentCancel(
-            @RequestParam("tran_id") String transactionId,
+            @RequestParam(value = "tran_id", required = false) String transactionId,
             @RequestParam(value = "amount", required = false) String amount,
-            @RequestParam(value = "currency", required = false) String currency) {
+            @RequestParam(value = "currency", required = false) String currency,
+            HttpServletRequest request) {
+        
+        System.out.println("=== PAYMENT CANCEL CALLBACK ===");
+        System.out.println("Request Method: " + request.getMethod());
+        System.out.println("Transaction ID: " + transactionId);
         
         String redirectUrl = String.format("%s%s?tran_id=%s&amount=%s&currency=%s", 
-            frontendUrl, cancelPath, transactionId, amount != null ? amount : "500", 
+            frontendUrl, cancelPath, transactionId != null ? transactionId : "unknown", 
+            amount != null ? amount : "500", 
             currency != null ? currency : "BDT");
         
         HttpHeaders headers = new HttpHeaders();
@@ -190,17 +206,33 @@ public class PaymentController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
-    @PostMapping("/ipn")
-    public ResponseEntity<String> paymentIPN(@RequestBody String ipnData) {
-        // Log IPN data for monitoring
-        System.out.println("IPN received: " + ipnData);
+    @RequestMapping(value = "/ipn", method = {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity<String> paymentIPN(
+            @RequestParam(value = "tran_id", required = false) String transactionId,
+            @RequestParam(value = "val_id", required = false) String validationId,
+            @RequestParam(value = "amount", required = false) String amount,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestBody(required = false) String ipnData,
+            HttpServletRequest request) {
+        
+        System.out.println("=== IPN CALLBACK ===");
+        System.out.println("Request Method: " + request.getMethod());
+        System.out.println("Transaction ID: " + transactionId);
+        System.out.println("Validation ID: " + validationId);
+        System.out.println("IPN Data: " + ipnData);
+        
         return ResponseEntity.ok("OK");
     }
 
     // Explicit OPTIONS support for CORS preflight
     @RequestMapping(value = {"/success", "/fail", "/cancel", "/ipn", "/validate"}, method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> handleOptions() {
-        return ResponseEntity.ok().build();
+        System.out.println("=== OPTIONS REQUEST RECEIVED ===");
+        return ResponseEntity.ok()
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            .header("Access-Control-Allow-Headers", "*")
+            .build();
     }
 
     @GetMapping("/subscription-status")
@@ -227,6 +259,31 @@ public class PaymentController {
                 SubscriptionStatusResponse.needsPayment("Server error: " + e.getMessage())
             );
         }
+    }
+
+    // Test endpoint for sandbox testing
+    @GetMapping("/test-success")
+    public ResponseEntity<String> testPaymentSuccess(
+            @RequestParam(value = "tran_id", defaultValue = "test_sandbox_123") String transactionId,
+            @RequestParam(value = "val_id", defaultValue = "test_val_456") String validationId,
+            @RequestParam(value = "amount", defaultValue = "500") String amount,
+            @RequestParam(value = "currency", defaultValue = "BDT") String currency) {
+        
+        System.out.println("=== TEST PAYMENT SUCCESS ===");
+        System.out.println("Redirecting to success endpoint with test data...");
+        
+        // If using default values, generate unique transaction ID
+        if ("test_sandbox_123".equals(transactionId)) {
+            transactionId = "test_" + System.currentTimeMillis();
+        }
+        
+        // Redirect to the actual success endpoint
+        String redirectUrl = String.format("/api/recommendations/payment/success?tran_id=%s&val_id=%s&amount=%s&currency=%s", 
+            transactionId, validationId, amount, currency);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(redirectUrl));
+        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
     @SuppressWarnings("unused")
