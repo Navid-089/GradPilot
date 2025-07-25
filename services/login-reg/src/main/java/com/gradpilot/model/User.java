@@ -55,20 +55,22 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String name, String email, String password) {
+    public User(String name, String email, String password, String gender) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.createdAt = LocalDateTime.now();
+        this.gender = gender;
     }
 
-    public User(String name, String email, String password, BigDecimal cgpa, Integer applyYear) {
+    public User(String name, String email, String password, BigDecimal cgpa, Integer applyYear, String gender) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.cgpa = cgpa;
         this.applyYear = applyYear;
         this.createdAt = LocalDateTime.now();
+        this.gender = gender;
     }
 
     // UserDetails interface methods

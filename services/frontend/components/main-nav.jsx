@@ -415,7 +415,7 @@ export function MainNav() {
         <div className="ml-auto flex items-center space-x-4">
           {isAuthenticated ? (
             <>
-              {/* <Button variant="ghost" size="icon" className="relative" asChild>
+              <Button variant="ghost" size="icon" className="relative" asChild>
                 <Link href="/dashboard/messages">
                   <MessageSquare className="h-5 w-5" />
                   {messages > 0 && (
@@ -424,7 +424,7 @@ export function MainNav() {
                     </Badge>
                   )}
                 </Link>
-              </Button> */}
+              </Button>
 
               {/* Notification Dropdown */}
               <NotificationMenu userId={user?.userId} />
@@ -439,7 +439,7 @@ export function MainNav() {
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={getAvatarSrc(user)} alt={user?.name} />
-                      <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
+                      {/* <AvatarFallback>{getInitials(user?.name)}</AvatarFallback> */}
                     </Avatar>
                     <span className="font-medium text-sm hidden sm:inline-block">
                       {user?.name || "User"}

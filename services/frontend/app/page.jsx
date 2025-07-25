@@ -1,6 +1,6 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { MainNav } from "@/components/main-nav"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { MainNav } from "@/components/main-nav";
 import {
   GraduationCap,
   ArrowRight,
@@ -12,10 +12,10 @@ import {
   MessageSquare,
   CheckCircle,
   Star,
-} from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 export default function HomePage() {
   return (
@@ -35,18 +35,23 @@ export default function HomePage() {
                   Navigate Your Path to Graduate School Success From Now!
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  GradPilot helps you find the perfect graduate programs, connect with professors, and streamline your
-                  application process.
+                  GradPilot helps you find the perfect graduate programs,
+                  connect with professors, and streamline your application
+                  process.
                 </p>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90" asChild>
+                  <Button
+                    size="lg"
+                    className="bg-primary hover:bg-primary/90"
+                    asChild
+                  >
                     <Link href="/signup">
-                      Get Started
+                      Get Started as Student
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                   </Button>
                   <Button size="lg" variant="outline" asChild>
-                    <Link href="/features">Learn More</Link>
+                    <Link href="/registerAsMentor">Continue as Mentor</Link>
                   </Button>
                 </div>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground">
@@ -75,7 +80,9 @@ export default function HomePage() {
                       <div className="text-4xl font-bold text-primary">94%</div>
                       <div className="text-sm">
                         <div className="font-medium">Success Rate</div>
-                        <div className="text-muted-foreground">of our users</div>
+                        <div className="text-muted-foreground">
+                          of our users
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -97,19 +104,26 @@ export default function HomePage() {
                   Everything You Need for Graduate School Applications
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl">
-                  Our platform provides all the tools and resources you need to navigate the complex graduate school
-                  application process.
+                  Our platform provides all the tools and resources you need to
+                  navigate the complex graduate school application process.
                 </p>
               </div>
             </div>
             <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mt-8">
               {features.map((feature) => (
-                <Card key={feature.title} className="overflow-hidden transition-all hover:shadow-md">
+                <Card
+                  key={feature.title}
+                  className="overflow-hidden transition-all hover:shadow-md"
+                >
                   <CardContent className="p-6">
                     <div className="flex flex-col items-center space-y-4 text-center">
-                      <div className="rounded-full bg-primary/10 p-3 text-primary">{feature.icon}</div>
+                      <div className="rounded-full bg-primary/10 p-3 text-primary">
+                        {feature.icon}
+                      </div>
                       <h3 className="text-xl font-bold">{feature.title}</h3>
-                      <p className="text-muted-foreground">{feature.description}</p>
+                      <p className="text-muted-foreground">
+                        {feature.description}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -126,9 +140,12 @@ export default function HomePage() {
                 <div className="inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary">
                   Success Stories
                 </div>
-                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">What Our Users Say</h2>
+                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">
+                  What Our Users Say
+                </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl">
-                  Hear from students who have successfully navigated their graduate school journey with GradPilot.
+                  Hear from students who have successfully navigated their
+                  graduate school journey with GradPilot.
                 </p>
               </div>
             </div>
@@ -142,14 +159,23 @@ export default function HomePage() {
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`h-5 w-5 ${i < testimonial.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                            className={`h-5 w-5 ${
+                              i < testimonial.rating
+                                ? "text-yellow-500 fill-yellow-500"
+                                : "text-gray-300"
+                            }`}
                           />
                         ))}
                       </div>
-                      <p className="italic text-muted-foreground">"{testimonial.quote}"</p>
+                      <p className="italic text-muted-foreground">
+                        "{testimonial.quote}"
+                      </p>
                       <div className="flex items-center space-x-4">
                         <Avatar>
-                          <AvatarImage src={testimonial.avatar || "/placeholder.svg"} alt={testimonial.name} />
+                          <AvatarImage
+                            src={testimonial.avatar || "/placeholder.svg"}
+                            alt={testimonial.name}
+                          />
                           <AvatarFallback>
                             {testimonial.name
                               .split(" ")
@@ -159,7 +185,9 @@ export default function HomePage() {
                         </Avatar>
                         <div>
                           <div className="font-medium">{testimonial.name}</div>
-                          <div className="text-sm text-muted-foreground">{testimonial.program}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {testimonial.program}
+                          </div>
                         </div>
                       </div>
                       <Badge variant="outline" className="w-fit">
@@ -187,7 +215,9 @@ export default function HomePage() {
               {stats.map((stat, index) => (
                 <div key={index} className="space-y-2">
                   <div className="text-4xl font-bold">{stat.value}</div>
-                  <div className="text-sm font-medium opacity-80">{stat.label}</div>
+                  <div className="text-sm font-medium opacity-80">
+                    {stat.label}
+                  </div>
                 </div>
               ))}
             </div>
@@ -203,11 +233,16 @@ export default function HomePage() {
                   Ready to Start Your Graduate School Journey?
                 </h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl">
-                  Join thousands of successful applicants who have used GradPilot to get into their dream programs.
+                  Join thousands of successful applicants who have used
+                  GradPilot to get into their dream programs.
                 </p>
               </div>
               <div className="w-full max-w-md">
-                <Button size="lg" className="w-full bg-primary hover:bg-primary/90" asChild>
+                <Button
+                  size="lg"
+                  className="w-full bg-primary hover:bg-primary/90"
+                  asChild
+                >
                   <Link href="/signup">
                     Create Your Free Account
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -229,52 +264,63 @@ export default function HomePage() {
             <Link className="text-sm font-medium hover:underline" href="/terms">
               Terms of Services
             </Link>
-            <Link className="text-sm font-medium hover:underline" href="/privacy">
+            <Link
+              className="text-sm font-medium hover:underline"
+              href="/privacy"
+            >
               Privacy
             </Link>
             <Link className="text-sm font-medium hover:underline" href="/about">
               About
             </Link>
           </nav>
-          <div className="text-sm text-muted-foreground">© 2023 GradPilot. All rights reserved.</div>
+          <div className="text-sm text-muted-foreground">
+            © 2023 GradPilot. All rights reserved.
+          </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
 
 const features = [
   {
     title: "University Matching",
-    description: "Find the perfect graduate programs based on your profile, interests, and goals.",
+    description:
+      "Find the perfect graduate programs based on your profile, interests, and goals.",
     icon: <School className="h-6 w-6" />,
   },
   {
     title: "Professor Connections",
-    description: "Discover and connect with professors whose research aligns with your interests.",
+    description:
+      "Discover and connect with professors whose research aligns with your interests.",
     icon: <Users className="h-6 w-6" />,
   },
   {
     title: "Document Review",
-    description: "Get feedback on your Statement of Purpose, CV, and other application documents.",
+    description:
+      "Get feedback on your Statement of Purpose, CV, and other application documents.",
     icon: <FileText className="h-6 w-6" />,
   },
   {
     title: "Application Timeline",
-    description: "Stay on track with a personalized timeline and deadline reminders.",
+    description:
+      "Stay on track with a personalized timeline and deadline reminders.",
     icon: <Calendar className="h-6 w-6" />,
   },
   {
     title: "Scholarship Finder",
-    description: "Discover scholarships and funding opportunities for your graduate studies.",
+    description:
+      "Discover scholarships and funding opportunities for your graduate studies.",
     icon: <Award className="h-6 w-6" />,
   },
   {
     title: "AI Assistant",
-    description: "Get instant answers to your questions about the application process.",
+    description:
+      "Get instant answers to your questions about the application process.",
     icon: <MessageSquare className="h-6 w-6" />,
   },
-]
+];
 
 const testimonials = [
   {
@@ -299,7 +345,8 @@ const testimonials = [
     name: "Priya Patel",
     program: "Ph.D. in Neuroscience",
     university: "UC Berkeley",
-    quote: "The document review feature helped me refine my SOP. I received offers from 4 of my top 5 schools!",
+    quote:
+      "The document review feature helped me refine my SOP. I received offers from 4 of my top 5 schools!",
     rating: 4,
     avatar: "/placeholder.svg?height=40&width=40",
   },
@@ -330,11 +377,11 @@ const testimonials = [
     rating: 4,
     avatar: "/placeholder.svg?height=40&width=40",
   },
-]
+];
 
 const stats = [
   { value: "10,000+", label: "Students Helped" },
   { value: "94%", label: "Acceptance Rate" },
   { value: "$2.5M+", label: "Scholarships Found" },
   { value: "500+", label: "Partner Universities" },
-]
+];

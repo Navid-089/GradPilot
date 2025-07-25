@@ -105,7 +105,8 @@ public class AuthService {
             // Save research interests (IDs)
             if (registerRequest.getResearchInterests() != null) {
                 for (Integer interestId : registerRequest.getResearchInterests()) {
-                    UserResearchInterest userResearchInterest = new UserResearchInterest(savedUser.getUserId(), interestId);
+                    UserResearchInterest userResearchInterest = new UserResearchInterest(savedUser.getUserId(),
+                            interestId);
                     userResearchInterestRepository.save(userResearchInterest);
                 }
             }
@@ -168,7 +169,8 @@ public class AuthService {
             LoginResponse.UserInfo userInfo = new LoginResponse.UserInfo(
                     user.getUserId().toString(),
                     user.getName(),
-                    user.getEmail());
+                    user.getEmail(),
+                    user.getGender());
 
             return new LoginResponse(token, userInfo);
 
@@ -181,7 +183,8 @@ public class AuthService {
     public UpdateProfileResponse updateProfile(UserProfileUpdate dto) {
         try {
             // For now, let's use the email from the DTO to find the user
-            // In a real application, you'd get this from JWT token or authentication context
+            // In a real application, you'd get this from JWT token or authentication
+            // context
             String email = dto.getEmail();
             if (email == null || email.trim().isEmpty()) {
                 throw new RuntimeException("Email is required for profile update");
@@ -244,7 +247,8 @@ public class AuthService {
             if (dto.getTargetCountries() != null) {
                 try {
                     // First, get existing target countries to avoid constraint violations
-                    List<UserTargetCountry> existingCountries = userTargetCountryRepository.findByUserId(updatedUser.getUserId());
+                    List<UserTargetCountry> existingCountries = userTargetCountryRepository
+                            .findByUserId(updatedUser.getUserId());
 
                     // Clear existing target countries
                     if (!existingCountries.isEmpty()) {
@@ -268,7 +272,8 @@ public class AuthService {
             if (dto.getTargetMajors() != null) {
                 try {
                     // First, get existing target majors to avoid constraint violations
-                    List<UserTargetMajor> existingMajors = userTargetMajorRepository.findByUserId(updatedUser.getUserId());
+                    List<UserTargetMajor> existingMajors = userTargetMajorRepository
+                            .findByUserId(updatedUser.getUserId());
 
                     // Clear existing target majors
                     if (!existingMajors.isEmpty()) {
@@ -291,7 +296,8 @@ public class AuthService {
             // Save research interests
             if (dto.getResearchInterests() != null) {
                 try {
-                    // Clear existing research interests using deleteByUserId which works better with composite keys
+                    // Clear existing research interests using deleteByUserId which works better
+                    // with composite keys
                     userResearchInterestRepository.deleteByUserId(updatedUser.getUserId());
                     userResearchInterestRepository.flush(); // Ensure deletion is committed
 
@@ -376,7 +382,8 @@ public class AuthService {
                     .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
             // Get user's target countries
-            java.util.List<UserTargetCountry> userTargetCountries = userTargetCountryRepository.findByUserId(user.getUserId());
+            java.util.List<UserTargetCountry> userTargetCountries = userTargetCountryRepository
+                    .findByUserId(user.getUserId());
             java.util.List<Integer> targetCountryIds = userTargetCountries.stream()
                     .map(UserTargetCountry::getCountryId)
                     .collect(java.util.stream.Collectors.toList());
@@ -388,7 +395,8 @@ public class AuthService {
                     .collect(java.util.stream.Collectors.toList());
 
             // Get user's research interests
-            java.util.List<UserResearchInterest> userResearchInterests = userResearchInterestRepository.findByUserId(user.getUserId());
+            java.util.List<UserResearchInterest> userResearchInterests = userResearchInterestRepository
+                    .findByUserId(user.getUserId());
             java.util.List<Integer> researchInterestIds = userResearchInterests.stream()
                     .map(UserResearchInterest::getResearchInterestId)
                     .collect(java.util.stream.Collectors.toList());

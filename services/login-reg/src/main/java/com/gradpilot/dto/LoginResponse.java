@@ -6,7 +6,8 @@ public class LoginResponse {
     private UserInfo user;
 
     // Constructors
-    public LoginResponse() {}
+    public LoginResponse() {
+    }
 
     public LoginResponse(String token, UserInfo user) {
         this.token = token;
@@ -35,13 +36,16 @@ public class LoginResponse {
         private String userId;
         private String name;
         private String email;
+        private String gender;
 
-        public UserInfo() {}
+        public UserInfo() {
+        }
 
-        public UserInfo(String userId, String name, String email) {
+        public UserInfo(String userId, String name, String email, String gender) {
             this.userId = userId;
             this.name = name;
             this.email = email;
+            this.gender = gender;
         }
 
         // Getters and Setters
@@ -67,6 +71,14 @@ public class LoginResponse {
 
         public void setEmail(String email) {
             this.email = email;
+        }
+
+        public String getGender() {
+            return gender;
+        }
+
+        public void setGender(String gender) {
+            this.gender = gender;
         }
     }
 }
