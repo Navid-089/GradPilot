@@ -51,6 +51,7 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "http://57.159.24.58:3000",
                 "http://gradpilot.me",
+                "https://gradpilot.me",
                 "http://57.159.24.58"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
