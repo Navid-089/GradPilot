@@ -44,3 +44,7 @@ Thumbs.db
 
 # Test results
 **/test-results/
+
+
+# nginx configuration
+nginx.conf
