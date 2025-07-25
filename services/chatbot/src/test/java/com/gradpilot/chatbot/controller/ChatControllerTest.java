@@ -25,7 +25,7 @@ class ChatControllerTest {
     @Test
     void chat_withValidRequest_returnsOk() throws Exception {
         ChatRequest req = new ChatRequest("Hello, chatbot!");
-        mockMvc.perform(post("/api/chat")
+        mockMvc.perform(post("/api/chatbot")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk());
