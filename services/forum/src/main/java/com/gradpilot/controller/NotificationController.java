@@ -1,18 +1,23 @@
 package com.gradpilot.controller;
 
-import com.gradpilot.model.Notification;
-import com.gradpilot.repository.NotificationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.security.Principal;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.gradpilot.model.Notification;
+import com.gradpilot.repository.NotificationRepository;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -20,14 +25,39 @@ public class NotificationController {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    // private Integer getCurrentUserId() {
+    // Authentication authentication =
+    // SecurityContextHolder.getContext().getAuthentication();
+    // if (authentication == null || !authentication.isAuthenticated()) {
+    // throw new RuntimeException("User is not authenticated");
+    // }
+    // @SuppressWarnings("unchecked")
+    // var principal = (java.util.Map<String, Object>)
+    // authentication.getPrincipal();
+    // return (Integer) principal.get("userId");
+    // }
+
     private Integer getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new RuntimeException("User is not authenticated");
         }
-        @SuppressWarnings("unchecked")
-        var principal = (java.util.Map<String, Object>) authentication.getPrincipal();
-        return (Integer) principal.get("userId");
+
+        Object principalObj = authentication.getPrincipal();
+        if (principalObj instanceof Map<?, ?> principal) {
+            Object userIdObj = principal.get("userId");
+            if (userIdObj instanceof Integer userId) {
+                return userId;
+            } else if (userIdObj instanceof Number number) {
+                return number.intValue();
+            } else {
+                throw new RuntimeException("User ID is missing or not an integer");
+            }
+        } else if (principalObj instanceof String principalStr && "anonymousUser".equals(principalStr)) {
+            throw new RuntimeException("User is anonymous");
+        } else {
+            throw new RuntimeException("Unknown principal type: " + principalObj.getClass());
+        }
     }
 
     private Integer getCurrentUserIdOptional() {
