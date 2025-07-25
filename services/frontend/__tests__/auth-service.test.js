@@ -29,6 +29,7 @@ describe("Auth Service", () => {
           userId: "26",
           name: "Rapunzel",
           email: "rapunzel@gmail.com",
+          userType: "student",
         },
       };
 
@@ -231,7 +232,7 @@ describe("Auth Service", () => {
 
       // Assert
       // expect(result).toBeNull();
-      expect(result).toBeTruthy();  // if it always returns an object
+      expect(result).toBeTruthy(); // if it always returns an object
     });
 
     it("should handle invalid JSON in localStorage", () => {
@@ -249,7 +250,7 @@ describe("Auth Service", () => {
 
       // Assert
       // expect(result).toBeNull();
-      expect(result).toBeTruthy();  // if it always returns an object
+      expect(result).toBeTruthy(); // if it always returns an object
     });
   });
 });
