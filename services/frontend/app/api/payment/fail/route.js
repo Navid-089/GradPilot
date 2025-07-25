@@ -8,8 +8,8 @@ export async function GET(request) {
   const currency = searchParams.get('currency');
   const error = searchParams.get('error');
   
-  // Redirect to the fail page with parameters
-  const redirectUrl = new URL('/payment/fail', request.url);
+  // Redirect to the fail page with parameters - use absolute URL
+  const redirectUrl = new URL('/payment/fail', 'https://gradpilot.me');
   if (tranId) redirectUrl.searchParams.set('tran_id', tranId);
   if (amount) redirectUrl.searchParams.set('amount', amount);
   if (currency) redirectUrl.searchParams.set('currency', currency);
@@ -38,8 +38,8 @@ export async function POST(request) {
       error
     });
     
-    // Redirect to fail page with parameters
-    const failUrl = new URL('/payment/fail', request.url);
+    // Redirect to fail page with parameters - use absolute URL
+    const failUrl = new URL('/payment/fail', 'https://gradpilot.me');
     if (tranId) failUrl.searchParams.set('tran_id', tranId);
     if (amount) failUrl.searchParams.set('amount', amount);
     if (currency) failUrl.searchParams.set('currency', currency);

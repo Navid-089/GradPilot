@@ -20,8 +20,8 @@ export async function POST(request) {
 
     console.log('SSLCommerz POST callback received:', paymentData)
 
-    // Build redirect URL with payment parameters
-    const redirectUrl = new URL('/payment/success', request.url)
+    // Build redirect URL with payment parameters - use absolute URL
+    const redirectUrl = new URL('/payment/success', 'https://gradpilot.me')
     Object.entries(paymentData).forEach(([key, value]) => {
       if (value) {
         redirectUrl.searchParams.set(key, value)
@@ -36,8 +36,8 @@ export async function POST(request) {
   } catch (error) {
     console.error('Error handling SSLCommerz POST callback:', error)
     
-    // Redirect to error page
-    const errorUrl = new URL('/payment/fail', request.url)
+    // Redirect to error page with absolute URL
+    const errorUrl = new URL('/payment/fail', 'https://gradpilot.me')
     errorUrl.searchParams.set('error', 'Invalid payment callback')
     return NextResponse.redirect(errorUrl.toString())
   }
@@ -57,8 +57,8 @@ export async function GET(request) {
 
   console.log('SSLCommerz GET callback received:', paymentData)
 
-  // Build redirect URL with payment parameters
-  const redirectUrl = new URL('/payment/success', request.url)
+  // Build redirect URL with payment parameters - use absolute URL
+  const redirectUrl = new URL('/payment/success', 'https://gradpilot.me')
   searchParams.forEach((value, key) => {
     redirectUrl.searchParams.set(key, value)
   })

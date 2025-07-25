@@ -7,8 +7,8 @@ export async function GET(request) {
   const amount = searchParams.get('amount');
   const currency = searchParams.get('currency');
   
-  // Redirect to the cancel page with parameters
-  const redirectUrl = new URL('/payment/cancel', request.url);
+  // Redirect to the cancel page with parameters - use absolute URL
+  const redirectUrl = new URL('/payment/cancel', 'https://gradpilot.me');
   if (tranId) redirectUrl.searchParams.set('tran_id', tranId);
   if (amount) redirectUrl.searchParams.set('amount', amount);
   if (currency) redirectUrl.searchParams.set('currency', currency);
@@ -36,8 +36,8 @@ export async function POST(request) {
       status
     });
     
-    // Redirect to cancel page with parameters
-    const cancelUrl = new URL('/payment/cancel', request.url);
+    // Redirect to cancel page with parameters - use absolute URL
+    const cancelUrl = new URL('/payment/cancel', 'https://gradpilot.me');
     if (tranId) cancelUrl.searchParams.set('tran_id', tranId);
     if (amount) cancelUrl.searchParams.set('amount', amount);
     if (currency) cancelUrl.searchParams.set('currency', currency);
@@ -48,6 +48,6 @@ export async function POST(request) {
     
   } catch (error) {
     console.error('Error processing SSLCommerz cancel callback:', error);
-    return NextResponse.redirect(new URL('/payment/cancel?error=processing_error', request.url));
+    return NextResponse.redirect(new URL('/payment/cancel?error=processing_error', 'https://gradpilot.me'));
   }
 }
