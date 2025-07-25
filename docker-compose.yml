@@ -120,6 +120,12 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       APP_JWT_SECRET: ${JWT_SECRET}
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 512M
 
   login-reg:
     image: ananyapromi3/gradpilot-login-reg:latest
@@ -133,6 +139,12 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       APP_JWT_SECRET: ${JWT_SECRET}
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+        reservations:
+          memory: 256M
 
   recommendation:
     image: ananyapromi3/gradpilot-recommendation:latest
@@ -151,6 +163,12 @@ services:
       # SSLCOMMERZ_STORE_ID: ${SSLCOMMERZ_STORE_ID}
       # SSLCOMMERZ_STORE_PASSWORD: ${SSLCOMMERZ_STORE_PASSWORD}
       FRONTEND_URL: https://gradpilot.me
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 512M
 
   sop-review-service:
     image: ananyapromi3/gradpilot-sop-review:latest
@@ -166,6 +184,12 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       APP_JWT_SECRET: ${JWT_SECRET}
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 384M
 
   forum:
     image: ananyapromi3/gradpilot-forum:latest
@@ -182,6 +206,12 @@ services:
       CLOUDINARY_URL: ${CLOUDINARY_URL}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+        reservations:
+          memory: 256M
 
   frontend:
     image: ananyapromi3/gradpilot-frontend:latest
@@ -189,3 +219,9 @@ services:
       - "3000:3000"  # ✅ Changed back to 3000 to match nginx config
     depends_on:
       - chatbot
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 384M
