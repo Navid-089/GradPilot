@@ -5,6 +5,7 @@ import com.gradpilot.recommendation.dto.PaymentInitResponse;
 import com.gradpilot.recommendation.dto.SubscriptionStatusResponse;
 import com.gradpilot.recommendation.model.User;
 import com.gradpilot.recommendation.repository.UserRepository;
+import com.gradpilot.recommendation.repository.PaymentRepository;
 import com.gradpilot.recommendation.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class PaymentController {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Value("${app.frontend.url}")
     private String frontendUrl;
@@ -137,6 +141,32 @@ public class PaymentController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
+    // Test endpoint to check if basic components are working
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, Object>> healthCheck() {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // Test database connection
+            long paymentCount = paymentRepository.count();
+            response.put("databaseConnected", true);
+            response.put("paymentRecordCount", paymentCount);
+            
+            // Test configuration
+            response.put("frontendUrl", frontendUrl);
+            response.put("successPath", successPath);
+            
+            response.put("status", "healthy");
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            response.put("status", "unhealthy");
+            response.put("error", e.getMessage());
+            response.put("errorType", e.getClass().getSimpleName());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
     // API endpoint for frontend to validate payment
     @GetMapping("/validate")
     public ResponseEntity<Map<String, Object>> validatePayment(
@@ -147,12 +177,29 @@ public class PaymentController {
         System.out.println("Transaction ID: " + transactionId);
         System.out.println("Validation ID: " + validationId);
         
+        Map<String, Object> response = new HashMap<>();
+        
         try {
+            // Add basic validation
+            if (transactionId == null || transactionId.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Transaction ID is required");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            if (validationId == null || validationId.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Validation ID is required");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Log before calling service
+            System.out.println("About to call paymentService.validateAndProcessPayment");
+            
             boolean isValid = paymentService.validateAndProcessPayment(transactionId, validationId);
             
             System.out.println("Payment validation result: " + isValid);
             
-            Map<String, Object> response = new HashMap<>();
             response.put("transactionId", transactionId);
             response.put("validationId", validationId);
             response.put("success", isValid);
@@ -162,12 +209,20 @@ public class PaymentController {
             
         } catch (Exception e) {
             System.err.println("Error in payment validation: " + e.getMessage());
+            System.err.println("Error type: " + e.getClass().getSimpleName());
             e.printStackTrace();
             
-            Map<String, Object> response = new HashMap<>();
             response.put("success", false);
             response.put("message", "Error processing payment: " + e.getMessage());
             response.put("error", e.getClass().getSimpleName());
+            response.put("transactionId", transactionId);
+            response.put("validationId", validationId);
+            
+            // Add stack trace for debugging
+            if (e.getCause() != null) {
+                response.put("cause", e.getCause().getMessage());
+            }
+            
             return ResponseEntity.status(500).body(response);
         }
     }

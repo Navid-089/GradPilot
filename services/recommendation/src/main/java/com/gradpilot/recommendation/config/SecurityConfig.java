@@ -36,6 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/recommendations/payment/cancel").permitAll()
                         .requestMatchers("/api/recommendations/payment/ipn").permitAll()
                         .requestMatchers("/api/recommendations/payment/validate").permitAll()
+                        .requestMatchers("/api/recommendations/payment/health").permitAll()
                         .requestMatchers("/api/recommendations/**").authenticated()
                         .requestMatchers("/api/user/**").authenticated()
                         .anyRequest().permitAll())
