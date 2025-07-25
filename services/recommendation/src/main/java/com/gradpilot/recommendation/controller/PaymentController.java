@@ -89,16 +89,34 @@ public class PaymentController {
 
     @PostMapping("/success")
     public ResponseEntity<Void> paymentSuccess(
-            @RequestParam("tran_id") String transactionId,
-            @RequestParam("val_id") String validationId,
+            @RequestParam(value = "tran_id", required = false) String transactionId,
+            @RequestParam(value = "val_id", required = false) String validationId,
             @RequestParam(value = "amount", required = false) String amount,
-            @RequestParam(value = "currency", required = false) String currency) {
+            @RequestParam(value = "currency", required = false) String currency,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam Map<String, String> allParams) {
         
         System.out.println("=== PAYMENT SUCCESS CALLBACK ===");
+        System.out.println("All parameters received:");
+        allParams.forEach((key, value) -> 
+            System.out.println("  " + key + " = " + value)
+        );
+        
         System.out.println("Transaction ID: " + transactionId);
         System.out.println("Validation ID: " + validationId);
         System.out.println("Amount: " + amount);
         System.out.println("Currency: " + currency);
+        System.out.println("Status: " + status);
+        
+        // Handle missing required parameters
+        if (transactionId == null || validationId == null) {
+            System.out.println("ERROR: Missing required parameters (tran_id or val_id)");
+            String redirectUrl = String.format("%s%s?error=missing_parameters", 
+                frontendUrl, failPath);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create(redirectUrl));
+            return new ResponseEntity<>(headers, HttpStatus.FOUND);
+        }
         
         boolean isValid = paymentService.validateAndProcessPayment(transactionId, validationId);
         System.out.println("Payment validation result: " + isValid);
