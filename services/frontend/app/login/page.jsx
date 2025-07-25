@@ -50,8 +50,30 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
-      <div className="w-full max-w-md">
+    <div
+      className="min-h-screen flex items-center justify-center bg-muted/40 p-4"
+      style={{
+        backgroundImage: "url('/meye.svg')",
+        backgroundSize: "350px auto",
+        backgroundPosition: "bottom right",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      {/* Bottom right image */}
+      {/* <img
+        src="/graduation2.svg"
+        alt="Graduation"
+        className="absolute bottom-0 right-0 w-1/2 max-w-s pointer-events-none select-none"
+        style={{ zIndex: 0 }}
+      /> */}
+      {/* Bottom left flipped image */}
+      {/* <img
+        src="/graduation2.svg"
+        alt="Graduation flipped"
+        className="absolute bottom-0 left-0 w-1/2 max-w-s pointer-events-none select-none"
+        style={{ transform: "scaleX(-1)", zIndex: 0 }}
+      /> */}
+      <div className="w-full max-w-md relative z-10">
         <div className="flex justify-center mb-8">
           <Link href="/" className="flex items-center space-x-2">
             <GraduationCap className="h-8 w-8 text-primary" />

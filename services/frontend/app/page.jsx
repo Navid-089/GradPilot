@@ -61,7 +61,7 @@ export default function HomePage() {
                   </div>
                   <div className="flex items-center">
                     <CheckCircle className="mr-1 h-4 w-4 text-primary" />
-                    <span>No credit card required</span>
+                    <span>No credit card required for signup</span>
                   </div>
                 </div>
               </div>
@@ -75,11 +75,15 @@ export default function HomePage() {
                     src="/placeholder.svg?height=550&width=800"
                     width="800"
                   />
-                  <div className="absolute -bottom-6 -right-6 bg-primary/5 p-4 rounded-lg border shadow-md z-20">
+                  <div className="absolute -bottom-6 -right-6 bg-primary/30 p-4 rounded-lg border shadow-md z-20 text-primary-foreground">
                     <div className="flex items-center space-x-2">
-                      <div className="text-4xl font-bold text-primary">94%</div>
+                      <div className="text-4xl font-bold text-primary-foreground">
+                        94%
+                      </div>
                       <div className="text-sm">
-                        <div className="font-medium">Success Rate</div>
+                        <div className="font-medium text-primary-foreground">
+                          Success Rate
+                        </div>
                         <div className="text-muted-foreground">
                           of our users
                         </div>
@@ -133,7 +137,7 @@ export default function HomePage() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-background to-primary/5">
+        {/* <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-background to-primary/5">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-10">
               <div className="space-y-2">
@@ -206,7 +210,7 @@ export default function HomePage() {
               </Button>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Stats Section */}
         <section className="w-full py-8 md:py-16 lg:py-24 bg-primary text-primary-foreground">
@@ -303,10 +307,10 @@ const features = [
     icon: <FileText className="h-6 w-6" />,
   },
   {
-    title: "Application Timeline",
+    title: "Mentor Guidance",
     description:
-      "Stay on track with a personalized timeline and deadline reminders.",
-    icon: <Calendar className="h-6 w-6" />,
+      "Connect instantly with mentors for guidance, advice, and support throughout your application journey.",
+    icon: <MessageSquare className="h-6 w-6" />,
   },
   {
     title: "Scholarship Finder",
@@ -380,8 +384,10 @@ const testimonials = [
 ];
 
 const stats = [
-  { value: "10,000+", label: "Students Helped" },
+  { value: "1,000+", label: "Students Helped" },
   { value: "94%", label: "Acceptance Rate" },
-  { value: "$2.5M+", label: "Scholarships Found" },
-  { value: "500+", label: "Partner Universities" },
+  // { value: "$2.5M+", label: "Scholarships Found" },
+  { value: "500+", label: "University Connections" },
+  { value: "200+", label: "Scholarships Information" },
+  // { value: "200+", label: "Scholarships" },
 ];

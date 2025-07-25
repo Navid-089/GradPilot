@@ -50,7 +50,15 @@ export default function MentorLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/40 p-4">
+    <div
+      className="min-h-screen flex items-center justify-center bg-muted/40 p-4"
+      style={{
+        backgroundImage: "url('/mentor.svg')",
+        backgroundSize: "350px auto",
+        backgroundPosition: "bottom right",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-8">
           <Link href="/" className="flex items-center space-x-2">

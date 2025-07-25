@@ -9,6 +9,9 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "GradPilot - Your Graduate School Application Assistant",
+  icons: {
+    icon: "/icon.svg",
+  },
   description:
     "AI-powered platform to assist postgraduate applicants in finding suitable universities",
   generator: "v0.dev",

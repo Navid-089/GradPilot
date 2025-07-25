@@ -83,11 +83,11 @@ export function MainNav() {
       href: "/scholarships",
       icon: <Award className="h-4 w-4 mr-2" />,
     },
-    {
-      name: "Timeline",
-      href: "/dashboard/timeline",
-      icon: <Calendar className="h-4 w-4 mr-2" />,
-    },
+    // {
+    //   name: "Timeline",
+    //   href: "/dashboard/timeline",
+    //   icon: <Calendar className="h-4 w-4 mr-2" />,
+    // },
   ];
 
   const resourcesItems = [
