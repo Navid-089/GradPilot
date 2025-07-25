@@ -24,10 +24,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/recommendations/payment")
-@CrossOrigin(origins = {"*"}, 
-             allowedHeaders = {"*"}, 
-             allowCredentials = "false",
-             methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
+
 public class PaymentController {
 
     @Autowired
