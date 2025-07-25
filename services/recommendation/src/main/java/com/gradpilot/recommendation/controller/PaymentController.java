@@ -185,6 +185,12 @@ public class PaymentController {
         return ResponseEntity.ok("OK");
     }
 
+    // Explicit OPTIONS support for CORS preflight
+    @RequestMapping(value = {"/success", "/fail", "/cancel", "/ipn", "/validate"}, method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> handleOptions() {
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/subscription-status")
     public ResponseEntity<SubscriptionStatusResponse> getSubscriptionStatus(
             Authentication authentication) {
