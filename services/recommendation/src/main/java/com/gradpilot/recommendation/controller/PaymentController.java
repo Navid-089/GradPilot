@@ -22,9 +22,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/recommendations/payment")
-@CrossOrigin(origins = {"http://localhost:3000", "https://gradpilot.me", "https://www.gradpilot.me"}, 
+@CrossOrigin(origins = {"*"}, 
              allowedHeaders = {"*"}, 
-             allowCredentials = "true",
+             allowCredentials = "false",
              methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class PaymentController {
 
@@ -93,15 +93,9 @@ public class PaymentController {
             @RequestParam(value = "val_id", required = false) String validationId,
             @RequestParam(value = "amount", required = false) String amount,
             @RequestParam(value = "currency", required = false) String currency,
-            @RequestParam(value = "status", required = false) String status,
-            @RequestParam Map<String, String> allParams) {
+            @RequestParam(value = "status", required = false) String status) {
         
         System.out.println("=== PAYMENT SUCCESS CALLBACK ===");
-        System.out.println("All parameters received:");
-        allParams.forEach((key, value) -> 
-            System.out.println("  " + key + " = " + value)
-        );
-        
         System.out.println("Transaction ID: " + transactionId);
         System.out.println("Validation ID: " + validationId);
         System.out.println("Amount: " + amount);
