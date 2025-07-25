@@ -16,7 +16,15 @@ const nextConfig = {
   },
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://gradpilot.me/api',
-  }
+  },
+   async rewrites() {
+    return [
+      {
+        source: '/api/recommendations/:path*',
+        destination: 'http://gradpilot-recommendation:8083/api/recommendations/:path*',
+      },
+    ];
+  },
 }
 
 export default nextConfig
