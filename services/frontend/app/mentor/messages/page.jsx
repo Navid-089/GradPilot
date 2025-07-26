@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/lib/auth-context";
+import { useRef } from "react";
 
 export default function MessagesPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -49,6 +50,7 @@ export default function MessagesPage() {
   const [mentorSearch, setMentorSearch] = useState("");
   const [showMentorSearch, setShowMentorSearch] = useState(false);
   const [error, setError] = useState(null);
+  const messagesContainerRef = useRef(null);
 
   // Fetch conversations and mentors on mount, only if user is loaded
   useEffect(() => {
@@ -135,21 +137,21 @@ export default function MessagesPage() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center h-full text-center">
-        <div>
-          <MessageSquare className="h-12 w-12 text-muted-foreground mb-4 mx-auto" />
-          <h3 className="text-lg font-medium mb-2">
-            You must be logged in to view your messages.
-          </h3>
-          <p className="text-muted-foreground">
-            Please log in to access your conversations.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // if (!user) {
+  //   return (
+  //     <div className="flex items-center justify-center h-full text-center">
+  //       <div>
+  //         <MessageSquare className="h-12 w-12 text-muted-foreground mb-4 mx-auto" />
+  //         <h3 className="text-lg font-medium mb-2">
+  //           You must be logged in to view your messages.
+  //         </h3>
+  //         <p className="text-muted-foreground">
+  //           Please log in to access your conversations.
+  //         </p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -329,7 +331,11 @@ export default function MessagesPage() {
           </div>
 
           {/* Messages */}
-          <ScrollArea className="flex-1 p-4">
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 p-4 overflow-y-auto"
+            style={{ minHeight: 0 }}
+          >
             <div className="space-y-4">
               {messages.length > 0 ? (
                 messages.map((message) => (
@@ -376,7 +382,7 @@ export default function MessagesPage() {
                 </div>
               )}
             </div>
-          </ScrollArea>
+          </div>
 
           {/* Message Input */}
           <div className="p-4 border-t">

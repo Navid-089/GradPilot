@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/lib/auth-context";
+import { useRef } from "react";
 
 export default function MessagesPage() {
   const { user, isLoading: authLoading } = useAuth();
@@ -51,6 +52,8 @@ export default function MessagesPage() {
   const [mentorSearch, setMentorSearch] = useState("");
   const [showMentorSearch, setShowMentorSearch] = useState(false);
   const [error, setError] = useState(null);
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   // Fetch conversations and mentors on mount, only if user is loaded
   useEffect(() => {
@@ -89,6 +92,30 @@ export default function MessagesPage() {
       setMessages([]);
     }
   }, [activeConversation]);
+
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const getAvatarSrc = (userId, gender) => {
+    console.log("User ID: ", userId);
+    console.log("Page Gender: ", gender);
+    if (!userId || !gender) return "/placeholder.svg";
+    let folder = "common";
+    let count = 2;
+    if (gender === "male") {
+      folder = "male";
+      count = 43;
+    } else if (gender === "female") {
+      folder = "female";
+      count = 24;
+    }
+    const idx = (userId % count) + 1;
+    return `/avatars/${folder}/${folder}_${idx}.png`;
+  };
 
   const handleSendMessage = async () => {
     if (!user || !messageText.trim() || !activeConversation) return;
@@ -209,23 +236,20 @@ export default function MessagesPage() {
                   key={conversation.id}
                   className={`flex items-start p-4 gap-3 cursor-pointer hover:bg-muted/50 transition-colors ${
                     activeConversation?.id === conversation.id ? "bg-muted" : ""
-                  } ${conversation.unread ? "bg-primary/5" : ""}`}
+                  } ${conversation.readUser ? "bg-primary/5" : ""}`}
                   onClick={() => handleConversationSelect(conversation)}
                 >
                   <Avatar className="h-10 w-10">
                     <AvatarImage
                       src={conversation.avatar || "/placeholder.svg"}
-                      alt={conversation.name}
+                      alt={conversation.mentorName}
                     />
                     <AvatarFallback>M</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <div className="font-medium truncate">
-                        {conversation.name}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {conversation.lastMessageTime}
+                        {conversation.mentorName}
                       </div>
                     </div>
                     <div className="text-sm text-muted-foreground truncate">
@@ -276,18 +300,16 @@ export default function MessagesPage() {
               <Avatar className="h-10 w-10 mr-3">
                 <AvatarImage
                   src={activeConversation.avatar || "/placeholder.svg"}
-                  alt={activeConversation.name}
+                  alt={activeConversation.mentorName}
                 />
                 <AvatarFallback>M</AvatarFallback>
               </Avatar>
               <div>
                 <div className="font-medium flex items-center">
-                  {activeConversation.name}
+                  {activeConversation.mentorName}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {activeConversation.type === "mentor" ? "Mentor" : "Student"}
-                  {activeConversation.university &&
-                    ` • ${activeConversation.university}`}
+                  {activeConversation.type === "mentor" ? "Mentor" : "Mentor"}
                 </div>
               </div>
             </div>
@@ -331,18 +353,23 @@ export default function MessagesPage() {
           </div>
 
           {/* Messages */}
-          <ScrollArea className="flex-1 p-4">
+          {/* <ScrollArea className="flex-1 p-4"> */}
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 p-4 overflow-y-auto"
+            style={{ minHeight: 0 }}
+          >
             <div className="space-y-4">
               {messages.length > 0 ? (
                 messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex ${
+                    className={`flex items-end ${
                       message.mentorSender ? "justify-start" : "justify-end"
                     }`}
                   >
                     {message.mentorSender && (
-                      <Avatar className="h-8 w-8 mr-2 mt-1">
+                      <Avatar className="h-8 w-8 mr-2">
                         <AvatarImage
                           src={activeConversation.avatar || "/placeholder.svg"}
                           alt={message.senderName}
@@ -353,6 +380,25 @@ export default function MessagesPage() {
                       </Avatar>
                     )}
                     <div>
+                      {/* Sender name */}
+                      <div
+                        className={`text-xs text-muted-foreground mb-1 ${
+                          message.mentorSender ? "text-left" : "text-right"
+                        }`}
+                      >
+                        {message.mentorSender
+                          ? message.senderName || activeConversation.mentorName
+                          : "You"}
+                      </div>
+                      {/* Timestamp */}
+                      <div
+                        className={`text-xs text-muted-foreground mt-1 ${
+                          message.mentorSender ? "" : "text-right"
+                        }`}
+                      >
+                        {new Date(message.sentAt).toLocaleTimeString()}
+                      </div>
+                      {/* Message bubble */}
                       <div
                         className={`rounded-lg px-4 py-2 max-w-md ${
                           message.mentorSender
@@ -362,14 +408,26 @@ export default function MessagesPage() {
                       >
                         <p>{message.message}</p>
                       </div>
-                      <div
-                        className={`text-xs text-muted-foreground mt-1 ${
-                          message.mentorSender ? "" : "text-right"
-                        }`}
-                      >
-                        {new Date(message.sentAt).toLocaleTimeString()}
-                      </div>
                     </div>
+                    {/* Show avatar for user messages on the right */}
+                    {!message.mentorSender && (
+                      <Avatar className="h-8 w-8 ml-2">
+                        {/* <AvatarImage
+                          src={user?.avatar || "/placeholder.svg"}
+                          alt="You"
+                        /> */}
+                        <AvatarImage
+                          src={getAvatarSrc(
+                            message.userId,
+                            message.senderGender
+                          )}
+                          alt={user?.name}
+                        />
+                        <AvatarFallback>
+                          {user?.name?.[0] || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
                   </div>
                 ))
               ) : (
@@ -377,8 +435,10 @@ export default function MessagesPage() {
                   No messages yet. Start the conversation!
                 </div>
               )}
+              {/* <div ref={messagesEndRef} /> */}
             </div>
-          </ScrollArea>
+          </div>
+          {/* </ScrollArea> */}
 
           {/* Message Input */}
           <div className="p-4 border-t">
@@ -467,7 +527,7 @@ export default function MessagesPage() {
                               const newConv = await import(
                                 "@/lib/chat-service"
                               ).then(({ startConversation }) =>
-                                startConversation(user.id, m.id)
+                                startConversation(m.id)
                               );
                               setConversations((prev) => [...prev, newConv]);
                               setActiveConversation(newConv);

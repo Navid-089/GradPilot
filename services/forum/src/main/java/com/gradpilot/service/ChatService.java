@@ -1,14 +1,21 @@
 package com.gradpilot.service;
 
-import com.gradpilot.dto.ConversationDto;
-import com.gradpilot.dto.MessageDto;
-import com.gradpilot.model.*;
-import com.gradpilot.repository.*;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.gradpilot.dto.ConversationDto;
+import com.gradpilot.dto.MessageDto;
+import com.gradpilot.model.Conversation;
+import com.gradpilot.model.Mentor;
+import com.gradpilot.model.Message;
+import com.gradpilot.model.User;
+import com.gradpilot.repository.ConversationRepository;
+import com.gradpilot.repository.MentorRepository;
+import com.gradpilot.repository.MessageRepository;
+import com.gradpilot.repository.UserRepository;
 
 @Service
 public class ChatService {
@@ -21,16 +28,37 @@ public class ChatService {
     @Autowired
     private MentorRepository mentorRepo;
 
-    public Conversation getOrCreateConversation(Integer userId, Integer mentorId) {
+    // public Conversation getOrCreateConversation(Integer userId, Integer mentorId)
+    // {
+    // User user = userRepo.findById(userId).orElseThrow();
+    // Mentor mentor = mentorRepo.findById(mentorId).orElseThrow();
+    // return conversationRepo.findByUserAndMentor(user, mentor)
+    // .orElseGet(() -> {
+    // Conversation c = new Conversation();
+    // c.setUser(user);
+    // c.setMentor(mentor);
+    // return conversationRepo.save(c);
+    // });
+    // }
+    public ConversationDto getOrCreateConversation(Integer userId, Integer mentorId) {
         User user = userRepo.findById(userId).orElseThrow();
         Mentor mentor = mentorRepo.findById(mentorId).orElseThrow();
-        return conversationRepo.findByUserAndMentor(user, mentor)
+        Conversation conversation = conversationRepo.findByUserAndMentor(user, mentor)
                 .orElseGet(() -> {
                     Conversation c = new Conversation();
                     c.setUser(user);
                     c.setMentor(mentor);
+                    c.setCreatedAt(LocalDateTime.now());
+                    c.setReadUser(true);
+                    c.setReadMentor(false);
                     return conversationRepo.save(c);
                 });
+        // Update existing conversation to mark as read by user
+        if (!conversation.isReadUser()) {
+            conversation.setReadUser(true);
+            conversation = conversationRepo.save(conversation);
+        }
+        return convertToDto(conversation);
     }
 
     public Message sendMessage(Integer convoId, Integer senderUserId, String text, String type) {
@@ -82,6 +110,8 @@ public class ChatService {
         dto.setMentorId(convo.getMentor().getId());
         dto.setUserName(convo.getUser().getName());
         dto.setMentorName(convo.getMentor().getName());
+        dto.setReadUser(convo.isReadUser());
+        dto.setReadMentor(convo.isReadMentor());
         return dto;
     }
 
@@ -97,10 +127,14 @@ public class ChatService {
 
         if (Boolean.TRUE.equals(msg.getMentorSender())) {
             dto.setSenderName(mentor != null ? mentor.getName() : "Unknown Mentor");
+            dto.setSenderGender(mentor != null ? mentor.getGender() : "other");
             dto.setReceiverName(user != null ? user.getName() : "Unknown User");
+            dto.setReceiverGender(user != null ? user.getGender() : "other");
         } else {
             dto.setSenderName(user != null ? user.getName() : "Unknown User");
+            dto.setSenderGender(user != null ? user.getGender() : "other");
             dto.setReceiverName(mentor != null ? mentor.getName() : "Unknown Mentor");
+            dto.setReceiverGender(mentor != null ? mentor.getGender() : "other");
         }
 
         dto.setUserId(user != null ? user.getUserId() : null);
@@ -115,6 +149,19 @@ public class ChatService {
 
         String type = msg.getMessageType();
         dto.setMessageType(type != null ? type : "TEXT");
+
+        // // Set sender and receiver gender
+        // if (user != null) {
+        // dto.setSenderGender(user.getGender());
+        // } else {
+        // dto.setSenderGender("Unknown");
+        // }
+
+        // if (mentor != null) {
+        // dto.setReceiverGender(mentor.getGender());
+        // } else {
+        // dto.setReceiverGender("Unknown");
+        // }
 
         return dto;
     }

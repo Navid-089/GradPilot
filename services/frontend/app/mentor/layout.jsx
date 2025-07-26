@@ -16,17 +16,17 @@ import {
 } from "lucide-react";
 
 export default function MentorLayout({ children }) {
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { user, isAuthenticatedMentor, isLoading, logout } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading && !isAuthenticatedMentor) {
       router.push("/loginAsMentor");
-    } else if (!isLoading && isAuthenticated && user?.userType !== "mentor") {
+    } else if (!isLoading && isAuthenticatedMentor && user?.userType !== "mentor") {
       // If user is authenticated but not a mentor, redirect to student dashboard
       router.push("/dashboard");
     }
-  }, [isAuthenticated, isLoading, user, router]);
+  }, [isAuthenticatedMentor, isLoading, user, router]);
 
   if (isLoading) {
     return (
@@ -39,7 +39,7 @@ export default function MentorLayout({ children }) {
     );
   }
 
-  if (!isAuthenticated || user?.userType !== "mentor") {
+  if (!isAuthenticatedMentor || user?.userType !== "mentor") {
     return null;
   }
 

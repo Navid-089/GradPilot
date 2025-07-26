@@ -1,4 +1,5 @@
 const API_BASE = "https://gradpilot.me/api/chat"; // adjust port if needed
+// const API_BASE = "http://localhost:8085/api/chat"; // Use the correct backend URL for chat
 
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
@@ -8,14 +9,11 @@ function getAuthHeaders() {
   };
 }
 
-export async function startConversation(userId, mentorId) {
-  const res = await fetch(
-    `${API_BASE}/start?userId=${userId}&mentorId=${mentorId}`,
-    {
-      method: "POST",
-      headers: getAuthHeaders(),
-    }
-  );
+export async function startConversation(mentorId) {
+  const res = await fetch(`${API_BASE}/start?mentorId=${mentorId}`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+  });
   return await res.json();
 }
 

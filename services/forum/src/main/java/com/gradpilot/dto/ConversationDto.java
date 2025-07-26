@@ -9,6 +9,8 @@ public class ConversationDto {
     private Integer mentorId;
     private String userName;
     private String mentorName;
+    private boolean readUser;
+    private boolean readMentor;
 
     public ConversationDto() {
     }
@@ -59,5 +61,21 @@ public class ConversationDto {
 
     public void setMentorName(String mentorName) {
         this.mentorName = mentorName;
+    }
+
+    public boolean isReadUser() {
+        return readUser;
+    }
+
+    public void setReadUser(boolean readUser) {
+        this.readUser = readUser;
+    }
+
+    public boolean isReadMentor() {
+        return readMentor;
+    }
+
+    public void setReadMentor(boolean readMentor) {
+        this.readMentor = readMentor;
     }
 }

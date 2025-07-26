@@ -1,5 +1,6 @@
 // Get all mentors (for mentee search and chat initiation)
 const API_URL = "https://gradpilot.me"; // adjust port if needed
+// const API_URL = "http://localhost:8085"; // Use the correct backend URL for mentors
 export async function getAllMentors() {
   try {
     const token = localStorage.getItem("token");

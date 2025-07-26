@@ -1,7 +1,16 @@
 package com.gradpilot.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "conversation")
@@ -21,6 +30,12 @@ public class Conversation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mentor_id")
     private Mentor mentor;
+
+    @Column(name = "read_user", nullable = false)
+    private boolean readUser = false;
+
+    @Column(name = "read_mentor", nullable = false)
+    private boolean readMentor = false;
 
     public Conversation() {
         this.createdAt = LocalDateTime.now();
@@ -58,5 +73,21 @@ public class Conversation {
 
     public void setMentor(Mentor mentor) {
         this.mentor = mentor;
+    }
+
+    public boolean isReadUser() {
+        return readUser;
+    }
+
+    public void setReadUser(boolean readUser) {
+        this.readUser = readUser;
+    }
+
+    public boolean isReadMentor() {
+        return readMentor;
+    }
+
+    public void setReadMentor(boolean readMentor) {
+        this.readMentor = readMentor;
     }
 }

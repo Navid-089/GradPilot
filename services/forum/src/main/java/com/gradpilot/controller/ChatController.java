@@ -1,18 +1,23 @@
 package com.gradpilot.controller;
 
-import com.gradpilot.dto.ConversationDto;
-import com.gradpilot.dto.MessageDto;
-import com.gradpilot.dto.SendMessageDto;
-import com.gradpilot.model.Conversation;
-import com.gradpilot.model.Message;
-import com.gradpilot.service.ChatService;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.gradpilot.dto.ConversationDto;
+import com.gradpilot.dto.MessageDto;
+import com.gradpilot.dto.SendMessageDto;
+import com.gradpilot.model.Message;
+import com.gradpilot.service.ChatService;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -46,8 +51,8 @@ public class ChatController {
     }
 
     @PostMapping("/start")
-    public Conversation startConversation(@RequestParam Integer userId, @RequestParam Integer mentorId) {
-        return chatService.getOrCreateConversation(userId, mentorId);
+    public ConversationDto startConversation(@RequestParam Integer mentorId) {
+        return chatService.getOrCreateConversation(getCurrentUserId(), mentorId);
     }
 
     @PostMapping("/send")

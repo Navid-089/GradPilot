@@ -15,6 +15,8 @@ public class MessageDto {
     private Integer convoId;
     private String senderName;
     private String receiverName;
+    private String senderGender;
+    private String receiverGender;
 
     public MessageDto() {
     }
@@ -113,5 +115,21 @@ public class MessageDto {
 
     public void setReceiverName(String receiverName) {
         this.receiverName = receiverName;
+    }
+
+    public String getSenderGender() {
+        return senderGender;
+    }
+
+    public void setSenderGender(String senderGender) {
+        this.senderGender = senderGender;
+    }
+
+    public String getReceiverGender() {
+        return receiverGender;
+    }
+
+    public void setReceiverGender(String receiverGender) {
+        this.receiverGender = receiverGender;
     }
 }
