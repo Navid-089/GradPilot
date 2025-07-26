@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { MessageMenu } from "@/components/messages/message-menu";
 import {
   GraduationCap,
   User,
@@ -69,6 +70,11 @@ export function MainNav() {
       icon: <FileText className="h-4 w-4 mr-2" />,
     },
     {
+      name: "Scholarships",
+      href: "/scholarships",
+      icon: <Award className="h-4 w-4 mr-2" />,
+    },
+    {
       name: "Forum",
       href: "/dashboard/forum",
       icon: <MessageSquare className="h-4 w-4 mr-2" />,
@@ -78,11 +84,7 @@ export function MainNav() {
       href: "/dashboard/sop-review",
       icon: <FileText className="h-4 w-4 mr-2" />,
     },
-    {
-      name: "Scholarships",
-      href: "/scholarships",
-      icon: <Award className="h-4 w-4 mr-2" />,
-    },
+
     // {
     //   name: "Timeline",
     //   href: "/dashboard/timeline",
@@ -250,19 +252,6 @@ export function MainNav() {
                     )}
                   </Link> */}
                   <Link
-                    href="/dashboard/notifications"
-                    className="flex items-center py-2 px-3 rounded-md text-sm text-muted-foreground hover:bg-muted"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <Bell className="h-4 w-4 mr-2" />
-                    Notifications
-                    {notifications > 0 && (
-                      <Badge className="ml-auto" variant="secondary">
-                        {notifications}
-                      </Badge>
-                    )}
-                  </Link>
-                  <Link
                     href="/settings"
                     className="flex items-center py-2 px-3 rounded-md text-sm text-muted-foreground hover:bg-muted"
                     onClick={() => setMobileMenuOpen(false)}
@@ -415,7 +404,7 @@ export function MainNav() {
         <div className="ml-auto flex items-center space-x-4">
           {isAuthenticated ? (
             <>
-              <Button variant="ghost" size="icon" className="relative" asChild>
+              {/* <Button variant="ghost" size="icon" className="relative" asChild>
                 <Link href="/dashboard/messages">
                   <MessageSquare className="h-5 w-5" />
                   {messages > 0 && (
@@ -424,8 +413,8 @@ export function MainNav() {
                     </Badge>
                   )}
                 </Link>
-              </Button>
-
+              </Button> */}
+              <MessageMenu userId={user?.userId} />
               {/* Notification Dropdown */}
               <NotificationMenu userId={user?.userId} />
               <ThemeToggle />
@@ -468,11 +457,6 @@ export function MainNav() {
                       <DropdownMenuSubContent>
                         <DropdownMenuItem asChild>
                           <Link href="/settings/account">Account</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href="/settings/notifications">
-                            Notifications
-                          </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/settings/privacy">Privacy</Link>

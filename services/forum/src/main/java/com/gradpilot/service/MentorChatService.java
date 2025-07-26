@@ -1,14 +1,21 @@
 package com.gradpilot.service;
 
-import com.gradpilot.dto.ConversationDto;
-import com.gradpilot.dto.MessageDto;
-import com.gradpilot.model.*;
-import com.gradpilot.repository.*;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.gradpilot.dto.ConversationDto;
+import com.gradpilot.dto.MessageDto;
+import com.gradpilot.model.Conversation;
+import com.gradpilot.model.Mentor;
+import com.gradpilot.model.Message;
+import com.gradpilot.model.User;
+import com.gradpilot.repository.ConversationRepository;
+import com.gradpilot.repository.MentorRepository;
+import com.gradpilot.repository.MessageRepository;
+import com.gradpilot.repository.UserRepository;
 
 @Service
 public class MentorChatService {
@@ -49,6 +56,13 @@ public class MentorChatService {
         return messageRepo.save(msg);
     }
 
+    // mark a conversation as read by user
+    public void markConversationAsReadByMentor(Integer convoId) {
+        Conversation conversation = conversationRepo.findById(convoId).orElseThrow();
+        conversation.setReadMentor(true);
+        conversationRepo.save(conversation);
+    }
+
     public List<MessageDto> getMessages(Integer convoId) {
         Conversation convo = conversationRepo.findById(convoId).orElseThrow();
         List<Message> messages = messageRepo.findByConversationOrderBySentAtAsc(convo);
@@ -81,6 +95,26 @@ public class MentorChatService {
         dto.setMentorId(convo.getMentor().getId());
         dto.setUserName(convo.getUser().getName());
         dto.setMentorName(convo.getMentor().getName());
+        dto.setReadUser(convo.isReadUser());
+        dto.setReadMentor(convo.isReadMentor());
+        dto.setMentorBio(convo.getMentor().getBio());
+        dto.setMentorUniversityName(
+                convo.getMentor().getUniversity() != null ? convo.getMentor().getUniversity().getName()
+                        : "Unknown University");
+        dto.setMentorFieldOfStudyName(
+                convo.getMentor().getFieldOfStudy() != null ? convo.getMentor().getFieldOfStudy().getName()
+                        : "Unknown Field");
+        dto.setMentorGender(convo.getMentor().getGender() != null ? convo.getMentor().getGender() : "Unknown");
+        dto.setMentorLinkedin(
+                convo.getMentor().getLinkedin() != null ? convo.getMentor().getLinkedin() : "Not provided");
+        dto.setMentorIsVerified(Boolean.TRUE.equals(convo.getMentor().getIsVerified()));
+        dto.setUserGender(convo.getUser().getGender() != null ? convo.getUser().getGender() : "Unknown");
+        dto.setLastMessage(convo.getLastMessageId() != null
+                ? messageRepo.findById(convo.getLastMessageId()).map(Message::getMessage).orElse("No messages")
+                : "No messages");
+        dto.setLastMessageTime(convo.getLastMessageId() != null
+                ? messageRepo.findById(convo.getLastMessageId()).map(Message::getSentAt).orElse(LocalDateTime.now())
+                : LocalDateTime.now());
         return dto;
     }
 
@@ -95,9 +129,13 @@ public class MentorChatService {
         if (Boolean.TRUE.equals(msg.getMentorSender())) {
             dto.setSenderName(mentor != null ? mentor.getName() : "Unknown Mentor");
             dto.setReceiverName(user != null ? user.getName() : "Unknown User");
+            dto.setSenderGender(mentor != null ? mentor.getGender() : "Unknown");
+            dto.setReceiverGender(user != null ? user.getGender() : "Unknown");
         } else {
             dto.setSenderName(user != null ? user.getName() : "Unknown User");
             dto.setReceiverName(mentor != null ? mentor.getName() : "Unknown Mentor");
+            dto.setSenderGender(user != null ? user.getGender() : "Unknown");
+            dto.setReceiverGender(mentor != null ? mentor.getGender() : "Unknown");
         }
 
         dto.setUserId(user != null ? user.getUserId() : null);

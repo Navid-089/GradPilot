@@ -12,6 +12,19 @@ public class ConversationDto {
     private boolean readUser;
     private boolean readMentor;
 
+    // Add mentor profile fields
+    private String mentorBio;
+    private String mentorUniversityName;
+    private String mentorFieldOfStudyName;
+    private String mentorGender;
+    private String mentorLinkedin;
+    private Boolean mentorIsVerified;
+
+    private String lastMessage;
+    private LocalDateTime lastMessageTime;
+
+    private String userGender;
+
     public ConversationDto() {
     }
 
@@ -77,5 +90,79 @@ public class ConversationDto {
 
     public void setReadMentor(boolean readMentor) {
         this.readMentor = readMentor;
+    }
+
+    // Add new getters and setters
+
+    public String getMentorBio() {
+        return mentorBio;
+    }
+
+    public void setMentorBio(String mentorBio) {
+        this.mentorBio = mentorBio;
+    }
+
+    public String getMentorUniversityName() {
+        return mentorUniversityName;
+    }
+
+    public void setMentorUniversityName(String mentorUniversityName) {
+        this.mentorUniversityName = mentorUniversityName;
+    }
+
+    public String getMentorFieldOfStudyName() {
+        return mentorFieldOfStudyName;
+    }
+
+    public void setMentorFieldOfStudyName(String mentorFieldOfStudyName) {
+        this.mentorFieldOfStudyName = mentorFieldOfStudyName;
+    }
+
+    public String getMentorLinkedin() {
+        return mentorLinkedin;
+    }
+
+    public void setMentorLinkedin(String mentorLinkedin) {
+        this.mentorLinkedin = mentorLinkedin;
+    }
+
+    public Boolean getMentorIsVerified() {
+        return mentorIsVerified;
+    }
+
+    public void setMentorIsVerified(Boolean mentorIsVerified) {
+        this.mentorIsVerified = mentorIsVerified;
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
+    public LocalDateTime getLastMessageTime() {
+        return lastMessageTime;
+    }
+
+    public void setLastMessageTime(LocalDateTime lastMessageTime) {
+        this.lastMessageTime = lastMessageTime;
+    }
+
+    public String getMentorGender() {
+        return mentorGender;
+    }
+
+    public void setMentorGender(String mentorGender) {
+        this.mentorGender = mentorGender;
+    }
+
+    public String getUserGender() {
+        return userGender;
+    }
+
+    public void setUserGender(String userGender) {
+        this.userGender = userGender;
     }
 }

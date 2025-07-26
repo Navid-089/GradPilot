@@ -52,3 +52,28 @@ export async function getMentorConversations(mentorId) {
   });
   return await res.json();
 }
+
+export const markConversationAsRead = async (conversationId) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(
+      `${API_BASE}/conversations/${conversationId}/read`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to mark conversation as read");
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error marking conversation as read:", error);
+    throw error;
+  }
+};

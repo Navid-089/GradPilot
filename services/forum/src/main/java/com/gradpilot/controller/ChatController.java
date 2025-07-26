@@ -68,12 +68,19 @@ public class ChatController {
     }
 
     // @GetMapping("/conversations/mentor/{mentorId}")
-    // public List<ConversationDto> getMentorConversations(@PathVariable Integer mentorId) {
-    //     return chatService.getMentorConversations(mentorId);
+    // public List<ConversationDto> getMentorConversations(@PathVariable Integer
+    // mentorId) {
+    // return chatService.getMentorConversations(mentorId);
     // }
 
     @GetMapping("/messages/{conversationId}")
     public List<MessageDto> getMessages(@PathVariable Integer conversationId) {
         return chatService.getMessages(conversationId);
+    }
+
+    // mark a conversation as read
+    @PostMapping("/conversations/{conversationId}/read")
+    public void markConversationAsRead(@PathVariable Integer conversationId) {
+        chatService.markConversationAsRead(conversationId);
     }
 }

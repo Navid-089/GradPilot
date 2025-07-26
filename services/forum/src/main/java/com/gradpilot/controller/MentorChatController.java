@@ -97,4 +97,10 @@ public class MentorChatController {
     public List<MessageDto> getMessages(@PathVariable Integer conversationId) {
         return mentorChatService.getMessages(conversationId);
     }
+
+    // mark a conversation as read
+    @PostMapping("/mentor/conversations/{conversationId}/read")
+    public void markConversationAsRead(@PathVariable Integer conversationId) {
+        mentorChatService.markConversationAsReadByMentor(conversationId);
+    }
 }

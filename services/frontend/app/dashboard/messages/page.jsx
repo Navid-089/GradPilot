@@ -6,8 +6,11 @@ import {
   getMessages,
   sendMessage as sendMessageApi,
   getMentorConversations,
+  markConversationAsRead as markConversationAsReadAPI, // Add this import
 } from "@/lib/chat-service";
 import { getAllMentors } from "@/lib/mentor-service";
+import { useMessages } from "@/components/messages/message-provider";
+import { X, GraduationCap, BookOpen } from "lucide-react";
 import {
   MessageSquare,
   Search,
@@ -22,6 +25,7 @@ import {
   Star,
   Trash,
   Archive,
+  SearchIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +58,10 @@ export default function MessagesPage() {
   const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
+  const [verificationFilter, setVerificationFilter] = useState("all");
+  const [universityFilter, setUniversityFilter] = useState(false);
+  const [showMentorProfile, setShowMentorProfile] = useState(false);
+  const { markConversationAsRead } = useMessages();
 
   // Fetch conversations and mentors on mount, only if user is loaded
   useEffect(() => {
@@ -101,8 +109,8 @@ export default function MessagesPage() {
   }, [messages]);
 
   const getAvatarSrc = (userId, gender) => {
-    console.log("User ID: ", userId);
-    console.log("Page Gender: ", gender);
+    // console.log("User ID: ", userId);
+    // console.log("Page Gender: ", gender);
     if (!userId || !gender) return "/placeholder.svg";
     let folder = "common";
     let count = 2;
@@ -116,6 +124,28 @@ export default function MessagesPage() {
     const idx = (userId % count) + 1;
     return `/avatars/${folder}/${folder}_${idx}.png`;
   };
+
+  // Add this computed value for filtered mentors
+  const filteredMentors = mentors.filter((m) => {
+    // Search filter
+    const searchMatch =
+      m.name?.toLowerCase().includes(mentorSearch.toLowerCase()) ||
+      m.universityName?.toLowerCase().includes(mentorSearch.toLowerCase()) ||
+      m.fieldOfStudyName?.toLowerCase().includes(mentorSearch.toLowerCase()) ||
+      m.bio?.toLowerCase().includes(mentorSearch.toLowerCase());
+
+    // Verification filter
+    const verificationMatch =
+      verificationFilter === "all" ||
+      (verificationFilter === "verified" && m.isVerified);
+
+    // University filter
+    const universityMatch =
+      !universityFilter ||
+      (user?.universityName && m.universityName === user.universityName);
+
+    return searchMatch && verificationMatch && universityMatch;
+  });
 
   const handleSendMessage = async () => {
     if (!user || !messageText.trim() || !activeConversation) return;
@@ -135,13 +165,33 @@ export default function MessagesPage() {
     }
   };
 
-  const handleConversationSelect = (conversation) => {
+  // Update the handleConversationSelect function
+  const handleConversationSelect = async (conversation) => {
+    if (!conversation.readUser) {
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv.id === conversation.id ? { ...conv, readUser: true } : conv
+        )
+      );
+      // Mark as read in context (this will update the badge count)
+      markConversationAsRead(conversation.id);
+
+      // Make API call to mark as read in backend
+      try {
+        await markConversationAsReadAPI(conversation.id);
+        console.log("Conversation marked as read successfully");
+      } catch (error) {
+        console.error("Failed to mark conversation as read:", error);
+        // Optionally, you could revert the local state change if API fails
+        // but for better UX, we'll keep the optimistic update
+      }
+    }
     setActiveConversation(conversation);
   };
 
   const filteredConversations = conversations.filter((conversation) => {
     const matchesSearch =
-      (conversation.name || "")
+      (conversation.mentorName || "")
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
       (conversation.lastMessage || "")
@@ -149,11 +199,7 @@ export default function MessagesPage() {
         .includes(searchQuery.toLowerCase());
 
     if (activeTab === "all") return matchesSearch;
-    if (activeTab === "unread") return matchesSearch && conversation.unread;
-    if (activeTab === "mentors")
-      return conversation.type === "mentor" && matchesSearch;
-    if (activeTab === "students")
-      return matchesSearch && conversation.type === "student";
+    if (activeTab === "unread") return matchesSearch && !conversation.readUser;
 
     return matchesSearch;
   });
@@ -198,16 +244,25 @@ export default function MessagesPage() {
       >
         <div className="p-4 border-b">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">Messages</h2>
-            <Button variant="ghost" size="icon">
-              <MessageSquare className="h-5 w-5" />
+            <h2 className="text-xl font-bold">Find your mentor here</h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowMentorSearch(true)}
+            >
+              <SearchIcon className="h-5 w-5" />
             </Button>
+            {/* <Button className="mt-4" onClick={() => setShowMentorSearch(true)}>
+              <MessageSquare className="mr-2 h-4 w-25" />
+              Find a Mentor
+            </Button> */}
           </div>
+
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search messages..."
+              placeholder="Search conversations..."
               className="pl-8"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -221,10 +276,9 @@ export default function MessagesPage() {
           onValueChange={setActiveTab}
           className="w-full"
         >
-          <TabsList className="grid grid-cols-4 w-full">
+          <TabsList className="grid grid-cols-2 w-full">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="unread">Unread</TabsTrigger>
-            <TabsTrigger value="mentors">Mentors</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -263,7 +317,7 @@ export default function MessagesPage() {
                       )}
                     </div>
                   </div>
-                  {conversation.unread && (
+                  {!conversation.readUser && (
                     <Badge className="ml-auto">New</Badge>
                   )}
                 </div>
@@ -308,47 +362,26 @@ export default function MessagesPage() {
                 <div className="font-medium flex items-center">
                   {activeConversation.mentorName}
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {activeConversation.type === "mentor" ? "Mentor" : "Mentor"}
-                </div>
+                <div className="text-xs text-muted-foreground">Mentor</div>
               </div>
             </div>
             <div className="flex items-center space-x-1">
-              <Button variant="ghost" size="icon">
-                <Phone className="h-5 w-5" />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowMentorProfile(true)}
+                title="View Profile"
+              >
+                <User className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon">
-                <Video className="h-5 w-5" />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setActiveConversation(null)}
+                title="Close conversation"
+              >
+                <X className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon">
-                <Info className="h-5 w-5" />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreVertical className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem className="flex items-center">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>View Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center">
-                    <Star className="mr-2 h-4 w-4" />
-                    <span>Conversation</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="flex items-center">
-                    <Archive className="mr-2 h-4 w-4" />
-                    <span>Archive</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center text-red-500">
-                    <Trash className="mr-2 h-4 w-4" />
-                    <span>Delete Conversation</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </div>
 
@@ -412,10 +445,6 @@ export default function MessagesPage() {
                     {/* Show avatar for user messages on the right */}
                     {!message.mentorSender && (
                       <Avatar className="h-8 w-8 ml-2">
-                        {/* <AvatarImage
-                          src={user?.avatar || "/placeholder.svg"}
-                          alt="You"
-                        /> */}
                         <AvatarImage
                           src={getAvatarSrc(
                             message.userId,
@@ -477,133 +506,421 @@ export default function MessagesPage() {
           </p>
           <Button className="mt-4" onClick={() => setShowMentorSearch(true)}>
             <MessageSquare className="mr-2 h-4 w-4" />
-            New Message
+            Find a Mentor
           </Button>
+        </div>
+      )}
 
-          {/* Mentor Search Modal/Panel */}
-          {showMentorSearch && (
-            <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
-                <button
-                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-                  onClick={() => setShowMentorSearch(false)}
-                  aria-label="Close"
-                >
-                  X
-                </button>
-                <h2 className="text-lg font-bold mb-2">Find a Mentor</h2>
+      {/* Mentor Search Modal/Panel */}
+      {showMentorSearch && (
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-background border rounded-xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b shrink-0">
+              <div>
+                <h2 className="text-2xl font-bold">Find Your Perfect Mentor</h2>
+                <p className="text-muted-foreground mt-1">
+                  Connect with experienced mentors to guide your academic
+                  journey
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowMentorSearch(false)}
+                className="h-8 w-8"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Search and Filters */}
+            <div className="p-6 border-b space-y-4 shrink-0">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search mentors by name, university, or expertise..."
+                  placeholder="Search by name, university, field of study, or expertise..."
                   value={mentorSearch}
                   onChange={(e) => setMentorSearch(e.target.value)}
-                  className="mb-4"
+                  className="pl-10 h-12 text-base"
                 />
-                <div className="max-h-64 overflow-y-auto divide-y">
-                  {mentors
-                    .filter(
-                      (m) =>
-                        m.name
-                          ?.toLowerCase()
-                          .includes(mentorSearch.toLowerCase()) ||
-                        m.universityName
-                          ?.toLowerCase()
-                          .includes(mentorSearch.toLowerCase())
-                    )
-                    .map((m) => (
-                      <div
-                        key={m.id}
-                        className="py-2 flex items-center gap-3 cursor-pointer hover:bg-muted/50 px-2 rounded transition"
-                        onClick={async () => {
-                          // Check if conversation exists
-                          const existing = conversations.find(
-                            (c) => c.mentorId === m.id
-                          );
-                          if (existing) {
-                            setActiveConversation(existing);
-                            setShowMentorSearch(false);
-                          } else {
-                            // Start new conversation (API call)
-                            try {
-                              const newConv = await import(
-                                "@/lib/chat-service"
-                              ).then(({ startConversation }) =>
-                                startConversation(m.id)
-                              );
-                              setConversations((prev) => [...prev, newConv]);
-                              setActiveConversation(newConv);
+              </div>
+
+              {/* Filter options */}
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={verificationFilter === "all" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setVerificationFilter("all")}
+                >
+                  All Mentors
+                </Button>
+                <Button
+                  variant={
+                    verificationFilter === "verified" ? "default" : "outline"
+                  }
+                  size="sm"
+                  onClick={() => setVerificationFilter("verified")}
+                >
+                  Verified Only
+                </Button>
+                <Button
+                  variant={universityFilter ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setUniversityFilter(!universityFilter)}
+                >
+                  Same University
+                </Button>
+              </div>
+            </div>
+
+            {/* Results - Scrollable Area */}
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <div className="h-full overflow-y-auto">
+                <div className="p-6">
+                  {filteredMentors.length > 0 ? (
+                    <div className="space-y-4">
+                      {filteredMentors.map((m) => (
+                        <div
+                          key={m.id}
+                          className="group border rounded-lg p-4 cursor-pointer hover:bg-muted/50 transition-all duration-200 hover:shadow-md"
+                          onClick={async () => {
+                            // Check if conversation exists
+                            const existing = conversations.find(
+                              (c) => c.mentorId === m.id
+                            );
+                            if (existing) {
+                              setActiveConversation(existing);
                               setShowMentorSearch(false);
-                            } catch (err) {
-                              setError("Failed to start conversation.");
+                            } else {
+                              // Start new conversation (API call)
+                              try {
+                                const newConv = await import(
+                                  "@/lib/chat-service"
+                                ).then(({ startConversation }) =>
+                                  startConversation(m.id)
+                                );
+                                setConversations((prev) => [...prev, newConv]);
+                                setActiveConversation(newConv);
+                                setShowMentorSearch(false);
+                              } catch (err) {
+                                setError("Failed to start conversation.");
+                              }
                             }
-                          }
+                          }}
+                        >
+                          <div className="flex gap-4">
+                            {/* Avatar */}
+                            <div className="relative shrink-0">
+                              <Avatar className="h-16 w-16">
+                                <AvatarImage
+                                  src={m.avatar || "/placeholder.svg"}
+                                  alt={m.name}
+                                />
+                                <AvatarFallback className="text-lg font-semibold">
+                                  {m.name?.charAt(0)}
+                                </AvatarFallback>
+                              </Avatar>
+                              {m.isVerified && (
+                                <div className="absolute -top-1 -right-1 h-5 w-5 bg-green-500 rounded-full flex items-center justify-center">
+                                  <svg
+                                    className="h-3 w-3 text-white"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Content */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1 min-w-0">
+                                  {/* Name and verification */}
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <h3 className="text-lg font-semibold truncate group-hover:text-primary transition-colors">
+                                      {m.name}
+                                    </h3>
+                                    {m.isVerified ? (
+                                      <Badge
+                                        variant="secondary"
+                                        className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                                      >
+                                        Verified
+                                      </Badge>
+                                    ) : (
+                                      <Badge
+                                        variant="outline"
+                                        className="text-yellow-600 border-yellow-500"
+                                      >
+                                        Unverified
+                                      </Badge>
+                                    )}
+                                  </div>
+
+                                  {/* University and Field */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                                    <div className="flex items-center gap-2">
+                                      <div className="h-4 w-4 rounded bg-primary/10 flex items-center justify-center shrink-0">
+                                        <GraduationCap className="h-3 w-3 text-primary" />
+                                      </div>
+                                      <span className="text-sm text-muted-foreground truncate">
+                                        <span className="font-medium">
+                                          University:
+                                        </span>{" "}
+                                        {m.universityName || "N/A"}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <div className="h-4 w-4 rounded bg-primary/10 flex items-center justify-center shrink-0">
+                                        <BookOpen className="h-3 w-3 text-primary" />
+                                      </div>
+                                      <span className="text-sm text-muted-foreground truncate">
+                                        <span className="font-medium">
+                                          Field:
+                                        </span>{" "}
+                                        {m.fieldOfStudyName || "N/A"}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  {/* Bio */}
+                                  {m.bio && (
+                                    <p className="flex items-center justify-between text-sm text-muted-foreground mb-3 line-clamp-2">
+                                      {m.bio}
+                                    </p>
+                                  )}
+
+                                  {/* Links and Actions */}
+                                  <div className="flex items-center justify-between">
+                                    {m.linkedin && (
+                                      <a
+                                        href={m.linkedin}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          className="h-4 w-4"
+                                          fill="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4V24h-4V8zM8 8h3.6v2.4h.05c.5-.94 1.7-1.95 3.5-1.95 3.75 0 4.45 2.45 4.45 5.65V24h-4v-7.6c0-1.8-.05-4.1-2.5-4.1-2.5 0-2.9 1.95-2.9 4v7.7H8V8z" />
+                                        </svg>
+                                        LinkedIn Profile
+                                      </a>
+                                    )}
+
+                                    <Button
+                                      size="sm"
+                                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                      Start Conversation
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="mx-auto h-16 w-16 bg-muted rounded-full flex items-center justify-center mb-4">
+                        <Search className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                      <h3 className="text-lg font-medium mb-2">
+                        No mentors found
+                      </h3>
+                      <p className="text-muted-foreground">
+                        {mentorSearch
+                          ? `No results for "${mentorSearch}". Try adjusting your search or filters.`
+                          : "Try adjusting your search criteria or filters."}
+                      </p>
+                      <Button
+                        variant="outline"
+                        className="mt-4"
+                        onClick={() => {
+                          setMentorSearch("");
+                          setVerificationFilter("all");
+                          setUniversityFilter(false);
                         }}
                       >
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage
-                            src={m.avatar || "/placeholder.svg"}
-                            alt={m.name}
-                          />
-                          <AvatarFallback>{m.name?.charAt(0)}</AvatarFallback>
-                        </Avatar>
-
-                        <div className="flex-1 min-w-0 text-left ml-3">
-                          <div className="flex items-center gap-2">
-                            <div className="font-semibold">{m.name}</div>
-                            {!m.isVerified && (
-                              <span className="text-xs text-yellow-600 border border-yellow-500 px-1 py-0.5 rounded">
-                                Unverified
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="text-xs text-muted-foreground">
-                            <span className="font-medium">University:</span>{" "}
-                            {m.universityName || "N/A"}
-                          </div>
-
-                          <div className="text-xs text-muted-foreground">
-                            <span className="font-medium">Field:</span>{" "}
-                            {m.fieldOfStudyName || "N/A"}
-                          </div>
-
-                          {m.bio && (
-                            <div className="text-xs text-muted-foreground truncate">
-                              {m.bio}
-                            </div>
-                          )}
-
-                          {m.linkedin && (
-                            <div className="text-xs mt-1">
-                              <a
-                                href={m.linkedin}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:underline flex items-center gap-1"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-3.5 w-3.5"
-                                  fill="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4V24h-4V8zM8 8h3.6v2.4h.05c.5-.94 1.7-1.95 3.5-1.95 3.75 0 4.45 2.45 4.45 5.65V24h-4v-7.6c0-1.8-.05-4.1-2.5-4.1-2.5 0-2.9 1.95-2.9 4v7.7H8V8z" />
-                                </svg>
-                                LinkedIn
-                              </a>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  {mentors.length === 0 && (
-                    <div className="text-center text-muted-foreground py-4">
-                      No mentors found.
+                        Clear Filters
+                      </Button>
                     </div>
                   )}
                 </div>
               </div>
             </div>
-          )}
+
+            {/* Footer */}
+            <div className="p-6 border-t bg-muted/30 shrink-0">
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>
+                  Showing {filteredMentors.length} of {mentors.length} mentors
+                </span>
+                <div className="flex items-center gap-1">
+                  <span>Powered by</span>
+                  <span className="font-semibold text-primary">GradPilot</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Mentor Profile Modal */}
+      {showMentorProfile && activeConversation && (
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-background border rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b">
+              <h2 className="text-2xl font-bold">Mentor Profile</h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowMentorProfile(false)}
+                className="h-8 w-8"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Profile Content */}
+            <div className="p-6 space-y-6">
+              {/* Avatar and Basic Info */}
+              <div className="flex items-start gap-4">
+                <div className="relative">
+                  <Avatar className="h-20 w-20">
+                    <AvatarImage
+                      src={activeConversation.avatar || "/placeholder.svg"}
+                      alt={activeConversation.mentorName}
+                    />
+                    <AvatarFallback className="text-xl font-semibold">
+                      {activeConversation.mentorName?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  {activeConversation.mentorIsVerified && (
+                    <div className="absolute -top-1 -right-1 h-6 w-6 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg
+                        className="h-4 w-4 text-white"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-xl font-semibold">
+                      {activeConversation.mentorName}
+                    </h3>
+                    {activeConversation.mentorIsVerified ? (
+                      <Badge
+                        variant="secondary"
+                        className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                      >
+                        Verified
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="text-yellow-600 border-yellow-500"
+                      >
+                        Unverified
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Details */}
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center">
+                      <GraduationCap className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">University</p>
+                      <p className="text-sm text-muted-foreground">
+                        {activeConversation.mentorUniversityName || "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded bg-primary/10 flex items-center justify-center">
+                      <BookOpen className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Field of Study</p>
+                      <p className="text-sm text-muted-foreground">
+                        {activeConversation.mentorFieldOfStudyName || "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bio */}
+                {activeConversation.mentorBio && (
+                  <div>
+                    <p className="text-sm font-medium mb-2">About</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {activeConversation.mentorBio}
+                    </p>
+                  </div>
+                )}
+
+                {/* LinkedIn */}
+                {activeConversation.mentorLinkedin && (
+                  <div>
+                    <p className="text-sm font-medium mb-2">Links</p>
+                    <a
+                      href={activeConversation.mentorLinkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM.5 8h4V24h-4V8zM8 8h3.6v2.4h.05c.5-.94 1.7-1.95 3.5-1.95 3.75 0 4.45 2.45 4.45 5.65V24h-4v-7.6c0-1.8-.05-4.1-2.5-4.1-2.5 0-2.9 1.95-2.9 4v7.7H8V8z" />
+                      </svg>
+                      LinkedIn Profile
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 border-t bg-muted/30">
+              <Button
+                className="w-full"
+                onClick={() => setShowMentorProfile(false)}
+              >
+                Close Profile
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>

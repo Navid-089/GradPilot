@@ -49,6 +49,25 @@ class ConversationService {
       console.error("Error fetching user conversations:", error);
     }
   }
+
+  // mark a conversation as read by user
+  async markConversationAsRead(conversationId) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/conversations/${conversationId}/read`,
+        {
+          method: "POST",
+          headers: this.getHeaders(),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to mark conversation as read");
+      }
+    } catch (error) {
+      console.error("Error marking conversation as read:", error);
+    }
+  }
 }
 
 const conversationService = new ConversationService();

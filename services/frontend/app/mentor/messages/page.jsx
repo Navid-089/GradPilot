@@ -78,6 +78,23 @@ export default function MessagesPage() {
     }
   }, [authLoading, user]);
 
+  const getAvatarSrc = (userId, gender) => {
+    console.log("User ID: ", userId);
+    console.log("Page Gender: ", gender);
+    if (!userId || !gender) return "/placeholder.svg";
+    let folder = "common";
+    let count = 2;
+    if (gender === "male") {
+      folder = "male";
+      count = 43;
+    } else if (gender === "female") {
+      folder = "female";
+      count = 24;
+    }
+    const idx = (userId % count) + 1;
+    return `/avatars/${folder}/${folder}_${idx}.png`;
+  };
+
   // Fetch messages when activeConversation changes
   useEffect(() => {
     console.log("Active conversation changed:", activeConversation);
@@ -341,15 +358,18 @@ export default function MessagesPage() {
                 messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex ${
+                    className={`flex items-end ${
                       message.mentorSender ? "justify-end" : "justify-start"
                     }`}
                   >
                     {!message.mentorSender && (
-                      <Avatar className="h-8 w-8 mr-2 mt-1">
+                      <Avatar className="h-8 w-8 mr-2">
                         <AvatarImage
-                          src={activeConversation.avatar || "/placeholder.svg"}
-                          alt={message.senderName}
+                          src={getAvatarSrc(
+                            message.userId,
+                            message.senderGender
+                          )}
+                          alt={user?.name}
                         />
                         <AvatarFallback>
                           {message.senderName?.[0] || "U"}
@@ -357,23 +377,50 @@ export default function MessagesPage() {
                       </Avatar>
                     )}
                     <div>
+                      {/* Sender name */}
                       <div
-                        className={`rounded-lg px-4 py-2 max-w-md ${
-                          message.mentorSender
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted"
+                        className={`text-xs text-muted-foreground mb-1 ${
+                          !message.mentorSender ? "text-left" : "text-right"
                         }`}
                       >
-                        <p>{message.message}</p>
+                        {!message.mentorSender
+                          ? message.senderName || activeConversation.mentorName
+                          : "You"}
                       </div>
+                      {/* Timestamp */}
                       <div
                         className={`text-xs text-muted-foreground mt-1 ${
-                          message.mentorSender ? "text-right" : ""
+                          !message.mentorSender ? "" : "text-right"
                         }`}
                       >
                         {new Date(message.sentAt).toLocaleTimeString()}
                       </div>
+                      {/* Message bubble */}
+                      <div
+                        className={`rounded-lg px-4 py-2 max-w-md ${
+                          !message.mentorSender
+                            ? "bg-muted"
+                            : "bg-primary text-primary-foreground"
+                        }`}
+                      >
+                        <p>{message.message}</p>
+                      </div>
                     </div>
+                    {/* Show avatar for user messages on the right */}
+                    {message.mentorSender && (
+                      <Avatar className="h-8 w-8 ml-2">
+                        <AvatarImage
+                          src={getAvatarSrc(
+                            message.mentorId,
+                            message.receiverGender
+                          )}
+                          alt={user?.name}
+                        />
+                        <AvatarFallback>
+                          {user?.name?.[0] || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
                   </div>
                 ))
               ) : (

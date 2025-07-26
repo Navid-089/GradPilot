@@ -37,6 +37,9 @@ public class Conversation {
     @Column(name = "read_mentor", nullable = false)
     private boolean readMentor = false;
 
+    @Column(name = "last_message_id")
+    private Integer lastMessageId;
+
     public Conversation() {
         this.createdAt = LocalDateTime.now();
     }
@@ -89,5 +92,13 @@ public class Conversation {
 
     public void setReadMentor(boolean readMentor) {
         this.readMentor = readMentor;
+    }
+
+    public Integer getLastMessageId() {
+        return lastMessageId;
+    }
+
+    public void setLastMessageId(Integer lastMessageId) {
+        this.lastMessageId = lastMessageId;
     }
 }

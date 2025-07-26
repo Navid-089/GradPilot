@@ -61,6 +61,13 @@ public class ChatService {
         return convertToDto(conversation);
     }
 
+    // mark a conversation as read by user
+    public void markConversationAsRead(Integer convoId) {
+        Conversation conversation = conversationRepo.findById(convoId).orElseThrow();
+        conversation.setReadUser(true);
+        conversationRepo.save(conversation);
+    }
+
     public Message sendMessage(Integer convoId, Integer senderUserId, String text, String type) {
         Conversation convo = conversationRepo.findById(convoId).orElseThrow();
         Message msg = new Message();
@@ -74,7 +81,11 @@ public class ChatService {
                 .map(Conversation::getMentor)
                 .orElse(null));
         msg.setMentorSender(false);
-        return messageRepo.save(msg);
+        // set conversation's last message
+        messageRepo.save(msg);
+        convo.setLastMessageId(msg.getId());
+        conversationRepo.save(convo);
+        return msg;
     }
 
     public List<MessageDto> getMessages(Integer convoId) {
@@ -112,6 +123,24 @@ public class ChatService {
         dto.setMentorName(convo.getMentor().getName());
         dto.setReadUser(convo.isReadUser());
         dto.setReadMentor(convo.isReadMentor());
+        dto.setMentorBio(convo.getMentor().getBio());
+        dto.setMentorUniversityName(
+                convo.getMentor().getUniversity() != null ? convo.getMentor().getUniversity().getName()
+                        : "Unknown University");
+        dto.setMentorFieldOfStudyName(
+                convo.getMentor().getFieldOfStudy() != null ? convo.getMentor().getFieldOfStudy().getName()
+                        : "Unknown Field");
+        dto.setMentorGender(convo.getMentor().getGender() != null ? convo.getMentor().getGender() : "Unknown");
+        dto.setMentorLinkedin(
+                convo.getMentor().getLinkedin() != null ? convo.getMentor().getLinkedin() : "Not provided");
+        dto.setMentorIsVerified(Boolean.TRUE.equals(convo.getMentor().getIsVerified()));
+        dto.setUserGender(convo.getUser().getGender() != null ? convo.getUser().getGender() : "Unknown");
+        dto.setLastMessage(convo.getLastMessageId() != null
+                ? messageRepo.findById(convo.getLastMessageId()).map(Message::getMessage).orElse("No messages")
+                : "No messages");
+        dto.setLastMessageTime(convo.getLastMessageId() != null
+                ? messageRepo.findById(convo.getLastMessageId()).map(Message::getSentAt).orElse(LocalDateTime.now())
+                : LocalDateTime.now());
         return dto;
     }
 
