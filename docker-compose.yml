@@ -128,7 +128,7 @@ services:
           memory: 512M
 
   login-reg:
-    image: ananyapromi3/gradpilot-login-reg:latest
+    build: ./services/login-reg
     container_name: gradpilot-login-reg
     ports:
       - "8082:8082"
@@ -139,6 +139,9 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       APP_JWT_SECRET: ${JWT_SECRET}
+      GMAIL_USERNAME: ${GMAIL_USERNAME}
+      GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD}
+      FRONTEND_URL: ${FRONTEND_URL}
     deploy:
       resources:
         limits:
@@ -214,7 +217,7 @@ services:
           memory: 256M
 
   frontend:
-    image: ananyapromi3/gradpilot-frontend:latest
+    build: ./services/frontend
     ports:
       - "3000:3000"  # ✅ Changed back to 3000 to match nginx config
     depends_on:
