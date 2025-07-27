@@ -90,7 +90,14 @@ public class ChatService {
 
                 } catch (Exception e) {
                         e.printStackTrace(); // Show error in logs
-                        return new ChatResponse("An error occurred: " + e.getMessage());
+                        // return new ChatResponse("An error occurred: " + e.getMessage());
+                        try {
+                                return generateGeminiResponse(req.message());
+                        } catch (Exception ex) {
+                                ex.printStackTrace();
+                                return new ChatResponse(
+                                                "Sorry, An error occurred while generating response :(");
+                        }
                 }
         }
 

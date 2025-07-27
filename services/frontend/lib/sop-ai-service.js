@@ -5,7 +5,7 @@ export async function askChatbot(message) {
   const userJson = localStorage.getItem("user");
   const token = localStorage.getItem("token");
 
-  const url = "https://gradpilot.me/api/v1/sop/review";
+  const url = "https://gradpilot.me/api/sop-review";
   //   const url = "http://localhost:8084/api/v1/sop/review";
 
   try {

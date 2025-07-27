@@ -251,10 +251,10 @@ export default function SopReview() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:h-[700px]">
         {/* Input Section */}
-        <Card>
-          <CardHeader>
+        <Card className="flex flex-col h-full">
+          <CardHeader className="flex-shrink-0">
             <CardTitle className="flex items-center justify-between">
               <span>Your Statement of Purpose</span>
               <Badge variant="outline">
@@ -268,7 +268,7 @@ export default function SopReview() {
               comprehensive review.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 flex-1 flex flex-col">
             {/* File Upload */}
             <div className="flex items-center gap-2">
               <input
@@ -300,8 +300,9 @@ export default function SopReview() {
             </div>
 
             {/* Text Area */}
-            <Textarea
-              placeholder="Start writing your Statement of Purpose here...
+            <div className="flex-1 flex flex-col">
+              <Textarea
+                placeholder="Start writing your Statement of Purpose here...
 
 A strong SOP typically includes:
 • Your academic background and achievements
@@ -311,51 +312,52 @@ A strong SOP typically includes:
 • Future aspirations and contributions
 
 Remember to be authentic, specific, and compelling in your narrative."
-              value={sopText}
-              onChange={handleTextChange}
-              className="min-h-[400px] resize-none"
-            />
+                value={sopText}
+                onChange={handleTextChange}
+                className="flex-1 min-h-[300px] resize-none"
+              />
 
-            {/* Validation Errors */}
-            {validationErrors.length > 0 && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  <ul className="list-disc list-inside">
-                    {validationErrors.map((error, index) => (
-                      <li key={index}>{error}</li>
-                    ))}
-                  </ul>
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {/* Action Button */}
-            <Button
-              onClick={handleReview}
-              disabled={
-                isLoading || validationErrors.length > 0 || !sopText.trim()
-              }
-              className="w-full"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Analyzing your SOP...
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Review My SOP
-                </>
+              {/* Validation Errors */}
+              {validationErrors.length > 0 && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <ul className="list-disc list-inside">
+                      {validationErrors.map((error, index) => (
+                        <li key={index}>{error}</li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
               )}
-            </Button>
+
+              {/* Action Button */}
+              <Button
+                onClick={handleReview}
+                disabled={
+                  isLoading || validationErrors.length > 0 || !sopText.trim()
+                }
+                className="w-full"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Analyzing your SOP...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="mr-2 h-4 w-4" />
+                    Review My SOP
+                  </>
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
         {/* Feedback Section */}
-        <Card>
-          <CardHeader>
+        <Card className="flex flex-col h-full">
+          <CardHeader className="flex-shrink-0">
             <CardTitle className="flex items-center justify-between">
               <span>Review Results</span>
               {hasReviewed && (
@@ -369,51 +371,55 @@ Remember to be authentic, specific, and compelling in your narrative."
               Detailed feedback and suggestions to improve your SOP
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            {!hasReviewed && !isLoading && (
-              <div className="text-center py-12">
-                <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Ready to Review</h3>
-                <p className="text-muted-foreground">
-                  Enter your SOP text and click "Review My SOP" to get detailed
-                  feedback.
-                </p>
-              </div>
-            )}
-
-            {isLoading && (
-              <div className="text-center py-12">
-                <Loader2 className="mx-auto h-12 w-12 text-primary animate-spin mb-4" />
-                <h3 className="text-lg font-medium mb-2">Analyzing Your SOP</h3>
-                <p className="text-muted-foreground">
-                  Please wait while we review your statement for grammar, style,
-                  and clarity.
-                </p>
-              </div>
-            )}
-
-            {hasReviewed && feedback && (
-              <div className="space-y-4">
-                <div className="prose prose-sm max-w-none">
-                  <div
-                    className="text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{
-                      __html: sopService.formatFeedback(feedback),
-                    }}
-                  />
+          <CardContent className="flex-1 overflow-hidden">
+            <div className="h-full max-h-[600px] overflow-y-auto pr-2">
+              {!hasReviewed && !isLoading && (
+                <div className="text-center py-12">
+                  <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">Ready to Review</h3>
+                  <p className="text-muted-foreground">
+                    Enter your SOP text and click "Review My SOP" to get
+                    detailed feedback.
+                  </p>
                 </div>
+              )}
 
-                {feedback.includes("No grammar or spelling errors") && (
-                  <Alert>
-                    <CheckCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      Great job! Your SOP appears to be well-written with no
-                      major issues detected.
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </div>
-            )}
+              {isLoading && (
+                <div className="text-center py-12">
+                  <Loader2 className="mx-auto h-12 w-12 text-primary animate-spin mb-4" />
+                  <h3 className="text-lg font-medium mb-2">
+                    Analyzing Your SOP
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Please wait while we review your statement for grammar,
+                    style, and clarity.
+                  </p>
+                </div>
+              )}
+
+              {hasReviewed && feedback && (
+                <div className="space-y-4">
+                  <div className="prose prose-sm max-w-none">
+                    <div
+                      className="text-sm leading-relaxed"
+                      dangerouslySetInnerHTML={{
+                        __html: sopService.formatFeedback(feedback),
+                      }}
+                    />
+                  </div>
+
+                  {feedback.includes("No grammar or spelling errors") && (
+                    <Alert>
+                      <CheckCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        Great job! Your SOP appears to be well-written with no
+                        major issues detected.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
