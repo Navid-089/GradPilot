@@ -1,5 +1,6 @@
 package com.gradpilot.service;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +13,17 @@ import com.gradpilot.dto.MentorLoginRequest;
 import com.gradpilot.dto.MentorLoginResponse;
 import com.gradpilot.dto.MentorRegisterRequest;
 import com.gradpilot.dto.MentorRegisterResponse;
+import com.gradpilot.dto.ResetPasswordRequest;
 import com.gradpilot.model.Mentor;
 import com.gradpilot.model.MentorExpertiseArea;
+import com.gradpilot.model.MentorPasswordResetToken;
 import com.gradpilot.model.University;
 import com.gradpilot.model.FieldOfStudy;
 import com.gradpilot.model.Country;
 import com.gradpilot.model.ExpertiseArea;
 import com.gradpilot.repository.MentorRepository;
 import com.gradpilot.repository.MentorExpertiseAreaRepository;
+import com.gradpilot.repository.MentorPasswordResetTokenRepository;
 import com.gradpilot.repository.UniversityRepository;
 import com.gradpilot.repository.FieldOfStudyRepository;
 import com.gradpilot.repository.CountryRepository;
@@ -52,6 +56,12 @@ public class MentorAuthService {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private MentorPasswordResetTokenRepository mentorPasswordResetTokenRepository; 
 
     @Transactional
     public MentorRegisterResponse register(MentorRegisterRequest registerRequest) {
@@ -149,5 +159,93 @@ public class MentorAuthService {
         } catch (Exception e) {
             throw new BadCredentialsException("Invalid email or password");
         }
+    }
+
+    @Transactional
+    public void sendPasswordResetEmail(String email) {
+        try {
+            // Mentor mentor = mentorRepository.findByEmail(email).orElse(null); // Change to mentor
+            Mentor mentor = mentorRepository.findByEmail(email).orElse(null); // Change to mentor
+            if (mentor == null) {
+                // For security reasons, don't reveal if email exists or not
+                // Just log and return success to prevent email enumeration
+                System.out.println("Password reset requested for non-existent mentor email: " + email);
+                return;
+            }
+
+            // Invalidate any existing unused tokens for this mentor
+            mentorPasswordResetTokenRepository.markAllMentorTokensAsUsed(mentor); // Change this
+
+            // Generate a secure reset token
+            String resetToken = java.util.UUID.randomUUID().toString();
+
+            // Create password reset token with 1 hour expiry
+            LocalDateTime expiryDate = LocalDateTime.now().plusHours(1);
+            MentorPasswordResetToken passwordResetToken = new MentorPasswordResetToken(resetToken, mentor, expiryDate); // Change
+                                                                                                                        // this
+            mentorPasswordResetTokenRepository.save(passwordResetToken); // Change this
+
+            // Send email
+            emailService.sendPasswordResetEmail(email, resetToken);
+
+        } catch (Exception e) {
+            System.err.println("Error in sendPasswordResetEmail: " + e.getMessage());
+            // Don't throw exception to prevent revealing system information
+        }
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        try {
+            // Validate passwords match
+            if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+                throw new RuntimeException("Passwords do not match");
+            }
+
+            // Find the token
+            MentorPasswordResetToken resetToken = mentorPasswordResetTokenRepository // Change this
+                    .findByTokenAndUsedFalse(request.getToken())
+                    .orElseThrow(() -> new RuntimeException("Invalid or expired reset token"));
+
+            // Check if token is expired
+            if (resetToken.isExpired()) {
+                throw new RuntimeException("Reset token has expired");
+            }
+
+            // Update mentor password
+            Mentor mentor = resetToken.getMentor(); // Change this
+            mentor.setBicryptedPass(passwordEncoder.encode(request.getNewPassword())); // Change to setBicryptedPass
+            mentorRepository.save(mentor); // Change this
+
+            // Mark token as used
+            resetToken.setUsed(true);
+            mentorPasswordResetTokenRepository.save(resetToken); // Change this
+
+            // Send success email
+            emailService.sendPasswordResetSuccessEmail(mentor.getEmail()); // Change this
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to reset password: " + e.getMessage());
+        }
+    }
+
+    @Transactional
+    public boolean validateResetToken(String token) {
+        try {
+            MentorPasswordResetToken resetToken = mentorPasswordResetTokenRepository // Change this
+                    .findByTokenAndUsedFalse(token)
+                    .orElse(null);
+
+            return resetToken != null && !resetToken.isExpired();
+        } catch (Exception e) {
+            System.err.println("Error validating reset token: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Cleanup method - can be called periodically to remove expired tokens
+    @Transactional
+    public void cleanupExpiredTokens() {
+        mentorPasswordResetTokenRepository.deleteExpiredTokens(LocalDateTime.now()); // Change this
     }
 }
