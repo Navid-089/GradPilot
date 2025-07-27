@@ -54,10 +54,10 @@ export default function MentorSignupPage() {
       try {
         const [universitiesRes, fieldsRes, countriesRes, expertiseRes] =
           await Promise.all([
-            fetch(`${API_BASE_URL}/api/universities`),
-            fetch(`${API_BASE_URL}/api/fields-of-study`),
-            fetch(`${API_BASE_URL}/api/countries`),
-            fetch(`${API_BASE_URL}/api/expertise-areas`),
+            fetch(`http://login-reg:8082/api/universities`),
+            fetch(`http://login-reg:8082/api/fields-of-study`),
+            fetch(`http://login-reg:8082/api/countries`),
+            fetch(`http://login-reg:8082/api/expertise-areas`),
           ]);
 
         const [universities, fields, countries, expertise] = await Promise.all([
@@ -140,7 +140,7 @@ export default function MentorSignupPage() {
 
       if (result.success) {
         // Redirect to mentor dashboard on successful registration
-        router.push("/mentor");
+        router.push("/loginAsMentor");
       } else {
         setError(result.error || "Failed to register. Please try again.");
       }

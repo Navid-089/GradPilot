@@ -218,7 +218,7 @@ export default function SignupPage() {
       });
 
       if (result.success) {
-        router.push("/dashboard");
+        router.push("/login");
       } else {
         setError(result.error || "Failed to create account. Please try again.");
       }
