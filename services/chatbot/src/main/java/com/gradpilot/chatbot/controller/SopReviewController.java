@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/sop-review")
-@CrossOrigin(origins = "*") // Add this
+@CrossOrigin(origins = { "http://localhost:3000", "https://gradpilot.me", "https://www.gradpilot.me" }) // Add this
 public class SopReviewController {
     private final ChatService svc;
 
