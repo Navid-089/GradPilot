@@ -63,12 +63,12 @@ export default function Dashboard() {
             Welcome back! Here's an overview of your graduate school application journey.
           </p>
         </div>
-        <Button asChild>
+        {/* <Button asChild>
           <Link href="/universities">
             Find Universities
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
-        </Button>
+        </Button> */}
       </div>
 
       {/* Application Progress */}

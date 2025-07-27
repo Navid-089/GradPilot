@@ -448,7 +448,7 @@ export function MainNav() {
                       <span>Profile</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSub>
+                  {/* <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
@@ -463,7 +463,7 @@ export function MainNav() {
                         </DropdownMenuItem>
                       </DropdownMenuSubContent>
                     </DropdownMenuPortal>
-                  </DropdownMenuSub>
+                  </DropdownMenuSub> */}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={handleLogout}

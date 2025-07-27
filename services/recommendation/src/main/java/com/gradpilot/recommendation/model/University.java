@@ -3,6 +3,8 @@ package com.gradpilot.recommendation.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "universities")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -40,6 +42,9 @@ public class University {
     @Column(name = "location_url")
     private String locationUrl;
 
+    @Column(name = "deadline") 
+    private LocalDate deadline;
+
     // Constructors
     public University() {
     }
@@ -66,6 +71,20 @@ public class University {
         this.websiteUrl = websiteUrl;
         this.locationUrl = locationUrl;
     }
+
+    public University(String name, String description, String email, Integer ranking, Double tuitionFees, String country, String address, String websiteUrl, String locationUrl, LocalDate deadline) {
+    this.name = name;
+    this.description = description;
+    this.email = email;
+    this.ranking = ranking;
+    this.tuitionFees = tuitionFees;
+    this.country = country;
+    this.address = address;
+    this.websiteUrl = websiteUrl;
+    this.locationUrl = locationUrl;
+    this.deadline = deadline; // ✅ include this
+}
+
 
     // Getters
     public Integer getId() {
@@ -108,6 +127,10 @@ public class University {
         return locationUrl;
     }
 
+    public LocalDate getDeadline() {
+        return deadline;
+    }
+
     // Setters
     public void setId(Integer id) {
         this.id = id;
@@ -147,5 +170,9 @@ public class University {
 
     public void setLocationUrl(String locationUrl) {
         this.locationUrl = locationUrl;
+    }
+
+    public void setDeadline(LocalDate deadline) {
+        this.deadline = deadline;
     }
 }
