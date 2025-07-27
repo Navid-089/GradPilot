@@ -257,10 +257,10 @@ export default function ProfilePage() {
                 <Book className="mr-2 h-4 w-4" />
                 Preferences
               </TabsTrigger>
-              <TabsTrigger value="documents">
+              {/* <TabsTrigger value="documents">
                 <FileText className="mr-2 h-4 w-4" />
                 Documents
-              </TabsTrigger>
+              </TabsTrigger> */}
             </TabsList>
 
             <TabsContent value="academic">
@@ -431,7 +431,7 @@ export default function ProfilePage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="documents">
+            {/* <TabsContent value="documents">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
@@ -493,7 +493,7 @@ export default function ProfilePage() {
                   </CardContent>
                 </Card>
               </div>
-            </TabsContent>
+            </TabsContent> */}
           </Tabs>
 
           <div className="mt-8 flex justify-end">

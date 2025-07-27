@@ -17,12 +17,15 @@ import {
 } from "@/components/ui/card";
 import { GraduationCap, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignupPage() {
   // Option states
   const [majorOptions, setMajorOptions] = useState([]);
   const [interestOptions, setInterestOptions] = useState([]);
   const [countryOptions, setCountryOptions] = useState([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Selected values (ID arrays)
   const [formData, setFormData] = useState({
@@ -418,31 +421,56 @@ export default function SignupPage() {
                 <Label htmlFor="password">
                   Password <span className="text-destructive">*</span>
                 </Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="******"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  minLength={6}
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="******"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    minLength={6}
+                  />
+                  <div
+                    className="absolute right-3 top-2.5 cursor-pointer text-muted-foreground"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </div>
+                </div>
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">
                   Confirm Password <span className="text-destructive">*</span>
                 </Label>
-                <Input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="******"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  minLength={6}
-                />
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="******"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    minLength={6}
+                  />
+                  <div
+                    className="absolute right-3 top-2.5 cursor-pointer text-muted-foreground"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </div>
+                </div>
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">

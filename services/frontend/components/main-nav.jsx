@@ -251,14 +251,14 @@ export function MainNav() {
                       </Badge>
                     )}
                   </Link> */}
-                  <Link
+                  {/* <Link
                     href="/settings"
                     className="flex items-center py-2 px-3 rounded-md text-sm text-muted-foreground hover:bg-muted"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Settings className="h-4 w-4 mr-2" />
                     Settings
-                  </Link>
+                  </Link> */}
                 </div>
 
                 <Button
