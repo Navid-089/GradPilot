@@ -53,7 +53,11 @@ public class MentorChatService {
                 .map(Conversation::getUser)
                 .orElse(null));
         msg.setMentorSender(true);
-        return messageRepo.save(msg);
+        // set conversation's last message
+        messageRepo.save(msg);
+        convo.setLastMessageId(msg.getId());
+        conversationRepo.save(convo);
+        return msg;
     }
 
     // mark a conversation as read by user

@@ -82,7 +82,7 @@ export default function MessagesPage() {
   const getAvatarSrc = (userId, gender) => {
     console.log("User ID: ", userId);
     console.log("Page Gender: ", gender);
-    if (!userId || !gender) return "/placeholder.svg";
+    if (!userId) return "/placeholder.svg";
     let folder = "common";
     let count = 2;
     if (gender === "male") {
@@ -96,6 +96,23 @@ export default function MessagesPage() {
     return `/avatars/${folder}/${folder}_${idx}.png`;
   };
 
+  const getMentorAvatarSrc = (mentorId, gender) => {
+    console.log("User ID: ", mentorId);
+    console.log("Page Gender: ", gender);
+    if (!mentorId) return "/placeholder.svg";
+    let folder = "common";
+    let count = 2;
+    if (gender === "male") {
+      folder = "male";
+      count = 12;
+    } else if (gender === "female") {
+      folder = "female";
+      count = 11;
+    }
+    const idx = (mentorId % count) + 1;
+    return `/mentorAvatars/${folder}/${folder}_${idx}.png`;
+  };
+
   // Fetch messages when activeConversation changes
   useEffect(() => {
     console.log("Active conversation changed:", activeConversation);
@@ -107,6 +124,13 @@ export default function MessagesPage() {
       setMessages([]);
     }
   }, [activeConversation]);
+
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleSendMessage = async () => {
     if (!mentor || !messageText.trim() || !activeConversation) return;
@@ -126,13 +150,32 @@ export default function MessagesPage() {
     }
   };
 
-  const handleConversationSelect = (conversation) => {
+  const handleConversationSelect = async (conversation) => {
+    if (!conversation.readMentor) {
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv.id === conversation.id ? { ...conv, readMentor: true } : conv
+        )
+      );
+      // Mark as read in context (this will update the badge count)
+      markConversationAsRead(conversation.id);
+
+      // Make API call to mark as read in backend
+      try {
+        await markConversationAsReadAPI(conversation.id);
+        console.log("Conversation marked as read successfully");
+      } catch (error) {
+        console.error("Failed to mark conversation as read:", error);
+        // Optionally, you could revert the local state change if API fails
+        // but for better UX, we'll keep the optimistic update
+      }
+    }
     setActiveConversation(conversation);
   };
 
   const filteredConversations = conversations.filter((conversation) => {
     const matchesSearch =
-      (conversation.name || "")
+      (conversation.userName || "")
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
       (conversation.lastMessage || "")
@@ -141,10 +184,6 @@ export default function MessagesPage() {
 
     if (activeTab === "all") return matchesSearch;
     if (activeTab === "unread") return matchesSearch && conversation.unread;
-    if (activeTab === "mentors")
-      return conversation.type === "mentor" && matchesSearch;
-    if (activeTab === "students")
-      return matchesSearch && conversation.type === "student";
 
     return matchesSearch;
   });
@@ -198,7 +237,7 @@ export default function MessagesPage() {
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search messages..."
+              placeholder="Search conversations..."
               className="pl-8"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -232,7 +271,7 @@ export default function MessagesPage() {
                   <Avatar className="h-10 w-10">
                     <AvatarImage
                       src={conversation.avatar || "/placeholder.svg"}
-                      alt={conversation.name}
+                      alt={conversation.userName}
                     />
                     <AvatarFallback>M</AvatarFallback>
                   </Avatar>
@@ -290,7 +329,7 @@ export default function MessagesPage() {
               <Avatar className="h-10 w-10 mr-3">
                 <AvatarImage
                   src={activeConversation.avatar || "/placeholder.svg"}
-                  alt={activeConversation.name}
+                  alt={activeConversation.userName}
                 />
                 <AvatarFallback>M</AvatarFallback>
               </Avatar>
@@ -335,7 +374,7 @@ export default function MessagesPage() {
                             message.userId,
                             message.senderGender
                           )}
-                          alt={mentor?.name}
+                          alt={message.userName}
                         />
                         <AvatarFallback>
                           {message.senderName?.[0] || "U"}
@@ -376,7 +415,7 @@ export default function MessagesPage() {
                     {message.mentorSender && (
                       <Avatar className="h-8 w-8 ml-2">
                         <AvatarImage
-                          src={getAvatarSrc(
+                          src={getMentorAvatarSrc(
                             message.mentorId,
                             message.receiverGender
                           )}
@@ -432,10 +471,6 @@ export default function MessagesPage() {
             Choose a conversation from the list or start a new one to begin
             messaging
           </p>
-          <Button className="mt-4" onClick={() => setShowMentorSearch(true)}>
-            <MessageSquare className="mr-2 h-4 w-4" />
-            New Message
-          </Button>
 
           {/* Mentor Search Modal/Panel */}
           {showMentorSearch && (
