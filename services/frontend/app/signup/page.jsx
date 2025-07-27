@@ -493,7 +493,7 @@ export default function SignupPage() {
               <div className="text-center text-sm">
                 Want to become a mentor?{" "}
                 <Link
-                  href="/mentor/signup"
+                  href="/registerAsMentor"
                   className="text-primary hover:underline"
                 >
                   Mentor Sign up

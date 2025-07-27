@@ -60,12 +60,17 @@ export default function MentorSignupPage() {
             fetch(`/api/expertise-areas`),
           ]);
 
-        const [universities, fields, countries, expertise] = await Promise.all([
-          universitiesRes.json(),
-          fieldsRes.json(),
-          countriesRes.json(),
-          expertiseRes.json(),
-        ]);
+        // const [universities, fields, countries, expertise] = await Promise.all([
+        //   universitiesRes.json(),
+        //   fieldsRes.json(),
+        //   countriesRes.json(),
+        //   expertiseRes.json(),
+        // ]);
+
+        const universities = await universitiesRes.json();
+        const fields = await fieldsRes.json();
+        const countries = await countriesRes.json();
+        const expertise = await expertiseRes.json();
 
         // Transform data for react-select
         setUniversityOptions(

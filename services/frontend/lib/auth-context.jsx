@@ -95,7 +95,7 @@ export function AuthProvider({ children }) {
     try {
       const response = await registerMentor(userData);
       setMentor(response.user);
-      return { success: true, user: response.user };
+      return { success: true, mentor: response.user };
     } catch (error) {
       console.error("Mentor registration error:", error);
       return { success: false, error: error.message };
