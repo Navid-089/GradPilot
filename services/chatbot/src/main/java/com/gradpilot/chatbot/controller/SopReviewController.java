@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/sop-review")
+@CrossOrigin(origins = "*") // Add this
 public class SopReviewController {
     private final ChatService svc;
 

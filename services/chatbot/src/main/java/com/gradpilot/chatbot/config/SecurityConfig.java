@@ -24,9 +24,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/chatbot").permitAll() // Allow unauthenticated access to chatbot endpoint
+                        .requestMatchers("/api/chatbot", "/api/sop-review").permitAll() // Allow public endpoints
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -45,9 +46,8 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000",
-            "https://gradpilot.me"
-        ));
+                "http://localhost:3000",
+                "https://gradpilot.me"));
 
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
@@ -61,10 +61,9 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000",
-            "https://gradpilot.me",
-            "https://www.gradpilot.me"
-        ));
+                "http://localhost:3000",
+                "https://gradpilot.me",
+                "https://www.gradpilot.me"));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
@@ -74,14 +73,15 @@ public class SecurityConfig {
 
     // @Bean
     // public UrlBasedCorsConfigurationSource corsConfigurationSourceForFrontend() {
-    //     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    //     CorsConfiguration config = new CorsConfiguration();
-    //     config.addAllowedOrigin("http://gradpilot.me");
-    //     config.addAllowedHeader("*");
-    //     config.addAllowedMethod("*");
-    //     config.setAllowCredentials(true);
-    //     source.registerCorsConfiguration("/**", config);
-    //     return source;
+    // UrlBasedCorsConfigurationSource source = new
+    // UrlBasedCorsConfigurationSource();
+    // CorsConfiguration config = new CorsConfiguration();
+    // config.addAllowedOrigin("http://gradpilot.me");
+    // config.addAllowedHeader("*");
+    // config.addAllowedMethod("*");
+    // config.setAllowCredentials(true);
+    // source.registerCorsConfiguration("/**", config);
+    // return source;
     // }
-    
+
 }
