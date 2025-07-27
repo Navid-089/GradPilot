@@ -1,46 +1,72 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { School, Users, Award, Calendar, FileText, ArrowRight, Bell } from "lucide-react"
-import { getDashboardData } from "@/lib/dashboard-service"
-import { useNotification } from "@/components/notification/notification-provider"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import {
+  School,
+  Users,
+  Award,
+  Calendar,
+  FileText,
+  ArrowRight,
+  Bell,
+} from "lucide-react";
+import {
+  getDashboardData,
+  getUpcomingDeadlines,
+} from "@/lib/dashboard-service";
+import { useNotification } from "@/components/notification/notification-provider";
 
 export default function Dashboard() {
-  const [dashboardData, setDashboardData] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const { showNotification } = useNotification()
+  const [dashboardData, setDashboardData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getDashboardData()
-        setDashboardData(data)
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
+        // 1. Fetch static mock data
+        // const mockData = await getDashboardData();
 
-    fetchData()
-    // Show a welcome notification when the dashboard loads
-    showNotification("Welcome to your GradPilot dashboard!", "info")
-  }, [showNotification])
+        // 2. Fetch real upcoming deadlines using dashboard-service.js helper
+        const upcomingDeadlines = await getUpcomingDeadlines();
+
+        // 3. Merge real deadlines with mock data
+
+
+        setDashboardData(upcomingDeadlines);
+      } catch (error) {
+        console.error("Error loading dashboard data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+    showNotification("Welcome to your GradPilot dashboard!", "info");
+  }, [showNotification]);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading your dashboard...</p>
+          <p className="mt-4 text-muted-foreground">
+            Loading your dashboard...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!dashboardData) {
@@ -51,7 +77,7 @@ export default function Dashboard() {
           Refresh
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -60,7 +86,8 @@ export default function Dashboard() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            Welcome back! Here's an overview of your graduate school application journey.
+            Welcome back! Here's an overview of your graduate school application
+            journey.
           </p>
         </div>
         {/* <Button asChild>
@@ -130,14 +157,23 @@ export default function Dashboard() {
             <div className="space-y-4">
               {dashboardData.upcomingDeadlines.length > 0 ? (
                 dashboardData.upcomingDeadlines.map((deadline, index) => (
-                  <div key={index} className="flex justify-between items-center">
+                  <div
+                    key={index}
+                    className="flex justify-between items-center"
+                  >
                     <div>
                       <p className="font-medium">{deadline.title}</p>
-                      <p className="text-sm text-muted-foreground">{deadline.institution}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {deadline.institution}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <Badge variant={getDeadlineVariant(deadline.daysLeft)}>{deadline.daysLeft} days left</Badge>
-                      <p className="text-sm text-muted-foreground mt-1">{deadline.date}</p>
+                      <Badge variant={getDeadlineVariant(deadline.daysLeft)}>
+                        {deadline.daysLeft} days left
+                      </Badge>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {deadline.date}
+                      </p>
                     </div>
                   </div>
                 ))
@@ -157,7 +193,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Recent Activity */}
+        {/* Recent Activity
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -170,10 +206,16 @@ export default function Dashboard() {
               {dashboardData.recentActivity.length > 0 ? (
                 dashboardData.recentActivity.map((activity, index) => (
                   <div key={index} className="flex items-start gap-4">
-                    <div className={`rounded-full p-2 bg-${activity.color}-100`}>{getActivityIcon(activity.type)}</div>
+                    <div
+                      className={`rounded-full p-2 bg-${activity.color}-100`}
+                    >
+                      {getActivityIcon(activity.type)}
+                    </div>
                     <div>
                       <p className="font-medium">{activity.title}</p>
-                      <p className="text-sm text-muted-foreground">{activity.timestamp}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {activity.timestamp}
+                      </p>
                     </div>
                   </div>
                 ))
@@ -182,7 +224,7 @@ export default function Dashboard() {
               )}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       {/* SOP Review Feature Highlight */}
@@ -193,7 +235,8 @@ export default function Dashboard() {
             Statement of Purpose Review
           </CardTitle>
           <CardDescription>
-            Get AI-powered feedback on your SOP to improve grammar, style, and clarity
+            Get AI-powered feedback on your SOP to improve grammar, style, and
+            clarity
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -225,13 +268,15 @@ export default function Dashboard() {
       </Card>
 
       {/* University Matches */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
             <School className="mr-2 h-5 w-5" />
             Top University Matches
           </CardTitle>
-          <CardDescription>Based on your profile, these universities are a good match for you</CardDescription>
+          <CardDescription>
+            Based on your profile, these universities are a good match for you
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -244,19 +289,25 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <p className="font-medium">{university.name}</p>
-                      <p className="text-sm text-muted-foreground">{university.location}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {university.location}
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
                     <Badge variant="outline" className="bg-green-50">
                       {university.matchScore}% Match
                     </Badge>
-                    <p className="text-sm text-muted-foreground mt-1">Deadline: {university.deadline}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Deadline: {university.deadline}
+                    </p>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-muted-foreground">No university matches found.</p>
+              <p className="text-muted-foreground">
+                No university matches found.
+              </p>
             )}
           </div>
 
@@ -269,9 +320,9 @@ export default function Dashboard() {
             </Button>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
-  )
+  );
 }
 
 function ProgressCard({ title, value, icon, href }) {
@@ -285,31 +336,34 @@ function ProgressCard({ title, value, icon, href }) {
         <span className="text-sm font-medium">{value}%</span>
       </div>
       <Progress value={value} className="h-1.5 mb-2" />
-      <Link href={href} className="text-sm text-primary hover:underline flex items-center">
+      <Link
+        href={href}
+        className="text-sm text-primary hover:underline flex items-center"
+      >
         View details
         <ArrowRight className="ml-1 h-3 w-3" />
       </Link>
     </div>
-  )
+  );
 }
 
 function getDeadlineVariant(daysLeft) {
-  if (daysLeft <= 7) return "destructive"
-  if (daysLeft <= 30) return "warning"
-  return "outline"
+  if (daysLeft <= 7) return "destructive";
+  if (daysLeft <= 30) return "warning";
+  return "outline";
 }
 
 function getActivityIcon(type) {
   switch (type) {
     case "university":
-      return <School className="h-4 w-4" />
+      return <School className="h-4 w-4" />;
     case "professor":
-      return <Users className="h-4 w-4" />
+      return <Users className="h-4 w-4" />;
     case "scholarship":
-      return <Award className="h-4 w-4" />
+      return <Award className="h-4 w-4" />;
     case "document":
-      return <FileText className="h-4 w-4" />
+      return <FileText className="h-4 w-4" />;
     default:
-      return <Bell className="h-4 w-4" />
+      return <Bell className="h-4 w-4" />;
   }
 }

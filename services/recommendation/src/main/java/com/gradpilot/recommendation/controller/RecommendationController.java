@@ -2,6 +2,7 @@ package com.gradpilot.recommendation.controller;
 
 import com.gradpilot.recommendation.dto.RecommendationDto;
 import com.gradpilot.recommendation.dto.UniversityRecommendationDto;
+import com.gradpilot.recommendation.dto.UpcomingDeadlineDto;
 import com.gradpilot.recommendation.model.User;
 import com.gradpilot.recommendation.model.University;
 import com.gradpilot.recommendation.model.Professor;
@@ -434,4 +435,11 @@ public class RecommendationController {
             return ResponseEntity.ok(response);
         }
     }
+
+    @GetMapping("/upcoming-deadlines") 
+    public ResponseEntity<List<UpcomingDeadlineDto>> getUpcomingDeadlines(@RequestParam String email) {
+        List<UpcomingDeadlineDto> deadlines = recommendationService.getUpcomingDeadlines(email);
+        return ResponseEntity.ok(deadlines);
+    }
+
 }

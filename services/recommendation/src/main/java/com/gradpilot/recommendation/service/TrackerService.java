@@ -103,6 +103,14 @@ public class TrackerService {
                 .map(this::convertTaskToMap)
                 .toList();
     }
+
+    public List<Task> getUserTaskEntities(String userEmail) {
+    User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    return taskRepository.findByUser_UserIdOrderByCreatedAtDesc(user.getUserId());
+}
+
     
     public List<Map<String, Object>> getUserTasksByType(String userEmail, String type) {
         // Find user by email

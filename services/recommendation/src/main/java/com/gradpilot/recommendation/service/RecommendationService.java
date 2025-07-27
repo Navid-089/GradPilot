@@ -2,6 +2,7 @@ package com.gradpilot.recommendation.service;
 
 import com.gradpilot.recommendation.dto.RecommendationDto;
 import com.gradpilot.recommendation.dto.UniversityRecommendationDto;
+import com.gradpilot.recommendation.dto.UpcomingDeadlineDto;
 import com.gradpilot.recommendation.model.*;
 import com.gradpilot.recommendation.repository.*;
 
@@ -12,6 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 
 
@@ -27,14 +32,60 @@ public class RecommendationService {
 
     private final MLRecommendationService mlRecommendationService;
 
-    
+    @Autowired
+    private TrackerService trackerService;
 
-    public RecommendationService(UserRepository userRepository, ProfessorRepository professorRepository, 
-                               MLRecommendationService mlRecommendationService) {
+    // Repositories for Univeristy and Scholarship
+    @Autowired
+    private UniversityRepository universityRepository;
+
+    @Autowired
+    private ScholarshipRepository scholarshipRepository;
+
+    // public RecommendationService(UserRepository userRepository, ProfessorRepository professorRepository, 
+    //                            MLRecommendationService mlRecommendationService) {
+    //     this.userRepository = userRepository;
+    //     this.professorRepository = professorRepository;
+    //     this.mlRecommendationService = mlRecommendationService;
+    // }
+
+    // public RecommendationService(UserRepository userRepository, ProfessorRepository professorRepository, 
+    //                            MLRecommendationService mlRecommendationService,
+    //                            TrackerService trackerService) {
+    //     this.userRepository = userRepository;
+    //     this.professorRepository = professorRepository;
+    //     this.mlRecommendationService = mlRecommendationService;
+    //     this.trackerService = trackerService;
+    // }
+
+    // public RecommendationService(UserRepository userRepository, ProfessorRepository professorRepository, 
+    //                            MLRecommendationService mlRecommendationService,
+    //                            TrackerService trackerService, UniversityRepository universityRepository,
+    //                            ScholarshipRepository scholarshipRepository) {
+    //     this.userRepository = userRepository;
+    //     this.professorRepository = professorRepository;
+    //     this.mlRecommendationService = mlRecommendationService;
+    //     this.trackerService = trackerService;
+    //     this.universityRepository = universityRepository;
+    //     this.scholarshipRepository = scholarshipRepository;
+    // }
+
+      public RecommendationService(UserRepository userRepository,
+                                  ProfessorRepository professorRepository,
+                                  MLRecommendationService mlRecommendationService,
+                                  TrackerService trackerService,
+                                  UniversityRepository universityRepository,
+                                  ScholarshipRepository scholarshipRepository,
+                                  EntityManager entityManager) {
         this.userRepository = userRepository;
         this.professorRepository = professorRepository;
         this.mlRecommendationService = mlRecommendationService;
+        this.trackerService = trackerService;
+        this.universityRepository = universityRepository;
+        this.scholarshipRepository = scholarshipRepository;
+        this.entityManager = entityManager;
     }
+
 
     public List<RecommendationDto> getProfessorRecommendations(String email) {
         User user = userRepository.findByEmail(email)
@@ -106,4 +157,71 @@ public class RecommendationService {
             .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
         return user.getResearchInterests();
     }
+
+    public List<UpcomingDeadlineDto> getUpcomingDeadlines(String email) {
+         Optional<User> userOpt = userRepository.findByEmail(email);
+    if (userOpt.isEmpty()) {
+        throw new RuntimeException("User not found");
+    }
+
+    User user = userOpt.get();
+    int userId = user.getUserId();
+
+    List<Task> tasks = trackerService.getUserTaskEntities(user.getEmail());
+
+    List<UpcomingDeadlineDto> deadlines = new ArrayList<>();
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    for (Task task : tasks) {
+        String title, institution, date;
+        int daysLeft;
+
+        // UNIVERSITY
+        if ("UNIVERSITY".equalsIgnoreCase(task.getTaskType().toString()) && task.getUniversityId() != null) {
+            Optional<University> uniOpt = universityRepository.findById(task.getUniversityId());
+            if (uniOpt.isPresent()) {
+                University uni = uniOpt.get();
+                if (uni.getDeadline() != null) {
+                    title = uni.getName() + " Application";
+                    institution = uni.getName();
+                    date = uni.getDeadline().toString();
+                    daysLeft = (int) ChronoUnit.DAYS.between(LocalDate.now(), uni.getDeadline());
+                    if (daysLeft >= 0) {
+                        deadlines.add(new UpcomingDeadlineDto(title, institution, date, daysLeft));
+                    }
+                }
+            }
+        }
+
+        // SCHOLARSHIP
+        if ("SCHOLARSHIP".equalsIgnoreCase(task.getTaskType().toString()) && task.getScholarshipId() != null) {
+            Optional<Scholarship> schOpt = scholarshipRepository.findById(task.getScholarshipId());
+            if (schOpt.isPresent()) {
+                Scholarship s = schOpt.get();
+                try {
+                    LocalDate deadline = LocalDate.parse(s.getDeadline(), formatter);
+                    title = s.getName();
+                    institution = s.getUniversity() != null ? s.getUniversity().getName() : "External";
+                    date = s.getDeadline();
+                    daysLeft = (int) ChronoUnit.DAYS.between(LocalDate.now(), deadline);
+                    if (daysLeft >= 0) {
+                        deadlines.add(new UpcomingDeadlineDto(title, institution, date, daysLeft));
+                    }
+                } catch (Exception ignored) {}
+            }
+        }
+    }
+
+    return deadlines.stream()
+            .sorted(Comparator.comparingInt(UpcomingDeadlineDto::getDaysLeft))
+            .limit(5)
+            .collect(Collectors.toList());
+        
+    }
+    
+
+    
+
+    
 }

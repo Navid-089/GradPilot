@@ -1,3 +1,55 @@
+// dashboard-service.js
+
+// const API_BASE_URL = "http://localhost:8083"; // Uncomment for local testing
+const API_BASE_URL = "https://gradpilot.me";
+
+/**
+ * Get the top 5 upcoming deadlines (universities or scholarships) saved by the user
+ * @param {string} userEmail - Optional user email parameter
+ * @returns {Promise<Array>} - Array of UpcomingDeadlineDto
+ */
+export async function getUpcomingDeadlines(userEmail = null) {
+  try {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const email = userEmail || user.email;
+
+    console.log('Making API call to:', `${API_BASE_URL}/api/recommendations/upcoming-deadlines`);
+    console.log('With email:', email);
+    console.log('With token:', token ? 'Present' : 'Not present');
+
+    const response = await fetch(`${API_BASE_URL}/api/recommendations/upcoming-deadlines?email=${encodeURIComponent(email)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      }
+    });
+
+    console.log('Response status:', response.status);
+    console.log('Response ok:', response.ok);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`API call failed: ${response.status} - ${response.statusText}`);
+      console.error('Error response:', errorText);
+      throw new Error(`API call failed: ${response.status} - ${errorText}`);
+    }
+
+    const deadlines = await response.json();
+    console.log('Received deadline data:', deadlines);
+
+    return deadlines;
+  } catch (error) {
+    console.error('Error fetching upcoming deadlines:', error);
+    console.error('Error details:', error.message);
+    console.error('Error stack:', error.stack);
+
+    // Optional: fallback message
+    return [];
+  }
+}
+
 // Mock dashboard service
 
 export async function getDashboardData() {
@@ -84,3 +136,4 @@ export async function getDashboardData() {
     ],
   }
 }
+
