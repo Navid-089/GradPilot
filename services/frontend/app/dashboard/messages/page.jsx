@@ -101,6 +101,23 @@ export default function MessagesPage() {
     }
   }, [activeConversation]);
 
+  const getMentorAvatarSrc = (mentorId, gender) => {
+    console.log("User ID: ", mentorId);
+    console.log("Page Gender: ", gender);
+    if (!mentorId) return "/placeholder.svg";
+    let folder = "common";
+    let count = 2;
+    if (gender === "male") {
+      folder = "male";
+      count = 12;
+    } else if (gender === "female") {
+      folder = "female";
+      count = 11;
+    }
+    const idx = (mentorId % count) + 1;
+    return `/mentorAvatars/${folder}/${folder}_${idx}.png`;
+  };
+
   useEffect(() => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
@@ -404,11 +421,14 @@ export default function MessagesPage() {
                     {message.mentorSender && (
                       <Avatar className="h-8 w-8 mr-2">
                         <AvatarImage
-                          src={activeConversation.avatar || "/placeholder.svg"}
-                          alt={message.senderName}
+                          src={getMentorAvatarSrc(
+                            message.mentorId,
+                            message.mentorGender
+                          )}
+                          alt={message.mentorName}
                         />
                         <AvatarFallback>
-                          {message.senderName?.[0] || "U"}
+                          {message.mentorName?.[0] || "U"}
                         </AvatarFallback>
                       </Avatar>
                     )}
