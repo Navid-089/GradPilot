@@ -22,7 +22,11 @@ export default function MentorLayout({ children }) {
   useEffect(() => {
     if (!isLoading && !isAuthenticatedMentor) {
       router.push("/loginAsMentor");
-    } else if (!isLoading && isAuthenticatedMentor && mentor?.userType !== "mentor") {
+    } else if (
+      !isLoading &&
+      isAuthenticatedMentor &&
+      mentor?.userType !== "mentor"
+    ) {
       // If user is authenticated but not a mentor, redirect to student dashboard
       router.push("/dashboard");
     }

@@ -140,7 +140,7 @@ export default function MentorSignupPage() {
 
       if (result.success) {
         // Redirect to mentor dashboard on successful registration
-        router.push("/mentor/messages");
+        router.push("/mentor");
       } else {
         setError(result.error || "Failed to register. Please try again.");
       }

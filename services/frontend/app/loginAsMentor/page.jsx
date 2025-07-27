@@ -32,10 +32,10 @@ export default function MentorLoginPage() {
 
     try {
       const result = await loginAsMentor(email, password);
-
+      console.log("Checking result from loginAsMentor page: ", result); // Debugging line to check the result
       if (result.success) {
         // Redirect to mentor dashboard on successful login
-        router.push("/mentor/messages");
+        router.push("/mentor");
       } else {
         setError(
           result.error || "Failed to login. Please check your credentials."
@@ -69,9 +69,7 @@ export default function MentorLoginPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl text-center">
-              Mentor Log In
-            </CardTitle>
+            <CardTitle className="text-2xl text-center">Mentor Login</CardTitle>
             <CardDescription className="text-center">
               Enter your credentials to access your mentor account
             </CardDescription>

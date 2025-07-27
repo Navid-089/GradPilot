@@ -20,6 +20,7 @@ import {
   Star,
   Trash,
   Archive,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -189,9 +190,9 @@ export default function MessagesPage() {
         <div className="p-4 border-b">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">Messages</h2>
-            <Button variant="ghost" size="icon">
+            <div variant="ghost" size="icon">
               <MessageSquare className="h-5 w-5" />
-            </Button>
+            </div>
           </div>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -211,10 +212,9 @@ export default function MessagesPage() {
           onValueChange={setActiveTab}
           className="w-full"
         >
-          <TabsList className="grid grid-cols-4 w-full">
+          <TabsList className="grid grid-cols-2 w-full">
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="unread">Unread</TabsTrigger>
-            <TabsTrigger value="mentors">Mentors</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -226,7 +226,7 @@ export default function MessagesPage() {
                   key={conversation.id}
                   className={`flex items-start p-4 gap-3 cursor-pointer hover:bg-muted/50 transition-colors ${
                     activeConversation?.id === conversation.id ? "bg-muted" : ""
-                  } ${conversation.unread ? "bg-primary/5" : ""}`}
+                  } ${conversation.readMentor ? "bg-primary/5" : ""}`}
                   onClick={() => handleConversationSelect(conversation)}
                 >
                   <Avatar className="h-10 w-10">
@@ -239,10 +239,7 @@ export default function MessagesPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <div className="font-medium truncate">
-                        {conversation.name}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {conversation.lastMessageTime}
+                        {conversation.userName}
                       </div>
                     </div>
                     <div className="text-sm text-muted-foreground truncate">
@@ -251,12 +248,12 @@ export default function MessagesPage() {
                     <div className="flex items-center mt-1 space-x-2">
                       {conversation.type === "mentor" && (
                         <Badge variant="outline" className="text-xs py-0 h-5">
-                          Mentor
+                          Student
                         </Badge>
                       )}
                     </div>
                   </div>
-                  {conversation.unread && (
+                  {conversation.readMentor && (
                     <Badge className="ml-auto">New</Badge>
                   )}
                 </div>
@@ -299,51 +296,20 @@ export default function MessagesPage() {
               </Avatar>
               <div>
                 <div className="font-medium flex items-center">
-                  {activeConversation.name}
+                  {activeConversation.userName}
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {activeConversation.type === "mentor" ? "Mentor" : "Student"}
-                  {activeConversation.university &&
-                    ` • ${activeConversation.university}`}
-                </div>
+                <div className="text-xs text-muted-foreground">Student</div>
               </div>
             </div>
             <div className="flex items-center space-x-1">
-              <Button variant="ghost" size="icon">
-                <Phone className="h-5 w-5" />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setActiveConversation(null)}
+                title="Close conversation"
+              >
+                <X className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon">
-                <Video className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Info className="h-5 w-5" />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreVertical className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem className="flex items-center">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>View Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center">
-                    <Star className="mr-2 h-4 w-4" />
-                    <span>Conversation</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="flex items-center">
-                    <Archive className="mr-2 h-4 w-4" />
-                    <span>Archive</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex items-center text-red-500">
-                    <Trash className="mr-2 h-4 w-4" />
-                    <span>Delete Conversation</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </div>
 
