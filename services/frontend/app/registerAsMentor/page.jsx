@@ -1,7 +1,5 @@
 "use client";
 
-const API_BASE_URL = "https:gradpilot.me"; // adjust port if needed
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -18,9 +16,93 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { GraduationCap, Loader2 } from "lucide-react";
+import { GraduationCap, Loader2, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
-import { Eye, EyeOff } from "lucide-react";
+
+const customSelectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    backgroundColor: "hsl(var(--background))",
+    borderColor: state.isFocused ? "hsl(var(--ring))" : "hsl(var(--border))",
+    borderWidth: "1px",
+    borderRadius: "6px",
+    minHeight: "40px",
+    boxShadow: state.isFocused ? "0 0 0 2px hsl(var(--ring))" : "none",
+    "&:hover": {
+      borderColor: "hsl(var(--border))",
+    },
+  }),
+  menu: (provided) => ({
+    ...provided,
+    backgroundColor: "hsl(var(--popover))",
+    border: "1px solid hsl(var(--border))",
+    borderRadius: "6px",
+    boxShadow:
+      "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+    zIndex: 50,
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected
+      ? "hsl(var(--accent))"
+      : state.isFocused
+      ? "hsl(var(--accent) / 0.5)"
+      : "transparent",
+    color: state.isSelected
+      ? "hsl(var(--accent-foreground))"
+      : "hsl(var(--foreground))",
+    "&:hover": {
+      backgroundColor: "hsl(var(--accent) / 0.5)",
+    },
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: "hsl(var(--muted-foreground))",
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: "hsl(var(--foreground))",
+  }),
+  multiValue: (provided) => ({
+    ...provided,
+    backgroundColor: "hsl(var(--secondary))",
+    borderRadius: "4px",
+  }),
+  multiValueLabel: (provided) => ({
+    ...provided,
+    color: "hsl(var(--secondary-foreground))",
+  }),
+  multiValueRemove: (provided) => ({
+    ...provided,
+    color: "hsl(var(--secondary-foreground))",
+    "&:hover": {
+      backgroundColor: "hsl(var(--destructive))",
+      color: "hsl(var(--destructive-foreground))",
+    },
+  }),
+  input: (provided) => ({
+    ...provided,
+    color: "hsl(var(--foreground))",
+  }),
+  indicatorSeparator: (provided) => ({
+    ...provided,
+    backgroundColor: "hsl(var(--border))",
+  }),
+  dropdownIndicator: (provided) => ({
+    ...provided,
+    color: "hsl(var(--muted-foreground))",
+    "&:hover": {
+      color: "hsl(var(--foreground))",
+    },
+  }),
+  clearIndicator: (provided) => ({
+    ...provided,
+    color: "hsl(var(--muted-foreground))",
+    "&:hover": {
+      color: "hsl(var(--foreground))",
+    },
+  }),
+};
 
 export default function MentorSignupPage() {
   // Option states
@@ -63,13 +145,6 @@ export default function MentorSignupPage() {
             fetch(`/api/expertise-areas`),
           ]);
 
-        // const [universities, fields, countries, expertise] = await Promise.all([
-        //   universitiesRes.json(),
-        //   fieldsRes.json(),
-        //   countriesRes.json(),
-        //   expertiseRes.json(),
-        // ]);
-
         const universities = await universitiesRes.json();
         const fields = await fieldsRes.json();
         const countries = await countriesRes.json();
@@ -77,7 +152,7 @@ export default function MentorSignupPage() {
 
         // Transform data for react-select
         setUniversityOptions(
-          universities.map((u) => ({ value: u.universityId, label: u.name }))
+          universities.map((u) => ({ value: u.id, label: u.name }))
         );
         setFieldOptions(fields.map((f) => ({ value: f.id, label: f.name })));
         setCountryOptions(
@@ -272,7 +347,7 @@ export default function MentorSignupPage() {
                     <Input
                       id="confirmPassword"
                       name="confirmPassword"
-                      type={showPassword ? "text" : "password"}
+                      type={showConfirmPassword ? "text" : "password"}
                       placeholder="******"
                       value={formData.confirmPassword}
                       onChange={handleInputChange}
@@ -306,6 +381,7 @@ export default function MentorSignupPage() {
                     }
                     placeholder="Select your university"
                     isClearable
+                    styles={customSelectStyles}
                   />
                 </div>
                 <div className="space-y-2">
@@ -320,6 +396,7 @@ export default function MentorSignupPage() {
                     }
                     placeholder="Select your field"
                     isClearable
+                    styles={customSelectStyles}
                   />
                 </div>
               </div>
@@ -336,6 +413,7 @@ export default function MentorSignupPage() {
                   }
                   placeholder="Select your country"
                   isClearable
+                  styles={customSelectStyles}
                 />
               </div>
 
@@ -352,6 +430,7 @@ export default function MentorSignupPage() {
                   placeholder="Select your areas of expertise"
                   isMulti
                   isClearable
+                  styles={customSelectStyles}
                 />
               </div>
 
