@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gradpilot.dto.ForgotPasswordRequest;
 import com.gradpilot.dto.LoginRequest;
 import com.gradpilot.dto.LoginResponse;
 import com.gradpilot.dto.RegisterRequest;
 import com.gradpilot.dto.RegisterResponse;
+import com.gradpilot.dto.ResetPasswordRequest;
 import com.gradpilot.dto.UpdateProfileResponse;
 import com.gradpilot.dto.UserProfileUpdate;
 import com.gradpilot.service.AuthService;
@@ -61,6 +63,39 @@ public class AuthController {
     public ResponseEntity<UpdateProfileResponse> updateProfile(@Valid @RequestBody UserProfileUpdate dto) {
         UpdateProfileResponse response = authService.updateProfile(dto);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        try {
+            authService.sendPasswordResetEmail(request.getEmail());
+            return ResponseEntity.ok("If the email exists in our system, a password reset link has been sent.");
+        } catch (Exception e) {
+            // Log error but return generic message for security
+            System.err.println("Error in forgot password: " + e.getMessage());
+            return ResponseEntity.ok("If the email exists in our system, a password reset link has been sent.");
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        try {
+            authService.resetPassword(request);
+            return ResponseEntity.ok("Password has been reset successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/validate-reset-token")
+    public ResponseEntity<Boolean> validateResetToken(@RequestParam String token) {
+        try {
+            boolean isValid = authService.validateResetToken(token);
+            return ResponseEntity.ok(isValid);
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
+        }
     }
 
 }

@@ -18,12 +18,31 @@ export default function ForgotPasswordPage() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false)
+    try {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      if (response.ok) {
+        setIsSubmitted(true)
+        showNotification("Password reset instructions sent to your email", "success")
+      } else {
+        // Even on error, show success message for security (prevent email enumeration)
+        setIsSubmitted(true)
+        showNotification("Password reset instructions sent to your email", "success")
+      }
+    } catch (error) {
+      console.error('Error sending reset email:', error)
+      // For security, still show success message
       setIsSubmitted(true)
       showNotification("Password reset instructions sent to your email", "success")
-    }, 1500)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
