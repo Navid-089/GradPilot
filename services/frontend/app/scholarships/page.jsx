@@ -500,7 +500,7 @@ export default function ScholarshipsPage() {
                 <span className="text-xl font-bold">GradPilot</span>
               </div>
               <div className="text-sm text-muted-foreground">
-                © 2025 GradPilot. Developed by Souvik Mandol, Wahid Al Azad Navid, and Ananya Shahrin Promi.
+                © 2025 GradPilot. Developed by Souvik Mandol, Ananya Shahrin Promi, and Wahid Al Azad Navid.
               </div>
               <div className="flex space-x-4 mt-4 md:mt-0">
                 <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">
@@ -910,7 +910,7 @@ export default function ScholarshipsPage() {
               <span className="text-xl font-bold">GradPilot</span>
             </div>
             <div className="text-sm text-muted-foreground">
-              © 2025 GradPilot. Developed by Souvik Mandol, Wahid Al Azad Navid, and Ananya Shahrin Promi.
+              © 2025 GradPilot. Developed by Souvik Mandol, Ananya Shahrin Promi, and Wahid Al Azad Navid.
             </div>
             <div className="flex space-x-4 mt-4 md:mt-0">
               <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">

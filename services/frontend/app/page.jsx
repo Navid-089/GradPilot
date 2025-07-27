@@ -72,7 +72,7 @@ export default function HomePage() {
                     alt="Graduate students"
                     className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last relative z-10 border shadow-lg"
                     height="550"
-                    src="/placeholder.svg?height=550&width=800"
+                    src="/placeholder.jpg?height=550&width=800"
                     width="800"
                   />
                   <div className="absolute -bottom-6 -right-6 bg-primary/30 p-4 rounded-lg border shadow-md z-20 text-primary-foreground">
@@ -279,7 +279,7 @@ export default function HomePage() {
             </Link>
           </nav>
           <div className="text-sm text-muted-foreground">
-            © 2023 GradPilot. All rights reserved.
+            © 2025 GradPilot. All rights reserved.
           </div>
         </div>
       </footer>
