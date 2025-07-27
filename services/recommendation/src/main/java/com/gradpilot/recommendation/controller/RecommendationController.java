@@ -439,6 +439,12 @@ public class RecommendationController {
     @GetMapping("/upcoming-deadlines") 
     public ResponseEntity<List<UpcomingDeadlineDto>> getUpcomingDeadlines(@RequestParam String email) {
         List<UpcomingDeadlineDto> deadlines = recommendationService.getUpcomingDeadlines(email);
+        // debug
+        logger.info("Retrieved {} upcoming deadlines for email: {}", deadlines.size(), email);
+        if (deadlines.isEmpty()) {
+            logger.info("No upcoming deadlines found for email: {}", email);
+        } else {
+            deadlines.forEach(deadline -> logger.info("Upcoming deadline: {}", deadline));
         return ResponseEntity.ok(deadlines);
     }
 
