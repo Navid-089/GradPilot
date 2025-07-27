@@ -1,6 +1,6 @@
 // Mock authentication service
-const API_URL = "https://gradpilot.me"; // Update with your actual API URL
-
+// const API_URL = "https://gradpilot.me"; // Update with your actual API URL
+const API_URL = "http://localhost:8082"; // Use the correct backend URL for auth
 export async function loginUser(email, password) {
   // Mock validation
   if (!email || !password) {

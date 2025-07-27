@@ -1,5 +1,6 @@
 package com.gradpilot.service;
 
+
 import java.time.OffsetDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import com.gradpilot.dto.MentorLoginRequest;
 import com.gradpilot.dto.MentorLoginResponse;
 import com.gradpilot.dto.MentorRegisterRequest;
 import com.gradpilot.dto.MentorRegisterResponse;
+import com.gradpilot.dto.MentorProfileUpdateRequest;
+import com.gradpilot.dto.MentorDto;
 import com.gradpilot.model.Mentor;
 import com.gradpilot.model.MentorExpertiseArea;
 import com.gradpilot.model.University;
@@ -52,6 +55,53 @@ public class MentorAuthService {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    public MentorDto getMentorProfileByEmail(String email) {
+        Mentor mentor = mentorRepository.findByEmail(email).orElse(null);
+        if (mentor == null) return null;
+        return mapMentorToDto(mentor);
+    }
+
+    @Transactional
+    public MentorDto updateMentorProfile(MentorProfileUpdateRequest updateRequest) {
+        Mentor mentor = mentorRepository.findByEmail(updateRequest.getEmail()).orElse(null);
+        if (mentor == null) return null;
+
+        if (updateRequest.getName() != null) mentor.setName(updateRequest.getName());
+        if (updateRequest.getBio() != null) mentor.setBio(updateRequest.getBio());
+        if (updateRequest.getLinkedin() != null) mentor.setLinkedin(updateRequest.getLinkedin());
+        if (updateRequest.getGender() != null) mentor.setGender(updateRequest.getGender());
+
+        if (updateRequest.getUniversityId() != null) {
+            University university = universityRepository.findById(updateRequest.getUniversityId()).orElse(null);
+            mentor.setUniversity(university);
+        }
+        if (updateRequest.getFieldStudyId() != null) {
+            FieldOfStudy fieldOfStudy = fieldOfStudyRepository.findById(updateRequest.getFieldStudyId()).orElse(null);
+            mentor.setFieldOfStudy(fieldOfStudy);
+        }
+        if (updateRequest.getCountryId() != null) {
+            Country country = countryRepository.findById(updateRequest.getCountryId()).orElse(null);
+            mentor.setCountry(country);
+        }
+
+        mentorRepository.save(mentor);
+        return mapMentorToDto(mentor);
+    }
+
+    private MentorDto mapMentorToDto(Mentor mentor) {
+        return new MentorDto(
+            mentor.getId(),
+            mentor.getCreatedAt() != null ? mentor.getCreatedAt().toLocalDateTime() : null,
+            mentor.getUniversity() != null ? mentor.getUniversity().getUniversityId() : null,
+            mentor.getFieldOfStudy() != null ? mentor.getFieldOfStudy().getId() : null,
+            mentor.getIsVerified(),
+            mentor.getCountry() != null ? mentor.getCountry().getId() : null,
+            mentor.getBio(),
+            mentor.getLinkedin(),
+            mentor.getGender()
+        );
+    }
 
     @Transactional
     public MentorRegisterResponse register(MentorRegisterRequest registerRequest) {

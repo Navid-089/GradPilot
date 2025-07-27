@@ -1,5 +1,5 @@
-const API_BASE = "https://gradpilot.me/api/chat"; // adjust port if needed
-// const API_BASE = "http://localhost:8085/api/chat"; // Use the correct backend URL for chat
+// const API_BASE = "https://gradpilot.me/api/chat"; // adjust port if needed
+ const API_BASE = "http://localhost:8085/api/chat"; // Use the correct backend URL for chat
 
 function getAuthHeaders() {
   const token = localStorage.getItem("token");

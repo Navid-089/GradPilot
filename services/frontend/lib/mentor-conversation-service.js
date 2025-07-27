@@ -1,7 +1,7 @@
 // lib/notification-service.js
 
-const API_BASE_URL = "https://gradpilot.me";
-// const API_BASE_URL = "http://localhost:8085"; // Use the correct backend URL for notifications
+// const API_BASE_URL = "https://gradpilot.me";
+ const API_BASE_URL = "http://localhost:8085"; // Use the correct backend URL for notifications
 
 class ConversationService {
   // Get auth token from localStorage

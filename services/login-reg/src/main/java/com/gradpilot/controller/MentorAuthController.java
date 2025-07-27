@@ -4,15 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.gradpilot.dto.MentorLoginRequest;
 import com.gradpilot.dto.MentorLoginResponse;
 import com.gradpilot.dto.MentorRegisterRequest;
 import com.gradpilot.dto.MentorRegisterResponse;
+
+import com.gradpilot.dto.MentorProfileUpdateRequest;
+import com.gradpilot.dto.MentorDto;
 import com.gradpilot.service.MentorAuthService;
 
 import jakarta.validation.Valid;
@@ -35,5 +35,25 @@ public class MentorAuthController {
     public ResponseEntity<MentorLoginResponse> login(@Valid @RequestBody MentorLoginRequest loginRequest) {
         MentorLoginResponse response = mentorAuthService.login(loginRequest);
         return ResponseEntity.ok(response);
+    }
+
+    // GET /api/v1/mentor/profile?email=...
+    @GetMapping("/profile")
+    public ResponseEntity<MentorDto> getMentorProfile(@RequestParam String email) {
+        MentorDto mentorDto = mentorAuthService.getMentorProfileByEmail(email);
+        if (mentorDto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(mentorDto);
+    }
+
+    // PUT /api/v1/mentor/profile
+    @PutMapping("/profile")
+    public ResponseEntity<MentorDto> updateMentorProfile(@Valid @RequestBody MentorProfileUpdateRequest updateRequest) {
+        MentorDto updated = mentorAuthService.updateMentorProfile(updateRequest);
+        if (updated == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updated);
     }
 }
