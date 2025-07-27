@@ -12,6 +12,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.gradpilot.dto.ResetPasswordRequest;
+import com.gradpilot.model.PasswordResetToken;
+import com.gradpilot.repository.PasswordResetTokenRepository;
 
 import com.gradpilot.dto.LoginRequest;
 import com.gradpilot.dto.LoginResponse;
@@ -51,6 +54,12 @@ public class AuthService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Autowired
     private UserScoreRepository userScoreRepository;
@@ -138,6 +147,14 @@ public class AuthService {
                     savedUser.getUserId().toString(),
                     savedUser.getName(),
                     savedUser.getEmail());
+
+            // Send welcome email (asynchronously to not block registration)
+            try {
+                emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getName());
+            } catch (Exception e) {
+                // Log error but don't fail registration
+                System.err.println("Failed to send welcome email to " + savedUser.getEmail() + ": " + e.getMessage());
+            }
 
             return new RegisterResponse("Registration successful", userInfo, token);
 
@@ -428,4 +445,89 @@ public class AuthService {
         }
     }
 
+    @Transactional
+    public void sendPasswordResetEmail(String email) {
+        try {
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (user == null) {
+                // For security reasons, don't reveal if email exists or not
+                // Just log and return success to prevent email enumeration
+                System.out.println("Password reset requested for non-existent email: " + email);
+                return;
+            }
+
+            // Invalidate any existing unused tokens for this user
+            passwordResetTokenRepository.markAllUserTokensAsUsed(user);
+
+            // Generate a secure reset token
+            String resetToken = java.util.UUID.randomUUID().toString();
+
+            // Create password reset token with 1 hour expiry
+            LocalDateTime expiryDate = LocalDateTime.now().plusHours(1);
+            PasswordResetToken passwordResetToken = new PasswordResetToken(resetToken, user, expiryDate);
+            passwordResetTokenRepository.save(passwordResetToken);
+
+            // Send email
+            emailService.sendPasswordResetEmail(email, resetToken);
+
+        } catch (Exception e) {
+            System.err.println("Error in sendPasswordResetEmail: " + e.getMessage());
+            // Don't throw exception to prevent revealing system information
+        }
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        try {
+            // Validate passwords match
+            if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+                throw new RuntimeException("Passwords do not match");
+            }
+
+            // Find the token
+            PasswordResetToken resetToken = passwordResetTokenRepository
+                    .findByTokenAndUsedFalse(request.getToken())
+                    .orElseThrow(() -> new RuntimeException("Invalid or expired reset token"));
+
+            // Check if token is expired
+            if (resetToken.isExpired()) {
+                throw new RuntimeException("Reset token has expired");
+            }
+
+            // Update user password
+            User user = resetToken.getUser();
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+
+            // Mark token as used
+            resetToken.setUsed(true);
+            passwordResetTokenRepository.save(resetToken);
+
+            // Send success email
+            emailService.sendPasswordResetSuccessEmail(user.getEmail());
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to reset password: " + e.getMessage());
+        }
+    }
+
+    @Transactional
+    public boolean validateResetToken(String token) {
+        try {
+            PasswordResetToken resetToken = passwordResetTokenRepository
+                    .findByTokenAndUsedFalse(token)
+                    .orElse(null);
+
+            return resetToken != null && !resetToken.isExpired();
+        } catch (Exception e) {
+            System.err.println("Error validating reset token: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Cleanup method - can be called periodically to remove expired tokens
+    @Transactional
+    public void cleanupExpiredTokens() {
+        passwordResetTokenRepository.deleteExpiredTokens(LocalDateTime.now());
+    }
 }
