@@ -35,16 +35,12 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Fetch static mock data
-        // const mockData = await getDashboardData();
-
-        // 2. Fetch real upcoming deadlines using dashboard-service.js helper
+        const mockData = await getDashboardData();
         const upcomingDeadlines = await getUpcomingDeadlines();
-
-        // 3. Merge real deadlines with mock data
-
-
-        setDashboardData(upcomingDeadlines);
+        setDashboardData({
+          ...mockData,
+          upcomingDeadlines,
+        });
       } catch (error) {
         console.error("Error loading dashboard data:", error);
       } finally {

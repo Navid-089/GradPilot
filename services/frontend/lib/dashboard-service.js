@@ -36,6 +36,10 @@ export async function getUpcomingDeadlines(userEmail = null) {
       throw new Error(`API call failed: ${response.status} - ${errorText}`);
     }
 
+    console.log('API call successful, parsing JSON response...');
+    //logs response data
+    
+
     const deadlines = await response.json();
     console.log('Received deadline data:', deadlines);
 
