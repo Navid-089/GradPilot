@@ -189,7 +189,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        Recent Activity
+        {/* Recent Activity */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
