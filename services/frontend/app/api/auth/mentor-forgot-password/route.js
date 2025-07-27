@@ -5,7 +5,7 @@ export async function POST(request) {
     const body = await request.json();
 
     const response = await fetch(
-      "http://login-reg:8082/api/v1/mentor/auth/forgot-password",
+      "http://login-reg:8082/api/v1/mentor/auth/mentor-forgot-password",
       {
         method: "POST",
         headers: {

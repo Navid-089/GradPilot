@@ -141,7 +141,7 @@ export default function ResetPasswordPage() {
                 request a new one.
               </p>
               <div className="space-y-2">
-                <Link href="/forgot-password">
+                <Link href="/mentor-forgot-password">
                   <Button className="w-full">Request New Reset Link</Button>
                 </Link>
                 <Link

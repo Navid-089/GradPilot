@@ -54,10 +54,10 @@ export default function MentorSignupPage() {
       try {
         const [universitiesRes, fieldsRes, countriesRes, expertiseRes] =
           await Promise.all([
-            fetch(`http://login-reg:8082/api/universities`),
-            fetch(`http://login-reg:8082/api/fields-of-study`),
-            fetch(`http://login-reg:8082/api/countries`),
-            fetch(`http://login-reg:8082/api/expertise-areas`),
+            fetch(`/api/universities`),
+            fetch(`/api/fields-of-study`),
+            fetch(`/api/countries`),
+            fetch(`/api/expertise-areas`),
           ]);
 
         const [universities, fields, countries, expertise] = await Promise.all([
