@@ -1,6 +1,6 @@
 #  Project Setup Guide
 
-This project supports both **Docker-based deployment** and **local development using `docker-compose`**, offering flexibility based on your use case. Below you'll find detailed instructions for both.
+This project supports both **Github Actions-based deployment** and **local development using `docker-compose`**, offering flexibility based on your use case. Below you'll find detailed instructions for both.
 
 ---
 
