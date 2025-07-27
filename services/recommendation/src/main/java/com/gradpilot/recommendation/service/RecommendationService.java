@@ -160,15 +160,19 @@ public class RecommendationService {
 
     public List<UpcomingDeadlineDto> getUpcomingDeadlines(String email) {
          Optional<User> userOpt = userRepository.findByEmail(email);
-    if (userOpt.isEmpty()) {
-        throw new RuntimeException("User not found");
-    }
+         // debug printing 
+         System.out.println("User found: " + userOpt.isPresent() + " for email: " + email);
+
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
 
     User user = userOpt.get();
     int userId = user.getUserId();
 
     List<Task> tasks = trackerService.getUserTaskEntities(user.getEmail());
-
+    // debug printing
+    System.out.println("Tasks found: " + tasks.size() + " for userId: " + userId);
     List<UpcomingDeadlineDto> deadlines = new ArrayList<>();
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -182,6 +186,7 @@ public class RecommendationService {
             Optional<University> uniOpt = universityRepository.findById(task.getUniversityId());
             if (uniOpt.isPresent()) {
                 University uni = uniOpt.get();
+                System.out.println("Processing university: " + uni.getName());
                 if (uni.getDeadline() != null) {
                     title = uni.getName() + " Application";
                     institution = uni.getName();
@@ -200,6 +205,7 @@ public class RecommendationService {
             if (schOpt.isPresent()) {
                 Scholarship s = schOpt.get();
                 try {
+                    System.out.println("Processing scholarship: " + s.getName());
                     LocalDate deadline = LocalDate.parse(s.getDeadline(), formatter);
                     title = s.getName();
                     institution = s.getUniversity() != null ? s.getUniversity().getName() : "External";

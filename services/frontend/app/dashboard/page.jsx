@@ -189,7 +189,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Recent Activity
+        Recent Activity
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -220,7 +220,7 @@ export default function Dashboard() {
               )}
             </div>
           </CardContent>
-        </Card> */}
+        </Card>
       </div>
 
       {/* SOP Review Feature Highlight */}
@@ -264,7 +264,7 @@ export default function Dashboard() {
       </Card>
 
       {/* University Matches */}
-      {/* <Card>
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
             <School className="mr-2 h-5 w-5" />
@@ -316,7 +316,7 @@ export default function Dashboard() {
             </Button>
           </div>
         </CardContent>
-      </Card> */}
+      </Card>
     </div>
   );
 }
