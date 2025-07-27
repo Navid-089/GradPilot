@@ -125,7 +125,7 @@ export default function MentorLayout({ children }) {
               
               <Avatar className="h-10 w-10">
                 <AvatarImage
-                  src={getMentorAvatarSrc(mentor?.id, mentor?.gender)}
+                  src={getMentorAvatarSrc(mentor?.mentorId, mentor?.gender)}
                   alt={mentor?.name}
                 />
                 <AvatarFallback>
