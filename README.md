@@ -11,13 +11,13 @@ To run the entire application using Docker, follow these steps:
 ### 1. Ensure Docker is installed
 Install Docker on your system: [https://docs.docker.com/get-docker/](https://docs.docker.com/get-docker/)
 
-### 2. Run the application
+### 2. Build and Run required microsystems
 ```bash
-docker build -t your-project-name .
-docker run -p 3000:3000 your-project-name
+docker build -t microservice-name .
+docker run -p 3000:3000 microservice-name
 ```
 
-Alternatively, you can use Docker Compose:
+Alternatively, you can use Docker Compose to run the whole application:
 
 ```bash
 docker-compose up --build
